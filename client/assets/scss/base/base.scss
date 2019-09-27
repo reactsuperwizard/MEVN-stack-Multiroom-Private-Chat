@@ -1,0 +1,297 @@
+@import '../abstract/keyframes.scss';
+@import '../abstract/variables.scss';
+@import '../abstract/util.scss';
+@import '../abstract/animations.scss';
+@import '../vendors/animate.scss';
+
+@import '../components/social.scss';
+
+*,
+*::before,
+*::after {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    background: #18191c;
+    font-family: 'Work Sans', sans-serif;
+}
+
+header {
+    background: #18191c;
+    border-bottom: 1px solid #fff;
+    width: 100%;
+    position: relative;
+    z-index: 10;
+
+    @include respond(phone) {
+        position: fixed;
+        top: 0;
+    }
+}
+
+img {
+    width: 100%;
+}
+
+nav a {
+    text-decoration: none;
+    color: #fff;
+    margin: 0 0.5rem;
+}
+
+li .nav__link.router-link-exact-active {
+    font-weight: bold;
+    color: #fff;
+    opacity: 1;
+}
+
+.app {
+    overflow-x: hidden;
+    height: auto;
+    width: 100%;
+}
+
+.public,
+.private {
+    font-weight: bold;
+}
+
+.public {
+    color: lightgreen;
+}
+
+.private {
+    color: crimson;
+}
+
+.lead {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 1.3em;
+    text-align: center;
+    font-size: 0.9em;
+    line-height: 1.5em;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Russo One';
+    text-transform: uppercase;
+}
+
+.btn {
+    text-decoration: none;
+    color: #fff;
+    text-align: center;
+    font-size: 0.9em;
+    margin: 0 1em;
+    padding: 12px 50px;
+    display: inline-block;
+    cursor: pointer;
+    transition: transform 1s ease, opacity 0.5s ease;
+
+    &:hover {
+        opacity: 0.5;
+    }
+
+    &--clear {
+        border: 0;
+        font-family: 'Work Sans';
+    }
+
+    &--rounded {
+        border-radius: 20px;
+        border: 2px solid #fff;
+        padding: 5px 17px 7px;
+    }
+
+    &--anim {
+        animation: hover 1s linear infinite;
+    }
+
+    &--white {
+        color: #000;
+        background: #fff;
+        border-radius: 5px;
+    }
+
+    &--coral {
+        color: #fff;
+        background: lightcoral;
+        border-radius: 5px;
+    }
+
+    &--purple {
+        color: #fff;
+        background: #9070b4;
+        border-radius: 5px;
+    }
+
+    &--success {
+        color: #fff;
+        background: lightgreen;
+        border-radius: 5px;
+    }
+
+    &--danger {
+        color: #fff;
+        background: crimson;
+        border-radius: 5px;
+    }
+
+    &--info {
+        color: #fff;
+        background: #3c9adf;
+        border-radius: 5px;
+        animation-delay: 0.8s;
+    }
+
+    &--modal {
+        width: 100%;
+        margin: 0;
+        height: 100%;
+    }
+}
+
+.badge {
+    display: flex;
+    border-radius: 15px;
+    padding: 5px;
+    height: auto;
+    width: auto;
+    justify-content: center;
+    align-items: center;
+
+    &--info {
+        color: #fff;
+        background: #3c9adf;
+    }
+
+    &--danger {
+        color: #fff;
+        background: crimson;
+    }
+
+    &--success {
+        color: #fff;
+        background: green;
+    }
+}
+
+.icon {
+    font-size: 1.5em;
+    margin: 0 0.4em;
+}
+
+.page {
+    min-height: 85vh;
+    width: 100%;
+    background: transparent;
+    color: #fff;
+    background: url(./assets/img/BackgroundPath.svg) no-repeat;
+    background-size: 100%;
+    background-position: bottom center;
+    background-attachment: fixed;
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+
+    @include respond(phone) {
+        height: 100%;
+    }
+}
+
+.section {
+    width: 100%;
+    position: relative;
+
+    &__heading {
+        font-size: 2.5rem;
+        text-align: center;
+    }
+
+    &__title {
+        width: auto;
+        display: inline-block;
+        font-family: 'Russo One', sans-serif;
+    }
+
+    &__lead {
+        text-align: center;
+        width: 50%;
+        margin: 1em auto 3em auto;
+        font-size: 0.9em;
+        line-height: 1.5em;
+        color: rgba(255, 255, 255, 0.8);
+
+        @include respond(phone) {
+            width: 100%;
+        }
+    }
+
+    // Not required??
+    &:first-child {
+        @include respond(phone) {
+            height: 100%;
+        }
+    }
+
+    &--mmt {
+        @include respond(phone) {
+            margin-top: 100px;
+        }
+    }
+
+    &__landing {
+        margin: 4em 0 10em 0;
+
+        @include respond(phone) {
+            margin: 8em 0 0 0;
+        }
+    }
+
+    &__content {
+        text-align: center;
+
+        @include respond(phone) {
+            padding: 0 20px 100px 20px;
+        }
+    }
+
+    &__graphic {
+        width: 80%;
+        margin: 4em auto;
+
+        & > img {
+            width: 70%;
+            @include respond(phone) {
+                width: 100%;
+            }
+        }
+    }
+
+    &--room {
+        height: calc(100vh - 68px);
+        @include respond(phone) {
+            margin-top: 70px;
+        }
+    }
+
+    &--profile {
+        height: 100vh;
+    }
+}
+
+.particle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    overflow: hidden;
+}

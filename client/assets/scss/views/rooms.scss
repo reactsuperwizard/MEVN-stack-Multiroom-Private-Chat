@@ -1,0 +1,140 @@
+@import '../abstract/variables.scss';
+
+.rooms {
+    background: $primary-container-background;
+    box-shadow: $primary-container-box-shadow;
+    width: 60%;
+    max-width: 600px;
+    margin: 1rem auto;
+
+    @include respond(phone) {
+        width: 100%;
+    }
+
+    &__header {
+        padding: 1rem 0;
+    }
+
+    &__details {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        @include respond(phone) {
+            margin: 0 0.8rem;
+        }
+
+        &-item {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+
+            @include respond(phone) {
+                text-align: left;
+            }
+        }
+
+        & span {
+            margin: 0 10px;
+        }
+    }
+
+    &__list {
+        margin: 0;
+        padding: 0 1rem;
+        height: 500px;
+        max-height: 500px;
+        overflow: auto;
+
+        &-item {
+            list-style: none;
+            margin: 0 0 1rem 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+
+            &:hover {
+                opacity: 0.6;
+            }
+
+            &-link {
+                text-decoration: none;
+                color: #fff;
+            }
+        }
+    }
+
+    &__item {
+        &-container {
+            display: flex;
+            padding: 1rem;
+            border-radius: 3px;
+            border: 1px solid #eeeeee;
+
+            @include respond(phone) {
+                flex-flow: column;
+            }
+        }
+
+        &-details {
+            width: 50%;
+            text-align: left;
+
+            @include respond(phone) {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /** List Item Actions */
+        &-actions {
+            display: flex;
+            justify-content: flex-end;
+
+            @include respond(phone) {
+                justify-content: center;
+            }
+        }
+
+        &-action {
+            width: 50%;
+            align-self: center;
+            text-align: right;
+
+            @include respond(phone) {
+                width: initial;
+                margin: 0.5rem 0;
+            }
+        }
+    }
+
+    &__actions {
+        padding: 1rem;
+
+        width: 100%;
+
+        @include respond(phone) {
+            & > * {
+                width: 100%;
+                margin: 0.5em 0;
+            }
+        }
+    }
+
+    &__search-input {
+        font-family: 'Work Sans';
+        position: relative;
+        padding: 1rem;
+        border-radius: 3px;
+        border: 1px solid #fff;
+        background: transparent;
+        margin: 1.5rem 0 0.5rem 0;
+        z-index: 1;
+        width: 95%;
+        color: #fff;
+        font-weight: bold;
+        font-family: 'Work Sans', sans-serif;
+
+        @include respond(phone) {
+            width: 90%;
+        }
+    }
+}
