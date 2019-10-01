@@ -4,10 +4,10 @@ const router = express.Router();
 // const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Room = require('../models/Room');
 const gravatar = require('gravatar');
 // const socialAuthActions = require('../actions/socialAuthActions');
 const bcrypt = require('bcryptjs')
-
 /** Middleware */
 const {
     checkRegistrationFields,
@@ -80,7 +80,6 @@ router.post('/register', [checkRegistrationFields], (req, res) => {
                         error: 'Something went wrong, Please check the fields again'
                     });
                 });
-            console.log('post register all finished');
         }
     });
 });
@@ -100,7 +99,6 @@ router.post('/login', checkLoginFields, async (req, res) => {
             error: 'No User Found'
         });
     }
-
     const token = jwt.sign(user.dataValues, process.env.JWT_SECRET, { expiresIn: 18000 });
 
     res.status(200).send({ auth: true, token: `Bearer ${token}`, user });

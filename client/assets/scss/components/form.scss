@@ -53,6 +53,10 @@
         font-family: 'Work Sans', sans-serif;
         outline: none;
 
+        option {
+            color: black;
+        }
+
         &:focus + label,
         &:focus:valid + label,
         &:valid + label,

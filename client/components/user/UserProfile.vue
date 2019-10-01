@@ -28,8 +28,20 @@
             <span class="infobox__item--right">{{ user.username }}</span>
           </div>
           <div class="infobox__item">
+            <span class="infobox__item--left">Age</span>
+            <span class="infobox__item--right">{{ user.age || 'Unknown' }}</span>
+          </div>
+          <div class="infobox__item">
+            <span class="infobox__item--left">Gender</span>
+            <span class="infobox__item--right">{{ user.sex || 'Unknown' }}</span>
+          </div>
+          <div class="infobox__item">
             <span class="infobox__item--left">Location</span>
             <span class="infobox__item--right">{{ user.location || 'Unknown' }}</span>
+          </div>
+          <div class="infobox__item">
+            <span class="infobox__item--left">Bio</span>
+            <textarea class="infobox__item--right" v-model="user.bio" disabled></textarea>
           </div>
           <div class="infobox__actions mt-3" v-if="user">
             <router-link

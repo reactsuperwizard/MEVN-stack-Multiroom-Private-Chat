@@ -16,7 +16,9 @@ module.exports = function (passport) {
     passport.serializeUser((user, done) => done(null, { id: user.id, _socket: user._socket }));
 
     passport.deserializeUser((user, done) => {
-        User.findByPk(user.id)
+        User.findByPk(user.id, {
+            attributes: { exclude: ['password'] }
+        })
             // .select('-password -googleId -facebookId')
             .then(user => {
                 done(null, { details: user, _socket: user._socket });
@@ -25,7 +27,9 @@ module.exports = function (passport) {
 
     passport.use(
         new JwtStrategy(opts, (payload, done) => {
-            User.findByPk(payload._id)
+            User.findByPk(payload.id, {
+                attributes: { exclude: ['password'] }
+            })
                 // .select('-password')
                 .then(user => {
                     if (user) {

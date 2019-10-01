@@ -3,9 +3,9 @@ const router = express.Router();
 
 const passport = require('passport');
 
-const { User } = require('../models/User');
+const User = require('../models/User');
 
-// const { checkEditProfileFields } = require('../middleware/authenticate');
+const { checkEditProfileFields } = require('../middleware/authenticate');
 
 // /**
 //  * @description  GET /api/user/users
@@ -29,32 +29,43 @@ const { User } = require('../models/User');
 //     }
 // });
 
-// /**
-//  * @description PUT /api/user/current
-//  * @param  {String} id
-//  * @param  {Middleware} passport.authenticate
-//  * @param  {false} session
-//  * @param  {Object} request
-//  * @param  {Object} response
-//  */
-// router.put(
-//     '/current',
-//     [passport.authenticate('jwt', { session: false }), checkEditProfileFields],
-//     async (req, res) => {
-//         const updateFields = {};
+/**
+ * @description PUT /api/user/current
+ * @param  {String} id
+ * @param  {Middleware} passport.authenticate
+ * @param  {false} session
+ * @param  {Object} request
+ * @param  {Object} response
+ */
+router.put(
+    '/current',
+    [passport.authenticate('jwt', { session: false }), checkEditProfileFields],
+    async (req, res) => {
+        const updateFields = {};
 
-//         for (let key of Object.keys(req.body)) {
-//             if (req.body[key] !== null) {
-//                 updateFields[key] = req.body[key];
-//             }
-//         }
-
-//         User.findOneAndUpdate({ _id: req.user.id }, { $set: updateFields }, { new: true })
-//             .select('-password')
-//             .then(doc => res.json({ success: true, user: doc }))
-//             .catch(err => res.json({ error: err }));
-//     }
-// );
+        for (let key of Object.keys(req.body)) {
+            if (req.body[key] !== null) {
+                updateFields[key] = req.body[key];
+            }
+        }
+        User.update(updateFields, { returning: true, plain: true, where: { id: req.user.id } })
+            .then(function (doc) {
+                if (doc[1]) {
+                    User.findByPk(req.user.id, {
+                        attributes: { exclude: ['password'] }
+                    })
+                        .then(doc => {
+                            res.json({ success: true, user: doc })
+                        })
+                }
+            })
+            // .then(doc => res.json({ success: true, user: doc }))
+            .catch(err => {
+                console.log('err', err);
+                res.json({ error: err })
+            });
+    }
+);
 
 /**
  * @description GET api/user/current
@@ -65,7 +76,6 @@ const { User } = require('../models/User');
  * @param  {Object} response
  */
 router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
-    console.log('get current user passport authentication success');
     res.json(req.user);
 });
 

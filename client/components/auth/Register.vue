@@ -98,7 +98,6 @@ export default {
     ...mapActions(["saveUserData", "toggleAuthState"]),
     handleSubmit() {
       this.errors = [];
-      console.log("handleSubmit");
 
       if (this.username && this.email && this.password) {
         axios
@@ -124,9 +123,6 @@ export default {
               this.$store.dispatch("saveUserData", true);
 
               setAuthToken(res.data.token);
-              console.log(
-                "front end post user register successful, before User profile routing"
-              );
               this.$router.push({
                 name: "UserProfile",
                 params: { handle: res.data.user.handle }

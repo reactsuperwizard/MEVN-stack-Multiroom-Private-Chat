@@ -32,7 +32,7 @@ const cors = require('cors');
 /** Socket IO */
 const app = express();
 const server = require('http').Server(app);
-// const io = require('socket.io')(server);
+const io = require('socket.io')(server);
 // const {
 //     ADD_MESSAGE,
 //     UPDATE_ROOM_USERS,
@@ -48,7 +48,7 @@ const server = require('http').Server(app);
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 // const profileRoutes = require('./routes/profile');
-// const roomRoutes = require('./routes/room');
+const roomRoutes = require('./routes/room');
 // const messageRoutes = require('./routes/messages');
 
 /** Middleware */
@@ -73,13 +73,13 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(expressValidator());
 app.use(cors());
-// app.set('io', io);
+app.set('io', io);
 
 /** Routes Definitions */
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 // app.use('/api/profile', profileRoutes);
-// app.use('/api/room', roomRoutes);
+app.use('/api/room', roomRoutes);
 // app.use('/api/messages', messageRoutes);
 
 // if (process.env.NODE_ENV !== 'production') {
@@ -90,8 +90,52 @@ app.use('/api/user', userRoutes);
 //     );
 // }
 
+let userTypings = {};
 /** Socket IO Connections */
+io.on('connection', socket => {
+    let currentRoomId = null;
 
+    /** User Typing Events */
+    socket.on('userTyping', data => {
+        if (!userTypings[data.room.id]) {
+            userTypings[data.room.id] = [];
+        } else {
+            if (!userTypings[data.room.id].includes(data.user.handle)) {
+                userTypings[data.room.id].push(data.user.handle);
+            }
+        }
+
+        socket.broadcast
+            .to(data.room.id)
+            .emit('receivedUserTyping', JSON.stringify(userTypings[data.room.id]));
+    });
+
+    socket.on('removeUserTyping', data => {
+        if (userTypings[data.room.id]) {
+            if (userTypings[data.room.id].includes(data.user.handle)) {
+                userTypings[data.room.id] = userTypings[data.room.id].filter(
+                    handle => handle !== data.user.handle
+                );
+            }
+        }
+
+        socket.broadcast
+            .to(data.room.id)
+            .emit('receivedUserTyping', JSON.stringify(userTypings[data.room.id]));
+    });
+
+    /** New Message Event */
+    socket.on('newMessage', async data => {
+        const newMessage = await ADD_MESSAGE(data);
+
+        // Emit data back to the client for display
+        io.to(data.room.id).emit('receivedNewMessage', JSON.stringify(newMessage));
+    });
+    /** Room Added Event */
+    socket.on('roomAdded', async data => {
+        io.emit('roomAdded', JSON.stringify(data));
+    });
+});
 /** Serve static assets if production */
 // if (process.env.NODE_ENV === 'production') {
 //     app.use(express.static(path.resolve(__dirname, '../client', 'dist')));

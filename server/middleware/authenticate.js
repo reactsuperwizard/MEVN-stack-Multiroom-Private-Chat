@@ -64,60 +64,60 @@ const checkLoginFields = async (req, res, next) => {
     }
 };
 
-// const checkEditProfileFields = async (req, res, next) => {
-//     let errors = [];
+const checkEditProfileFields = async (req, res, next) => {
+    let errors = [];
 
-//     if (req.body.email) {
-//         if (await User.findOne({ email: req.body.email })) {
-//             errors.push({ param: 'email', msg: 'Email is already taken' });
-//         }
-//     }
+    if (req.body.email) {
+        if (await User.findOne({ where: { email: req.body.email } })) {
+            errors.push({ param: 'email', msg: 'Email is already taken' });
+        }
+    }
 
-//     if (req.body.handle) {
-//         if (await User.findOne({ handle: req.body.handle })) {
-//             errors.push({ param: 'handle', msg: 'Handle is already taken' });
-//         }
-//     }
-//     if (errors.length !== 0) {
-//         res.send({
-//             errors: createErrorObject(errors)
-//         });
-//     } else {
-//         next();
-//     }
-// };
+    if (req.body.handle) {
+        if (await User.findOne({ where: { handle: req.body.handle } })) {
+            errors.push({ param: 'handle', msg: 'Handle is already taken' });
+        }
+    }
+    if (errors.length !== 0) {
+        res.send({
+            errors: createErrorObject(errors)
+        });
+    } else {
+        next();
+    }
+};
 
-// const checkCreateRoomFields = async (req, res, next) => {
-//     if (!req.body.room_name) {
-//         req.check('room_name')
-//             .not()
-//             .isEmpty()
-//             .withMessage('Room name is required');
-//     } else {
-//         req.check('room_name')
-//             .isString()
-//             .isLength({ min: 3, max: 20 })
-//             .withMessage('Room name must be between 5 and 20 characters');
-//     }
+const checkCreateRoomFields = async (req, res, next) => {
+    if (!req.body.room_name) {
+        req.check('room_name')
+            .not()
+            .isEmpty()
+            .withMessage('Room name is required');
+    } else {
+        req.check('room_name')
+            .isString()
+            .isLength({ min: 3, max: 20 })
+            .withMessage('Room name must be between 5 and 20 characters');
+    }
 
-//     if (req.body.password) {
-//         req.check('password')
-//             .not()
-//             .isEmpty()
-//             .isLength({ min: 5, max: 15 })
-//             .withMessage('Password should be between 5 and 15 characters');
-//     }
+    if (req.body.password) {
+        req.check('password')
+            .not()
+            .isEmpty()
+            .isLength({ min: 5, max: 15 })
+            .withMessage('Password should be between 5 and 15 characters');
+    }
 
-//     const errors = req.validationErrors();
+    const errors = req.validationErrors();
 
-//     if (errors) {
-//         res.send({
-//             errors: createErrorObject(errors)
-//         });
-//     } else {
-//         next();
-//     }
-// };
+    if (errors) {
+        res.send({
+            errors: createErrorObject(errors)
+        });
+    } else {
+        next();
+    }
+};
 
 // const customSocialAuthenticate = socialAuth => {
 //     return (req, res, next) => {
@@ -130,8 +130,8 @@ const checkLoginFields = async (req, res, next) => {
 module.exports = {
     checkLoginFields,
     checkRegistrationFields,
-    // checkEditProfileFields,
-    // checkCreateRoomFields,
+    checkEditProfileFields,
+    checkCreateRoomFields,
     // customSocialAuthenticate,
     createErrorObject
 };

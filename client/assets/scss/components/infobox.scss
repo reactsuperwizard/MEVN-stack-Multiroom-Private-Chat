@@ -33,6 +33,12 @@
             font-weight: bold;
         }
 
+        & textarea {
+            color: white;
+            min-height: 50px;
+            resize: vertical;
+        }
+
         &--left {
             text-align: left;
             text-transform: uppercase;
@@ -54,6 +60,7 @@
             border-radius: 5px;
             padding: 0.6em;
             text-align: right;
+            max-width: 100%;
 
             @include respond(phone) {
                 width: 100%;

@@ -65,42 +65,42 @@ const router = new Router({
                 enterActive: 'animated fadeIn'
             }
         },
-        // {
-        //     path: '/user/:handle/edit',
-        //     name: 'EditUserProfile',
-        //     component: () => import('@/components/user/EditUserProfile.vue'),
-        //     props: true,
-        //     meta: {
-        //         requiresAuth: true,
-        //         transitionName: 'router-anim',
-        //         enterActive: 'animated fadeIn'
-        //     }
-        // },
-        // {
-        //     path: '/rooms',
-        //     name: 'RoomList',
-        //     component: () => import('@/components/room/RoomList.vue'),
-        //     props: true,
-        //     meta: {
-        //         requiresAuth: true,
-        //         transitionName: 'router-anim',
-        //         enterActive: 'animated fadeIn'
-        //     }
-        // },
-        // {
-        //     path: '/room/:id',
-        //     name: 'Room',
-        //     component: () => import('@/components/room/Room.vue'),
-        //     meta: {
-        //         requiresAuth: true,
-        //         transitionName: 'router-anim',
-        //         enterActive: 'animated fadeIn'
-        //     }
-        // },
-        // {
-        //     path: '*',
-        //     component: () => import('@/components/error/NotFound.vue')
-        // }
+        {
+            path: '/user/:handle/edit',
+            name: 'EditUserProfile',
+            component: () => import('@/components/user/EditUserProfile.vue'),
+            props: true,
+            meta: {
+                requiresAuth: true,
+                transitionName: 'router-anim',
+                enterActive: 'animated fadeIn'
+            }
+        },
+        {
+            path: '/rooms',
+            name: 'RoomList',
+            component: () => import('@/components/room/RoomList.vue'),
+            props: true,
+            meta: {
+                requiresAuth: true,
+                transitionName: 'router-anim',
+                enterActive: 'animated fadeIn'
+            }
+        },
+        {
+            path: '/room/:id',
+            name: 'Room',
+            component: () => import('@/components/room/Room.vue'),
+            meta: {
+                requiresAuth: true,
+                transitionName: 'router-anim',
+                enterActive: 'animated fadeIn'
+            }
+        },
+        {
+            path: '*',
+            component: () => import('@/components/error/NotFound.vue')
+        }
     ]
 });
 
