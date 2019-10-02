@@ -36,6 +36,24 @@ const router = new Router({
             }
         },
         {
+            path: '/forgotpassword',
+            name: 'ForgotPassword',
+            component: () => import('@/components/auth/Forgot.vue'),
+            props: true,
+            meta: {
+                requiresAuth: false
+            }
+        },
+        {
+            path: '/resetpassword/:token',
+            name: 'ResetPassword',
+            component: () => import('@/components/auth/Reset.vue'),
+            props: true,
+            meta: {
+                requiresAuth: false
+            }
+        },
+        {
             path: '/register',
             name: 'Register',
             component: () => import('@/components/auth/Register.vue'),

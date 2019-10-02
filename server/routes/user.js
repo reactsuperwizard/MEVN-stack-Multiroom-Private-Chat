@@ -7,6 +7,7 @@ const User = require('../models/User');
 
 const { checkEditProfileFields } = require('../middleware/authenticate');
 
+const bcrypt = require('bcryptjs')
 // /**
 //  * @description  GET /api/user/users
 //  * @param  {Middleware} passport.authenticate
@@ -29,6 +30,11 @@ const { checkEditProfileFields } = require('../middleware/authenticate');
 //     }
 // });
 
+/**Password Encrypt Function */
+encryptPwd = async (pwd) => {
+
+}
+
 /**
  * @description PUT /api/user/current
  * @param  {String} id
@@ -42,6 +48,9 @@ router.put(
     [passport.authenticate('jwt', { session: false }), checkEditProfileFields],
     async (req, res) => {
         const updateFields = {};
+        // let hash;
+
+        req.body.password = await bcrypt.hash(req.body.password, 10);
 
         for (let key of Object.keys(req.body)) {
             if (req.body[key] !== null) {

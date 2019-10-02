@@ -64,6 +64,22 @@ const checkLoginFields = async (req, res, next) => {
     }
 };
 
+const checkForgotFields = async (req, res, next) => {
+    let errors = [];
+    const user = await User.findOne({ where: { email: req.body.email } });
+    if (!user) {
+        errors.push({ param: 'email', msg: 'Invalid Details Entered' });
+    }
+
+    if (errors.length !== 0) {
+        res.send({
+            errors: createErrorObject(errors)
+        });
+    } else {
+        next();
+    }
+};
+
 const checkEditProfileFields = async (req, res, next) => {
     let errors = [];
 
@@ -133,5 +149,6 @@ module.exports = {
     checkEditProfileFields,
     checkCreateRoomFields,
     // customSocialAuthenticate,
+    checkForgotFields,
     createErrorObject
 };

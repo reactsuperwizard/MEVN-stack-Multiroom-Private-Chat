@@ -46,6 +46,10 @@
             />
             <label for="password" class="form__label">Password</label>
           </div>
+          <div class="form__info-group mb-3">
+            <span>Forgotten password?</span>
+            <router-link to="/forgotpassword" class="form__link btn btn--rounded">Forgot password</router-link>
+          </div>
           <div class="form__info-group">
             <span>Don't have an account?</span>
             <router-link to="/register" class="form__link btn btn--rounded">Register</router-link>
@@ -67,15 +71,15 @@ import setAuthToken from "../../utils/authToken";
 
 export default {
   name: "Login",
-  props: ["message"],
+  props: ["message", "pEmail", "pPassword"],
   components: {
     Error
     // OAuth
   },
   data: function() {
     return {
-      email: "",
-      password: "",
+      email: this.pEmail,
+      password: this.pPassword,
       errorMessage: this.message,
       errors: []
     };
