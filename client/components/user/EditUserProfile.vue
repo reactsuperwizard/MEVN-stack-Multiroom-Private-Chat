@@ -5,14 +5,31 @@
         <span class="section__title">Update Account</span>
       </div>
       <div class="section__content">
-        <form @submit.prevent="handleSubmit" class="form">
+        <form
+          @submit.prevent="handleSubmit"
+          class="form"
+          method="post"
+          enctype="multipart/form-data"
+        >
           <p class="lead">Edit Profile Details</p>
           <div class="profile__item">
-            <img :src="user.image" alt class="profile__image" />
+            <img v-if="selected_url" :src="selected_url" class="profile__image" />
+            <img
+              v-else
+              :src="(!user.image.includes('www.gravatar.com/avatar') ? '/' : '') + user.image"
+              alt
+              class="profile__image"
+            />
+            <input
+              class="form__control"
+              type="file"
+              id="image"
+              ref="image"
+              name="image"
+              @change="handleFileUpload"
+              accept="image/*"
+            />
           </div>
-          <!-- <div class="profile__item" v-else>
-                        <img :src="user.social.image" alt class="profile__image">
-          </div>-->
           <br />
           <div class="form__input-group">
             <ion-icon name="pricetags" class="form__icon"></ion-icon>
@@ -81,7 +98,7 @@
           <Error :errors="errors" />
           <div class="form__actions mt-3">
             <a @click="handleBackBtn" class="btn btn--info">Back</a>
-            <button type="submit" class="btn btn--clear btn--danger">Update Account</button>
+            <button type="submit" class="btn btn--clear btn--info">Update Account</button>
           </div>
         </form>
       </div>
@@ -103,6 +120,8 @@ export default {
   },
   data: function() {
     return {
+      selected_url: null,
+      image: "",
       user: {},
       //   email: "",
       handle: "",
@@ -119,6 +138,11 @@ export default {
   methods: {
     ...mapActions(["saveUserData"]),
 
+    handleFileUpload(e) {
+      this.image = this.$refs.image.files[0];
+      const file = e.target.files[0];
+      this.selected_url = URL.createObjectURL(file);
+    },
     handleBackBtn() {
       this.$router.go(-1);
     },
@@ -128,6 +152,7 @@ export default {
       }
     },
     handleSubmit() {
+      let formData = new FormData();
       const updatedUserDetails = {
         handle:
           this.handle === this.getUserData.handle
@@ -138,12 +163,24 @@ export default {
         sex: this.sex === this.getUserData.sex ? null : this.sex,
         location:
           this.location === this.getUserData.location ? null : this.location,
-        bio: this.bio === this.getUserData.bio ? null : this.bio
+        bio: this.bio === this.getUserData.bio ? null : this.bio,
+        image: this.image === this.getUserData.image ? null : this.image
       };
+
+      console.log("updatedUserDetails['image']", updatedUserDetails["image"]);
+      for (const property in updatedUserDetails) {
+        if (updatedUserDetails[property]) {
+          formData.append(property, updatedUserDetails[property]);
+        }
+      }
 
       if (localStorage.getItem("authToken")) {
         axios
-          .put(`/api/user/current`, updatedUserDetails)
+          .put(`/api/user/current`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data"
+            }
+          })
           .then(async res => {
             if (res.data.errors) {
               for (const error of res.data.errors) {

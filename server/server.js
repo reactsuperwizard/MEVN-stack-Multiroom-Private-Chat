@@ -68,7 +68,7 @@ const roomRoutes = require('./routes/room');
 
 // app.use(compression());
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(expressValidator());

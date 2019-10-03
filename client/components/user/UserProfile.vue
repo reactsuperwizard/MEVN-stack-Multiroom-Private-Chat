@@ -9,7 +9,11 @@
         <div class="infobox__container" v-if="user">
           <span class="lead">Your current profile</span>
           <div class="infobox__item">
-            <img :src="user.image" alt class="profile__image" />
+            <img
+              :src="(!user.image.includes('www.gravatar.com/avatar') ? '/' : '') + user.image"
+              alt
+              class="profile__image"
+            />
           </div>
           <!-- <div class="infobox__item" v-else>
             <img :src="user.social.image" alt class="profile__image" />

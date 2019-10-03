@@ -28,7 +28,6 @@ if (localStorage.authToken) {
 } else {
     setAuthToken(null);
 }
-console.log('fe: Main.js');
 /** Axios Request Intercept */
 axios.interceptors.request.use(
     function (config) {
