@@ -3,3 +3,5 @@ server/node_modules/
 node_modules/
 .env
 server/.env
+*.jpg
+*.png
