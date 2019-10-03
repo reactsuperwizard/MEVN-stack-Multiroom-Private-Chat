@@ -1,19 +1,20 @@
 const Message = require('../models/Message');
 const Room = require('../models/Room');
+const User = require('../models/User');
 
 module.exports = {
     ADD_MESSAGE: async data => {
-        const newMessage = await new Message({
-            content: data.content,
-            admin: data.admin ? true : false,
-            user: data.user ? data.user.id : null,
-            room: data.room.id
-        }).save();
+        // const newMessage = await new Message({
+        //     content: data.content,
+        //     admin: data.admin ? true : false,
+        //     user: data.user ? data.user.id : null,
+        //     room: data.room.id
+        // }).save();
 
-        return Message.populate(newMessage, {
-            path: 'user',
-            select: 'username social handle image'
-        });
+        // return Message.populate(newMessage, {
+        //     path: 'user',
+        //     select: 'username social handle image'
+        // });
     },
     GET_MESSAGES: async data => {
         return await Message.find({ room: data.room._id }).populate('user', [
@@ -31,52 +32,51 @@ module.exports = {
             : `Unknown User has left ${room.updated.name}`;
     },
     GET_ROOMS: async () => {
-        return await Room.find({})
-            .populate('user users.lookup', ['username', 'social', 'handle', 'image'])
-            .select('-password');
+        console.log('be: GET_ROOMS START');
+        const rooms = await Room.findAll({}, { raw: true });
+
+        for (var i = 0; i < rooms.length; i++) {
+            const room = rooms[i];
+            await User.findOne({ where: { id: room['user'] } }, { raw: true })
+                .then(user => {
+                    room['user'] = user;
+                })
+            await User.findAndCountAll({ where: { room_id: room['id'] } })
+                .then(result => {
+                    room['users'] = result.count;
+                })
+                .catch(err => {
+                    console.log('err', err);
+                })
+        }
+        console.log('be: GET_ROOMS END');
+        return rooms;
+        // return await Room.find({})
+        //     .populate('user users.lookup', ['username', 'social', 'handle', 'image'])
+        //     .select('-password');
     },
     GET_ROOM_USERS: async data => {
-        return await Room.findById(data.room._id)
-            .populate('user users.lookup', ['username', 'social', 'handle', 'image'])
-            .select('-password');
+        console.log('be: GET_ROOM_USERS START');
+        console.log('be: GET_ROOM_USERS END');
+        return await User.findAll({ where: { room_id: data.room.id } }, { raw: true });
     },
     UPDATE_ROOM_USERS: async data => {
-        const room = await Room.findOne({ name: data.room.name })
-            .select('-password')
-            .populate('users.lookup', ['username', 'social', 'handle', 'image']);
-
-        // console.log(data.user);
-        if (room) {
-            if (
-                room.users &&
-                !room.users.find(user => user.lookup._id.toString() === data.user._id)
-            ) {
-                room.users.push({
-                    lookup: mongoose.Types.ObjectId(data.user._id),
-                    socketId: data.socketId
-                });
-                const updatedRoom = await room.save();
-                return await Room.populate(updatedRoom, {
-                    path: 'user users.lookup',
-                    select: 'username social image handle'
-                });
-            } else {
-                // Update user socket id if the user already exists
-                const existingUser = room.users.find(
-                    user => user.lookup._id.toString() === data.user._id
-                );
-                if (existingUser.socketId != data.socketId) {
-                    existingUser.socketId = data.socketId;
-                    await room.save();
+        // console.log('be: UPDATE_ROOM_USERS', data.user);
+        let room;
+        const updateFields = ({
+            room_id: data.room.id,
+            socketid: data.socketId
+        });
+        await User.update(updateFields, { returning: true, raw: true, where: { id: data.user.id } })
+            .then(async info => {
+                if (info[1]) {
+                    room = await Room.findByPk(data.room.id, { raw: true })
+                    const users = await User.findAll({ where: { room_id: data.room.id } }, { raw: true })
+                    room['users'] = users;
                 }
-                return await Room.populate(room, {
-                    path: 'user users.lookup',
-                    select: 'username social image handle'
-                });
-            }
-        } else {
-            return;
-        }
+            })
+        console.log(room);
+        return room;
     },
     FILTER_ROOM_USERS: async data => {
         const room = await Room.findById(mongoose.Types.ObjectId(data.roomId))

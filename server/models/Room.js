@@ -30,16 +30,7 @@ module.exports = (function () {
                 default: []
             },
             users: {
-                type: Sequelize.STRING,
-                get() {
-                    if (this.getDataValue('users')) {
-                        return this.getDataValue('users').split(';')
-                    }
-                    return '';
-                },
-                set(val) {
-                    this.setDataValue('users', val.join(';'));
-                },
+                type: Sequelize.INTEGER
             }
         },
         {

@@ -24,20 +24,18 @@
               />
               <ul class="chat__userlist" v-if="this.getCurrentRoom && filteredUsers">
                 <transition-group name="slideDown">
-                  <li class="chat__user" v-for="user in filteredUsers" :key="user.lookup._id">
+                  <li class="chat__user" v-for="user in filteredUsers" :key="user.id">
                     <div class="chat__user-item">
                       <div class="chat__user-image">
                         <img
-                          v-if="user.lookup.social.id === null"
-                          :src="user.lookup.image"
-                          class="chat__user-avatar"
+                          :src="(!user.image.includes('www.gravatar.com/avatar') ? '/' : '') + user.image"
                           alt
+                          class="chat__user-avatar"
                         />
-                        <img v-else :src="user.lookup.social.image" class="chat__user-avatar" alt />
                       </div>
 
                       <div class="chat__user-details">
-                        <span>{{ user.lookup.handle }}</span>
+                        <span>{{ user.handle }}</span>
                       </div>
                     </div>
                   </li>
@@ -106,13 +104,14 @@ export default {
   },
   computed: {
     ...mapGetters(["getUserData", "getCurrentRoom", "getSocket"]),
-    filteredUsers() {
+    filteredUsers: function() {
+      console.log("fe filtered", this.users);
       return this.users
         ? this.users
             .slice()
             .sort(this.sortAlphabetical)
             .filter(user =>
-              user.lookup.username
+              user.username
                 .toLowerCase()
                 .includes(this.searchInput.toLowerCase())
             )
@@ -127,18 +126,29 @@ export default {
   methods: {
     ...mapActions(["saveCurrentRoom"]),
     checkUserTabs(room) {
+      console.log(
+        "chekc",
+        room.users.findIndex(user => {
+          return user.id === this.getUserData.id;
+        })
+      );
       if (
         room &&
-        room.users.findIndex(
-          user => user.lookup._id === this.getUserData._id
-        ) === -1
+        room.users.findIndex(user => {
+          console.log(
+            "user.id",
+            user.id + " this.getUserData.id " + this.getUserData.id
+          );
+          return user.id === this.getUserData.id;
+        }) === -1
       ) {
+        console.log("fe: u exit the room");
         this.$router.push({ name: "RoomList" });
       }
     },
     sortAlphabetical(a, b) {
-      let userA = a.lookup.username.toUpperCase();
-      let userB = b.lookup.username.toUpperCase();
+      let userA = a.username.toUpperCase();
+      let userB = b.username.toUpperCase();
       if (userA < userB) {
         return -1;
       }
@@ -148,27 +158,25 @@ export default {
       return 0;
     },
     leaveRoom(e, newPage) {
+      console.log("fe: function leaveRoom");
       if (e) {
         e.preventDefault();
       }
       axios
         .post("/api/room/remove/users", {
-          room_name: this.getCurrentRoom.name
+          room_id: this.getCurrentRoom.id
         })
         .then(res => {
-          if (
-            this.room.access ||
-            this.room.accessIds.includes(this.getUserData._id)
-          ) {
-            this.getSocket.emit("exitRoom", {
-              room: res.data,
-              user: null,
-              admin: true,
-              content: `${this.getUserData.handle} left ${this.getCurrentRoom.name}`
-            });
-          }
+          console.log("fe: /api/room/remove/users room data", res.data);
+          this.getSocket.emit("exitRoom", {
+            room: res.data,
+            user: null,
+            admin: true,
+            content: `${this.getUserData.handle} left ${this.getCurrentRoom.name}`
+          });
           this.roomLeft = true;
           if (!newPage) {
+            console.log("u clicked leave room and exit");
             this.$router.push({ name: "RoomList" });
           }
         });
@@ -223,26 +231,15 @@ export default {
     }
   },
   created() {
+    console.log("created");
     axios
       .get(`/api/room/${this.$route.params.id}`)
       .then(res => {
-        console.log("fe: room.vue created res.data", res.data);
+        console.log("fe: api room id data", res);
         this.room = res.data;
         this.users = res.data.users;
         this.$store.dispatch("saveCurrentRoom", res.data);
 
-        /** Check for private access and access Id */
-        if (!res.data.access) {
-          if (
-            !res.data.accessIds.includes(this.getUserData._id) &&
-            this.getUserData._id !== res.data.user.lookup._id
-          ) {
-            return this.$router.push({
-              name: "RoomList",
-              params: { message: "You do not have access to this room" }
-            });
-          }
-        }
         /** Socket IO: User join event, get latest messages from room */
         this.getSocket.emit("userJoined", {
           room: this.getCurrentRoom,
@@ -254,6 +251,7 @@ export default {
         /** Socket IO: Received New User Event */
         this.getSocket.on("updateRoomData", data => {
           data = JSON.parse(data);
+          console.log("fe:Son updateRoomData data", data);
           if (data.messages) {
             this.messages = data.messages;
           }
@@ -267,6 +265,7 @@ export default {
 
         /** Socket IO: Reconnect User Event */
         this.getSocket.on("reconnect", () => {
+          console.log("fe: reconnet");
           this.usersTyping = [];
           this.getSocket.emit("reconnectUser", {
             room: this.getCurrentRoom,
@@ -275,30 +274,36 @@ export default {
         });
 
         this.getSocket.on("reconnected", () => {
+          console.log("fe: reconnected");
           console.warn("Reconnected");
         });
 
         this.getSocket.on("disconnect", () => {
+          console.log("fe: disconnect");
           console.warn("Disconnected");
         });
 
         /** Socket IO: User Exit Event - Update User List */
         this.getSocket.on("updateUserList", data => {
-          this.users = JSON.parse(data).users;
+          console.log("fe: updateUserList user data", JSON.parse(data));
+          this.users = JSON.parse(data);
         });
 
         /** Socket IO: User Exit Event - Check other tabs of the same room and redirect */
         this.getSocket.on("receivedUserExit", room => {
+          console.log("fe: receivedUserExit");
           this.checkUserTabs(room);
         });
 
         /** Socket IO: New Messaage Event - Append the new message to the messages array */
         this.getSocket.on("receivedNewMessage", message => {
-          this.messages.push(JSON.parse(message));
+          // console.log("fe: receivedNewMessage");
+          // this.messages.push(JSON.parse(message));
         });
 
         /** Socket IO: User Typing Event  */
         this.getSocket.on("receivedUserTyping", data => {
+          console.log("fe: receivedUserTyping");
           this.usersTyping = JSON.parse(data).filter(
             user => user !== this.getUserData.handle
           );
@@ -306,6 +311,7 @@ export default {
 
         /** Socket IO: Room Deleted Event - Redirect all users */
         this.getSocket.on("roomDeleted", () => {
+          console.log("fe: roomDeleted");
           this.$store.dispatch("saveCurrentRoom", null);
           setTimeout(() => {
             this.$router.push({ name: "RoomList" });
@@ -314,11 +320,13 @@ export default {
 
         /** Socket IO: Room Updated Event */
         this.getSocket.on("roomUpdated", data => {
+          console.log("fe: roomUpdated");
           this.room = JSON.parse(data).room;
           this.$store.dispatch("saveCurrentRoom", JSON.parse(data).room);
         });
       })
       .catch(err => {
+        console.log("fe Room error", err);
         if (err.response.status === 404) {
           this.$router.push({
             name: "RoomList",
@@ -328,6 +336,7 @@ export default {
       });
   },
   beforeDestroy() {
+    console.log("You exit before destroy");
     if (this.getCurrentRoom && !this.roomLeft) {
       this.leaveRoom(null, true);
     }

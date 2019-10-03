@@ -19,6 +19,10 @@ router.get('/', passport.authenticate('jwt', { session: false }), async (req, re
             .then(user => {
                 room['user'] = user;
             })
+        await User.findAndCountAll({ where: { room_id: room['id'] } })
+            .then(result => {
+                room['users'] = result.count;
+            })
             .catch(err => {
                 console.log('err', err);
             })
@@ -35,12 +39,9 @@ router.get('/', passport.authenticate('jwt', { session: false }), async (req, re
  */
 router.get('/:room_id', passport.authenticate('jwt', { session: false }), async (req, res) => {
     const room = await Room.findByPk(req.params.room_id, { raw: true });
-    await User.findOne({ where: { id: room['user'] } })
-        .then(user => {
-            room['user'] = user.dataValues;
-        })
-        .catch(err => {
-            console.log('err', err);
+    await User.findAndCountAll({ where: { room_id: room['id'] } })
+        .then(result => {
+            room['users'] = result.rows;
         })
 
     // const user = 
@@ -195,26 +196,30 @@ router.post(
 //     }
 // });
 
-// /**
-//  * @description PUT /api/room/remove/users
-//  */
-// router.post('/remove/users', passport.authenticate('jwt', { session: false }), async (req, res) => {
-//     const room = await Room.findOne({ name: req.body.room_name });
+/**
+ * @description PUT /api/room/remove/users
+ */
+router.post('/remove/users', passport.authenticate('jwt', { session: false }), async (req, res) => {
 
-//     if (room) {
-//         if (room.users.find(user => user.lookup.toString() === req.user.id)) {
-//             room.users = room.users.filter(user => user.lookup.toString() !== req.user.id);
-//             await room.save();
-//         }
-//         const returnRoom = await Room.populate(room, {
-//             path: 'user users.lookup',
-//             select: 'username social image handle'
-//         });
-//         return res.status(200).json(returnRoom);
-//     } else {
-//         return res.status(404).json({ errors: `No room with name ${req.params.room_name} found` });
-//     }
-// });
+    console.log('be: post remove users', req.body);
+    let room = await Room.findByPk(req.body.room_id, { raw: true });
+
+    if (room) {
+        const updateFields = ({
+            room_id: 0
+        });
+        await User.update(updateFields, { returning: true, raw: true, where: { id: req.user.id } })
+            .then(async info => {
+                if (info[1]) {
+                    const users = await User.findAll({ where: { room_id: req.body.room_id } }, { raw: true })
+                    room['users'] = users;
+                }
+            })
+        return res.status(200).json(room);
+    } else {
+        return res.status(404).json({ errors: `No room with name ${req.body.room_name} found` });
+    }
+});
 
 /**
  * @description PUT /api/room/remove/users/:id/all

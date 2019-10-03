@@ -47,7 +47,7 @@
                         >{{ room.access === true ? 'Public': 'Private' }}</p>
                         <p>
                           <strong>Users:</strong>
-                          {{ room.users.length }}
+                          {{ room.users }}
                         </p>
                         <p>
                           <strong>Room Admin:</strong>
@@ -225,6 +225,7 @@ export default {
           } else {
             this.$store.dispatch("updateRoomData", res.data);
             this.rooms = res.data;
+            console.log(this.rooms);
           }
         })
         .then(res => {
@@ -347,6 +348,7 @@ export default {
     });
 
     this.getSocket.on("updateRooms", data => {
+      console.log("fe:Son updateRooms", JSON.parse(data));
       this.rooms = JSON.parse(data).room;
     });
 

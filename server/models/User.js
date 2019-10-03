@@ -62,6 +62,9 @@ module.exports = (function () {
             },
             status_participate: {
                 type: Sequelize.TINYINT
+            },
+            room_id: {
+                type: Sequelize.INTEGER
             }
         },
         {

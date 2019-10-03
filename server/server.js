@@ -33,16 +33,16 @@ const cors = require('cors');
 const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
-// const {
-//     ADD_MESSAGE,
-//     UPDATE_ROOM_USERS,
-//     GET_ROOMS,
-//     GET_ROOM_USERS,
-//     FILTER_ROOM_USERS,
-//     CREATE_MESSAGE_CONTENT
-// } = require('./actions/socketio');
+const {
+    ADD_MESSAGE,
+    UPDATE_ROOM_USERS,
+    GET_ROOMS,
+    GET_ROOM_USERS,
+    FILTER_ROOM_USERS,
+    CREATE_MESSAGE_CONTENT
+} = require('./actions/socketio');
 
-// const { JOIN_ROOM } = require('./helpers/socketEvents');
+const { JOIN_ROOM } = require('./helpers/socketEvents');
 
 /** Routes */
 const authRoutes = require('./routes/auth');
@@ -95,6 +95,42 @@ let userTypings = {};
 io.on('connection', socket => {
     let currentRoomId = null;
 
+    /** Join User in Room */
+    socket.on('userJoined', data => {
+        currentRoomId = data.room.id;
+        data.socketId = socket.id;
+        console.log('be: userJoined socket id', socket.id);
+        JOIN_ROOM(socket, data);
+    });
+
+    /** User Exit Room */
+    socket.on('exitRoom', data => {
+        currentRoomId = null;
+        socket.leave(data.room.id, async () => {
+            socket.to(data.room.id).emit(
+                'updateRoomData',
+                JSON.stringify({
+                    room: data.room
+                })
+            );
+
+            /** Update room list count */
+            socket.broadcast.emit(
+                'updateRooms',
+                JSON.stringify({
+                    room: await GET_ROOMS()
+                })
+            );
+
+            io.to(data.room.id).emit('receivedUserExit', data.room);
+
+            // /** Send Exit Message back to room */
+            // socket.broadcast
+            //     .to(data.room.id)
+            //     .emit('receivedNewMessage', JSON.stringify(await ADD_MESSAGE(data)));
+        });
+    });
+
     /** User Typing Events */
     socket.on('userTyping', data => {
         if (!userTypings[data.room.id]) {
@@ -126,10 +162,10 @@ io.on('connection', socket => {
 
     /** New Message Event */
     socket.on('newMessage', async data => {
-        const newMessage = await ADD_MESSAGE(data);
+        // const newMessage = await ADD_MESSAGE(data);
 
-        // Emit data back to the client for display
-        io.to(data.room.id).emit('receivedNewMessage', JSON.stringify(newMessage));
+        // // Emit data back to the client for display
+        // io.to(data.room.id).emit('receivedNewMessage', JSON.stringify(newMessage));
     });
     /** Room Added Event */
     socket.on('roomAdded', async data => {

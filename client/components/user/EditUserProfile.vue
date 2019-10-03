@@ -1,9 +1,6 @@
 <template>
   <div class="page profile">
     <div class="section section--profile profile__content">
-      <div class="section__heading mt-10">
-        <span class="section__title">Update Account</span>
-      </div>
       <div class="section__content">
         <form
           @submit.prevent="handleSubmit"
