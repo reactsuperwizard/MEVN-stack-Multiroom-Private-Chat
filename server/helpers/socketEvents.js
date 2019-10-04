@@ -14,7 +14,7 @@ module.exports = {
             socket.emit(
                 'updateRoomData',
                 JSON.stringify({
-                    // messages: await GET_MESSAGES(data),
+                    messages: await GET_MESSAGES(data),
                     room: await UPDATE_ROOM_USERS(data)
                 })
             );
@@ -38,7 +38,7 @@ module.exports = {
                 JSON.stringify(
                     await ADD_MESSAGE({
                         room: data.room,
-                        user: false,
+                        user: 1,
                         content: data.content,
                         admin: data.admin
                     })

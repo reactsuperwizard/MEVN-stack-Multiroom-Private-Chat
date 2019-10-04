@@ -1,5 +1,6 @@
 <template>
   <div class="page page--room">
+    <ion-icon name="add-circle"></ion-icon>
     <section class="section section--room section--mmt p-0">
       <div class="section__content u-max-height p-0">
         <div class="chat">
@@ -253,6 +254,7 @@ export default {
           data = JSON.parse(data);
           console.log("fe:Son updateRoomData data", data);
           if (data.messages) {
+            console.log("fe:Son updateRoomData data Messages", data.messages);
             this.messages = data.messages;
           }
 
@@ -297,8 +299,8 @@ export default {
 
         /** Socket IO: New Messaage Event - Append the new message to the messages array */
         this.getSocket.on("receivedNewMessage", message => {
-          // console.log("fe: receivedNewMessage");
-          // this.messages.push(JSON.parse(message));
+          console.log("fe:Son receivedNewMessage", JSON.parse(message));
+          this.messages.push(JSON.parse(message));
         });
 
         /** Socket IO: User Typing Event  */

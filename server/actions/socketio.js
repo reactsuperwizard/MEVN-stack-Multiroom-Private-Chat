@@ -4,25 +4,37 @@ const User = require('../models/User');
 
 module.exports = {
     ADD_MESSAGE: async data => {
-        // const newMessage = await new Message({
-        //     content: data.content,
-        //     admin: data.admin ? true : false,
-        //     user: data.user ? data.user.id : null,
-        //     room: data.room.id
-        // }).save();
+        // console.log('ADD_MESSAGE', data);
+        const newMessage = new Message({
+            content: data.content,
+            admin: data.admin ? true : false,
+            user: data.user ? data.user.id : null,
+            room: data.room.id
+        });
 
-        // return Message.populate(newMessage, {
-        //     path: 'user',
-        //     select: 'username social handle image'
-        // });
+        let messageData = await newMessage.save();
+        const userData = await User.findByPk(data.user.id, { raw: true });
+        messageData['user'] = userData;
+        // console.log('ADD_MESSAGE', messageData);
+        return messageData;
     },
     GET_MESSAGES: async data => {
-        return await Message.find({ room: data.room._id }).populate('user', [
-            'username',
-            'social',
-            'handle',
-            'image'
-        ]);
+        console.log('be: GET_MESSAGES START');
+
+        const messages = await Message.findAll({ room: data.room.id }, { raw: true });
+
+        for (var i = 0; i < messages.length; i++) {
+            const message = messages[i];
+            await User.findByPk(message['user'], { raw: true })
+                .then(user => {
+                    message['user'] = user;
+                })
+                .catch(err => {
+                    console.log('err', err);
+                })
+        }
+        console.log('be: GET_MESSAGES END');
+        return messages;
     },
     CREATE_MESSAGE_CONTENT: (room, socketId) => {
         const user = room.previous.users.find(user => user.socketId === socketId);
@@ -75,7 +87,6 @@ module.exports = {
                     room['users'] = users;
                 }
             })
-        console.log(room);
         return room;
     },
     FILTER_ROOM_USERS: async data => {
