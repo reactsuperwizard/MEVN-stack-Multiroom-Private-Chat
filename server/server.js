@@ -124,10 +124,10 @@ io.on('connection', socket => {
 
             io.to(data.room.id).emit('receivedUserExit', data.room);
 
-            // /** Send Exit Message back to room */
-            // socket.broadcast
-            //     .to(data.room.id)
-            //     .emit('receivedNewMessage', JSON.stringify(await ADD_MESSAGE(data)));
+            /** Send Exit Message back to room */
+            socket.broadcast
+                .to(data.room.id)
+                .emit('receivedNewMessage', JSON.stringify(await ADD_MESSAGE(data)));
         });
     });
 

@@ -13,15 +13,17 @@ module.exports = {
         });
 
         let messageData = await newMessage.save();
-        const userData = await User.findByPk(data.user.id, { raw: true });
-        messageData['user'] = userData;
+        if (data.user) {
+            const userData = await User.findByPk(data.user.id, { raw: true });
+            messageData['user'] = userData;
+        }
         // console.log('ADD_MESSAGE', messageData);
         return messageData;
     },
     GET_MESSAGES: async data => {
         console.log('be: GET_MESSAGES START');
 
-        const messages = await Message.findAll({ room: data.room.id }, { raw: true });
+        const messages = await Message.findAll({ where:{ room: data.room.id} }, { raw: true });
 
         for (var i = 0; i < messages.length; i++) {
             const message = messages[i];
@@ -39,8 +41,8 @@ module.exports = {
     CREATE_MESSAGE_CONTENT: (room, socketId) => {
         const user = room.previous.users.find(user => user.socketId === socketId);
 
-        return user && user.lookup.handle
-            ? `${user.lookup.handle} has left ${room.updated.name}`
+        return user && user.handle
+            ? `${user.handle} has left ${room.updated.name}`
             : `Unknown User has left ${room.updated.name}`;
     },
     GET_ROOMS: async () => {
