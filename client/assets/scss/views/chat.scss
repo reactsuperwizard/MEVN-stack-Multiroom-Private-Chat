@@ -1,7 +1,7 @@
 .chat {
     height: 100%;
     position: relative;
-    display: flex;
+    // display: flex;
 
     @include respond(phone) {
         height: calc(100vh - 70px);
@@ -36,7 +36,7 @@
         flex-grow: 1;
         text-align: right;
 
-        & > * {
+        &>* {
             cursor: pointer;
         }
     }
@@ -183,7 +183,7 @@
         transition: all 0.5s ease;
         background: #101114;
 
-        & > span {
+        &>span {
             font-family: 'Work Sans';
             transition: all 0.5s ease;
         }
@@ -191,7 +191,7 @@
 
     /** Input List */
     &__input {
-        overflow: hidden;
+        // overflow: hidden;
         display: flex;
         padding: 1rem 0;
         margin: 0 1rem;
@@ -220,7 +220,6 @@
             text-align: right;
         }
 
-        @include respond(phone) {
-        }
+        @include respond(phone) {}
     }
 }

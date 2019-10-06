@@ -14,7 +14,9 @@ if (process.env.NODE_ENV !== 'production') {
 /** Logging Dependencies */
 // const morgan = require('morgan');
 // const winston = require('winston');
-const { logger } = require('./config/logModule');
+const {
+    logger
+} = require('./config/logModule');
 
 /** Passport Configuration */
 const passport = require('passport');
@@ -42,7 +44,9 @@ const {
     CREATE_MESSAGE_CONTENT
 } = require('./actions/socketio');
 
-const { JOIN_ROOM } = require('./helpers/socketEvents');
+const {
+    JOIN_ROOM
+} = require('./helpers/socketEvents');
 
 /** Routes */
 const authRoutes = require('./routes/auth');
@@ -68,7 +72,9 @@ const roomRoutes = require('./routes/room');
 
 // app.use(compression());
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(expressValidator());
@@ -165,7 +171,7 @@ io.on('connection', socket => {
         const newMessage = await ADD_MESSAGE(data);
 
         // Emit data back to the client for display
-        console.log('be:Son newMessage addedMessage ', newMessage);
+        // console.log('be:Son newMessage addedMessage ', newMessage);
         io.to(data.room.id).emit('receivedNewMessage', JSON.stringify(newMessage));
     });
     /** Room Added Event */
@@ -187,4 +193,6 @@ if (process.env.NODE_ENV !== 'test') {
     });
 }
 
-module.exports = { app };
+module.exports = {
+    app
+};

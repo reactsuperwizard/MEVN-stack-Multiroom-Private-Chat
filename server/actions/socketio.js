@@ -4,7 +4,7 @@ const User = require('../models/User');
 
 module.exports = {
     ADD_MESSAGE: async data => {
-        // console.log('ADD_MESSAGE', data);
+        console.log('ADD_MESSAGE content', data.content);
         const newMessage = new Message({
             content: data.content,
             admin: data.admin ? true : false,
@@ -14,7 +14,9 @@ module.exports = {
 
         let messageData = await newMessage.save();
         if (data.user) {
-            const userData = await User.findByPk(data.user.id, { raw: true });
+            const userData = await User.findByPk(data.user.id, {
+                raw: true
+            });
             messageData['user'] = userData;
         }
         // console.log('ADD_MESSAGE', messageData);
@@ -23,11 +25,17 @@ module.exports = {
     GET_MESSAGES: async data => {
         console.log('be: GET_MESSAGES START');
 
-        const messages = await Message.findAll({ where:{ room: data.room.id} }, { raw: true });
+        const messages = await Message.findAll({
+            where: {
+                room: data.room.id
+            }
+        });
 
         for (var i = 0; i < messages.length; i++) {
             const message = messages[i];
-            await User.findByPk(message['user'], { raw: true })
+            await User.findByPk(message['user'], {
+                    raw: true
+                })
                 .then(user => {
                     message['user'] = user;
                 })
@@ -41,21 +49,33 @@ module.exports = {
     CREATE_MESSAGE_CONTENT: (room, socketId) => {
         const user = room.previous.users.find(user => user.socketId === socketId);
 
-        return user && user.handle
-            ? `${user.handle} has left ${room.updated.name}`
-            : `Unknown User has left ${room.updated.name}`;
+        return user && user.handle ?
+            `${user.handle} has left ${room.updated.name}` :
+            `Unknown User has left ${room.updated.name}`;
     },
     GET_ROOMS: async () => {
         console.log('be: GET_ROOMS START');
-        const rooms = await Room.findAll({}, { raw: true });
+        const rooms = await Room.findAll({}, {
+            raw: true
+        });
 
         for (var i = 0; i < rooms.length; i++) {
             const room = rooms[i];
-            await User.findOne({ where: { id: room['user'] } }, { raw: true })
+            await User.findOne({
+                    where: {
+                        id: room['user']
+                    }
+                }, {
+                    raw: true
+                })
                 .then(user => {
                     room['user'] = user;
                 })
-            await User.findAndCountAll({ where: { room_id: room['id'] } })
+            await User.findAndCountAll({
+                    where: {
+                        room_id: room['id']
+                    }
+                })
                 .then(result => {
                     room['users'] = result.count;
                 })
@@ -72,7 +92,13 @@ module.exports = {
     GET_ROOM_USERS: async data => {
         console.log('be: GET_ROOM_USERS START');
         console.log('be: GET_ROOM_USERS END');
-        return await User.findAll({ where: { room_id: data.room.id } }, { raw: true });
+        return await User.findAll({
+            where: {
+                room_id: data.room.id
+            }
+        }, {
+            raw: true
+        });
     },
     UPDATE_ROOM_USERS: async data => {
         // console.log('be: UPDATE_ROOM_USERS', data.user);
@@ -81,11 +107,25 @@ module.exports = {
             room_id: data.room.id,
             socketid: data.socketId
         });
-        await User.update(updateFields, { returning: true, raw: true, where: { id: data.user.id } })
+        await User.update(updateFields, {
+                returning: true,
+                raw: true,
+                where: {
+                    id: data.user.id
+                }
+            })
             .then(async info => {
                 if (info[1]) {
-                    room = await Room.findByPk(data.room.id, { raw: true })
-                    const users = await User.findAll({ where: { room_id: data.room.id } }, { raw: true })
+                    room = await Room.findByPk(data.room.id, {
+                        raw: true
+                    })
+                    const users = await User.findAll({
+                        where: {
+                            room_id: data.room.id
+                        }
+                    }, {
+                        raw: true
+                    })
                     room['users'] = users;
                 }
             })
