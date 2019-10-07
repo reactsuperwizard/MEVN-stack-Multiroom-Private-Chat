@@ -172,32 +172,34 @@ router.post('/forgot', checkForgotFields, async (req, res) => {
     };
     transport.sendMail(mailOptions, (error, info) => {
         if (error) {
-            return res.send({
-                error,
-                error: 'Something went wrong, Please check the fields again'
-            });
+            // return res.send({
+            //     error,
+            //     error: 'Something went wrong, Please check the fields again'
+            // });
+            console.log('Something went wrong, Please check the fields again');
         }
-        return res.send({
-            error: 'Mail Sent Successful'
-        });
+        console.log('Mailtrap Sent Successful');
+        // return res.send({
+        //     error: 'Mailtrap Sent Successful'
+        // });
     });
-    // sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-    // token = encodeURI(token);
-    // const msg = {
-    //     to: process.env.myEmailAddress,
-    //     from: 'test@example.com',
-    //     subject: 'Sending with SendGrid is Fun',
-    //     text: 'and easy to do anywhere, even with Node.js',
-    //     html: '<b>Hey there! </b><br><a href="http://localhost:8081/resetpassword/' + token + '">Please click this link</a>'
-    // };
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    token = encodeURI(token);
+    const msg = {
+        to: process.env.myEmailAddress,
+        from: 'test@example.com',
+        subject: 'Sending with SendGrid is Fun',
+        text: 'and easy to do anywhere, even with Node.js',
+        html: '<b>Hey there! </b><br><a href="http://localhost:8081/resetpassword/' + token + '">Please click this link</a>'
+    };
 
-    // sgMail.send(msg, (error, info) => {
-    //     if (error) {
-    //         return res.status(400).send('Cannot send email via sendgrid ' + error)
-    //     }
-    //     console.log('Sendgrid Message sent: %s', info);
-    //     return res.send('Email sent successfully')
-    // });
+    sgMail.send(msg, (error, info) => {
+        if (error) {
+            return res.status(400).send('Cannot send email via sendgrid ' + error)
+        }
+        console.log('Sendgrid Message sent: %s', info);
+        return res.send('Email sent successfully')
+    });
 });
 
 /**
