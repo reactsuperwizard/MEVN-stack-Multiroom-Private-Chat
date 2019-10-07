@@ -253,7 +253,7 @@ router.post('/remove/users', passport.authenticate('jwt', {
 
     if (room) {
         const updateFields = ({
-            room_id: 0
+            room_id: null
         });
         await User.update(updateFields, {
                 returning: true,

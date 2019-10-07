@@ -5,8 +5,7 @@ const bcrypt = require('bcryptjs')
 // module.exports = db.sequelize.define(
 module.exports = (function () {
     const User = db.sequelize.define(
-        'user_info',
-        {
+        'user_info', {
             // id: {
             //     type: Sequelize.INTEGER,
             //     primaryKey: true,
@@ -64,20 +63,18 @@ module.exports = (function () {
                 type: Sequelize.TINYINT
             },
             room_id: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                default: -1
             }
-        },
-        {
+        }, {
             timestamps: {
                 createdAt: 'created_at',
                 updatedAt: 'updated_at'
             }
-        },
-        {
-        }
+        }, {}
     );
     User.prototype.isValidPassword = function (password) {
         return bcrypt.compare(password, this.password);
     }
     return User;
-})(); 
+})();

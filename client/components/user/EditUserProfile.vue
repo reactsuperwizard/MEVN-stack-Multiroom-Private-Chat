@@ -19,7 +19,7 @@
 							ref="image"
 							name="image"
 							@change="handleFileUpload"
-							accept="image/*"
+							accept=".jpg, .jpeg"
 						/>
 					</div>
 					<br />
