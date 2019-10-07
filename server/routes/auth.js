@@ -29,12 +29,22 @@ const {
 router.post('/register', [checkRegistrationFields], (req, res) => {
     let errors = [];
 
-    User.findOne({ where: { email: req.body.email } }).then(user => {
+    User.findOne({
+        where: {
+            email: req.body.email
+        }
+    }).then(user => {
         if (user) {
-            errors.push({ param: 'email', msg: 'Email is already taken' });
+            errors.push({
+                param: 'email',
+                msg: 'Email is already taken'
+            });
 
             if (user.username === req.body.username) {
-                errors.push({ param: 'username', msg: 'Username is already taken' });
+                errors.push({
+                    param: 'username',
+                    msg: 'Username is already taken'
+                });
             }
 
             res.send({
@@ -77,7 +87,7 @@ router.post('/register', [checkRegistrationFields], (req, res) => {
                         })
                 })
                 .catch(err => {
-                    console.log('post register error catch', err);
+                    console.log('err', err);
                     res.send({
                         err,
                         error: 'Something went wrong, Please check the fields again'
@@ -95,28 +105,45 @@ router.post('/register', [checkRegistrationFields], (req, res) => {
  * @access public
  */
 router.post('/login', checkLoginFields, async (req, res) => {
-    const user = await User.findOne({ where: { email: req.body.email }, raw: true });
+    const user = await User.findOne({
+        where: {
+            email: req.body.email
+        },
+        raw: true
+    });
 
     if (!user) {
         return res.status(404).send({
             error: 'No User Found'
         });
     }
-    const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: 18000 });
+    const token = jwt.sign(user, process.env.JWT_SECRET, {
+        expiresIn: 18000
+    });
 
-    res.status(200).send({ auth: true, token: `Bearer ${token}`, user });
+    res.status(200).send({
+        auth: true,
+        token: `Bearer ${token}`,
+        user
+    });
 });
 
 router.post('/forgot', checkForgotFields, async (req, res) => {
-    const user = await User.findOne({ where: { email: req.body.email }, raw: true });
+    const user = await User.findOne({
+        where: {
+            email: req.body.email
+        },
+        raw: true
+    });
 
     if (!user) {
         return res.status(404).send({
             error: 'No User Found'
         });
     }
-    let token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: 18000 });
-    // console.log('forgot user token', token);
+    let token = jwt.sign(user, process.env.JWT_SECRET, {
+        expiresIn: 18000
+    });
 
     token = `Bearer ${token}`;
 

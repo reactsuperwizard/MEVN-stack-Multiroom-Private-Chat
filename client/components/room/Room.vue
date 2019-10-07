@@ -106,7 +106,6 @@
 		computed: {
 			...mapGetters(["getUserData", "getCurrentRoom", "getSocket"]),
 			filteredUsers: function() {
-				console.log("fe filtered", this.users);
 				return this.users
 					? this.users
 							.slice()
@@ -127,23 +126,12 @@
 		methods: {
 			...mapActions(["saveCurrentRoom"]),
 			checkUserTabs(room) {
-				console.log(
-					"chekc",
-					room.users.findIndex(user => {
-						return user.id === this.getUserData.id;
-					})
-				);
 				if (
 					room &&
 					room.users.findIndex(user => {
-						console.log(
-							"user.id",
-							user.id + " this.getUserData.id " + this.getUserData.id
-						);
 						return user.id === this.getUserData.id;
 					}) === -1
 				) {
-					console.log("fe: u exit the room");
 					this.$router.push({ name: "RoomList" });
 				}
 			},
@@ -159,7 +147,6 @@
 				return 0;
 			},
 			leaveRoom(e, newPage) {
-				console.log("fe: function leaveRoom");
 				if (e) {
 					e.preventDefault();
 				}
@@ -168,10 +155,6 @@
 						room_id: this.getCurrentRoom.id
 					})
 					.then(res => {
-						console.log(
-							"fe: /api/room/remove/users room data",
-							res.data
-						);
 						this.getSocket.emit("exitRoom", {
 							room: res.data,
 							user: null,
@@ -180,7 +163,6 @@
 						});
 						this.roomLeft = true;
 						if (!newPage) {
-							console.log("u clicked leave room and exit");
 							this.$router.push({ name: "RoomList" });
 						}
 					});
@@ -235,11 +217,9 @@
 			}
 		},
 		created() {
-			console.log("created");
 			axios
 				.get(`/api/room/${this.$route.params.id}`)
 				.then(res => {
-					console.log("fe: api room id data", res);
 					this.room = res.data;
 					this.users = res.data.users;
 					this.$store.dispatch("saveCurrentRoom", res.data);
@@ -255,12 +235,7 @@
 					/** Socket IO: Received New User Event */
 					this.getSocket.on("updateRoomData", data => {
 						data = JSON.parse(data);
-						console.log("fe:Son updateRoomData data", data);
 						if (data.messages) {
-							console.log(
-								"fe:Son updateRoomData data Messages",
-								data.messages
-							);
 							this.messages = data.messages;
 						}
 
@@ -273,7 +248,6 @@
 
 					/** Socket IO: Reconnect User Event */
 					this.getSocket.on("reconnect", () => {
-						console.log("fe: reconnet");
 						this.usersTyping = [];
 						this.getSocket.emit("reconnectUser", {
 							room: this.getCurrentRoom,
@@ -282,42 +256,30 @@
 					});
 
 					this.getSocket.on("reconnected", () => {
-						console.log("fe: reconnected");
 						console.warn("Reconnected");
 					});
 
 					this.getSocket.on("disconnect", () => {
-						console.log("fe: disconnect");
 						console.warn("Disconnected");
 					});
 
 					/** Socket IO: User Exit Event - Update User List */
 					this.getSocket.on("updateUserList", data => {
-						console.log(
-							"fe: updateUserList user data",
-							JSON.parse(data)
-						);
 						this.users = JSON.parse(data);
 					});
 
 					/** Socket IO: User Exit Event - Check other tabs of the same room and redirect */
 					this.getSocket.on("receivedUserExit", room => {
-						console.log("fe: receivedUserExit");
 						this.checkUserTabs(room);
 					});
 
 					/** Socket IO: New Messaage Event - Append the new message to the messages array */
 					this.getSocket.on("receivedNewMessage", message => {
-						console.log(
-							"fe:Son receivedNewMessage",
-							JSON.parse(message)
-						);
 						this.messages.push(JSON.parse(message));
 					});
 
 					/** Socket IO: User Typing Event  */
 					this.getSocket.on("receivedUserTyping", data => {
-						console.log("fe: receivedUserTyping");
 						this.usersTyping = JSON.parse(data).filter(
 							user => user !== this.getUserData.handle
 						);
@@ -325,7 +287,6 @@
 
 					/** Socket IO: Room Deleted Event - Redirect all users */
 					this.getSocket.on("roomDeleted", () => {
-						console.log("fe: roomDeleted");
 						this.$store.dispatch("saveCurrentRoom", null);
 						setTimeout(() => {
 							this.$router.push({ name: "RoomList" });
@@ -334,7 +295,6 @@
 
 					/** Socket IO: Room Updated Event */
 					this.getSocket.on("roomUpdated", data => {
-						console.log("fe: roomUpdated");
 						this.room = JSON.parse(data).room;
 						this.$store.dispatch(
 							"saveCurrentRoom",
@@ -343,7 +303,6 @@
 					});
 				})
 				.catch(err => {
-					console.log("fe Room error", err);
 					if (err.response.status === 404) {
 						this.$router.push({
 							name: "RoomList",
@@ -356,7 +315,6 @@
 				});
 		},
 		beforeDestroy() {
-			console.log("You exit before destroy");
 			if (this.getCurrentRoom && !this.roomLeft) {
 				this.leaveRoom(null, true);
 			}

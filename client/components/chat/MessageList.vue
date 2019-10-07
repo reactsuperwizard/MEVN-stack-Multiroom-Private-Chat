@@ -116,7 +116,6 @@
 			};
 		},
 		created() {
-			console.log("fe: MessageList Created ", this.messages);
 			this.user = this.getUserData;
 		},
 		methods: {
@@ -126,8 +125,6 @@
 			}
 		},
 		mounted() {
-			console.log("fe: MessageList Mounted ", this.messages);
-			console.log();
 			this.scrollMessages();
 		},
 		updated() {

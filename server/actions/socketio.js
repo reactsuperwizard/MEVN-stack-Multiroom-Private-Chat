@@ -4,7 +4,6 @@ const User = require('../models/User');
 
 module.exports = {
     ADD_MESSAGE: async data => {
-        console.log('ADD_MESSAGE content', data.content);
         const newMessage = new Message({
             content: data.content,
             admin: data.admin ? true : false,
@@ -19,11 +18,9 @@ module.exports = {
             });
             messageData['user'] = userData;
         }
-        // console.log('ADD_MESSAGE', messageData);
         return messageData;
     },
     GET_MESSAGES: async data => {
-        console.log('be: GET_MESSAGES START');
 
         const messages = await Message.findAll({
             where: {
@@ -43,7 +40,6 @@ module.exports = {
                     console.log('err', err);
                 })
         }
-        console.log('be: GET_MESSAGES END');
         return messages;
     },
     CREATE_MESSAGE_CONTENT: (room, socketId) => {
@@ -54,7 +50,6 @@ module.exports = {
             `Unknown User has left ${room.updated.name}`;
     },
     GET_ROOMS: async () => {
-        console.log('be: GET_ROOMS START');
         const rooms = await Room.findAll({}, {
             raw: true
         });
@@ -83,15 +78,12 @@ module.exports = {
                     console.log('err', err);
                 })
         }
-        console.log('be: GET_ROOMS END');
         return rooms;
         // return await Room.find({})
         //     .populate('user users.lookup', ['username', 'social', 'handle', 'image'])
         //     .select('-password');
     },
     GET_ROOM_USERS: async data => {
-        console.log('be: GET_ROOM_USERS START');
-        console.log('be: GET_ROOM_USERS END');
         return await User.findAll({
             where: {
                 room_id: data.room.id
@@ -101,7 +93,6 @@ module.exports = {
         });
     },
     UPDATE_ROOM_USERS: async data => {
-        // console.log('be: UPDATE_ROOM_USERS', data.user);
         let room;
         const updateFields = ({
             room_id: data.room.id,

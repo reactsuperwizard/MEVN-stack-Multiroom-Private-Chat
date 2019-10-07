@@ -80,7 +80,6 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 // file url
-console.log(path.resolve(__dirname, '../storage'));
 app.use('/public', express.static(path.resolve(__dirname, 'D:\\chat_storage')));
 
 app.use(passport.initialize());
@@ -112,7 +111,6 @@ io.on('connection', socket => {
     socket.on('userJoined', data => {
         currentRoomId = data.room.id;
         data.socketId = socket.id;
-        console.log('be: userJoined socket id', socket.id);
         JOIN_ROOM(socket, data);
     });
 
@@ -178,7 +176,6 @@ io.on('connection', socket => {
         const newMessage = await ADD_MESSAGE(data);
 
         // Emit data back to the client for display
-        // console.log('be:Son newMessage addedMessage ', newMessage);
         io.to(data.room.id).emit('receivedNewMessage', JSON.stringify(newMessage));
     });
     /** New Image Message Event */
@@ -186,7 +183,6 @@ io.on('connection', socket => {
         const newMessage = await ADD_MESSAGE(data);
 
         // Emit data back to the client for display
-        // console.log('be:Son newMessage addedMessage ', newMessage);
         io.to(data.room.id).emit('receivedNewMessage', JSON.stringify(newMessage));
     });
 

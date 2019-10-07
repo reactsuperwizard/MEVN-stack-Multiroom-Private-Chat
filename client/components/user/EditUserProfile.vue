@@ -149,10 +149,6 @@
 					image: this.image === this.getUserData.image ? null : this.image
 				};
 
-				console.log(
-					"updatedUserDetails['image']",
-					updatedUserDetails["image"]
-				);
 				for (const property in updatedUserDetails) {
 					if (updatedUserDetails[property]) {
 						formData.append(property, updatedUserDetails[property]);

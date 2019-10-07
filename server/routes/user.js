@@ -86,7 +86,6 @@ router.post(
     '/image', [upload_images.single('image'), passport.authenticate('jwt', {
         session: false
     })], async (req, res) => {
-        console.log('req', req.file);
         if (req.file) {
             res.json({
                 success: true,
@@ -124,7 +123,6 @@ router.put(
         }
 
         bcrypt.hash(req.body.password, 10, (error, hash) => {
-            console.log('req.body', req.body);
             if (hash && req.body['password']) {
                 updateFields['password'] = hash;
             }
@@ -162,7 +160,6 @@ router.put(
                 });
         })
 
-        console.log(req.body);
     }
 );
 

@@ -5,21 +5,38 @@ const passport = require('passport');
 const Room = require('../models/Room');
 const User = require('../models/User');
 
-const { createErrorObject, checkCreateRoomFields } = require('../middleware/authenticate');
+const {
+    createErrorObject,
+    checkCreateRoomFields
+} = require('../middleware/authenticate');
 
 /**
  * @description GET /api/room
  */
-router.get('/', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    const rooms = await Room.findAll({}, { raw: true });
+router.get('/', passport.authenticate('jwt', {
+    session: false
+}), async (req, res) => {
+    const rooms = await Room.findAll({}, {
+        raw: true
+    });
 
     for (var i = 0; i < rooms.length; i++) {
         const room = rooms[i];
-        await User.findOne({ where: { id: room['user'] } }, { raw: true })
+        await User.findOne({
+                where: {
+                    id: room['user']
+                }
+            }, {
+                raw: true
+            })
             .then(user => {
                 room['user'] = user;
             })
-        await User.findAndCountAll({ where: { room_id: room['id'] } })
+        await User.findAndCountAll({
+                where: {
+                    room_id: room['id']
+                }
+            })
             .then(result => {
                 room['users'] = result.count;
             })
@@ -30,16 +47,26 @@ router.get('/', passport.authenticate('jwt', { session: false }), async (req, re
     if (rooms) {
         return res.status(200).json(rooms);
     } else {
-        return res.status(404).json({ error: 'No Rooms Found' });
+        return res.status(404).json({
+            error: 'No Rooms Found'
+        });
     }
 });
 
 /**
  * @description GET /api/room/:room_id
  */
-router.get('/:room_id', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    const room = await Room.findByPk(req.params.room_id, { raw: true });
-    await User.findAndCountAll({ where: { room_id: room['id'] } })
+router.get('/:room_id', passport.authenticate('jwt', {
+    session: false
+}), async (req, res) => {
+    const room = await Room.findByPk(req.params.room_id, {
+        raw: true
+    });
+    await User.findAndCountAll({
+            where: {
+                room_id: room['id']
+            }
+        })
         .then(result => {
             room['users'] = result.rows;
         })
@@ -53,7 +80,9 @@ router.get('/:room_id', passport.authenticate('jwt', { session: false }), async 
     if (room) {
         return res.status(200).json(room);
     } else {
-        return res.status(404).json({ error: `No room with name ${req.params.room_name} found` });
+        return res.status(404).json({
+            error: `No room with name ${req.params.room_name} found`
+        });
     }
 });
 
@@ -62,16 +91,27 @@ router.get('/:room_id', passport.authenticate('jwt', { session: false }), async 
  */
 router.post(
     '/',
-    [passport.authenticate('jwt', { session: false }), checkCreateRoomFields],
+    [passport.authenticate('jwt', {
+        session: false
+    }), checkCreateRoomFields],
     async (req, res) => {
         let errors = [];
 
-        const room = await Room.findOne({ where: { name: req.body.room_name } });
+        const room = await Room.findOne({
+            where: {
+                name: req.body.room_name
+            }
+        });
         if (room) {
             if (room.name === req.body.room_name) {
-                errors.push({ param: 'room_taken', msg: 'Roomname already taken' });
+                errors.push({
+                    param: 'room_taken',
+                    msg: 'Roomname already taken'
+                });
             }
-            return res.json({ errors: createErrorObject(errors) });
+            return res.json({
+                errors: createErrorObject(errors)
+            });
         } else {
             const newRoom = new Room({
                 name: req.body.room_name,
@@ -83,7 +123,11 @@ router.post(
             newRoom
                 .save()
                 .then(room => {
-                    User.findOne({ where: { id: room['user'] } })
+                    User.findOne({
+                            where: {
+                                id: room['user']
+                            }
+                        })
                         .then(user => {
                             room['user'] = user;
                         })
@@ -199,25 +243,42 @@ router.post(
 /**
  * @description PUT /api/room/remove/users
  */
-router.post('/remove/users', passport.authenticate('jwt', { session: false }), async (req, res) => {
+router.post('/remove/users', passport.authenticate('jwt', {
+    session: false
+}), async (req, res) => {
 
-    console.log('be: post remove users', req.body);
-    let room = await Room.findByPk(req.body.room_id, { raw: true });
+    let room = await Room.findByPk(req.body.room_id, {
+        raw: true
+    });
 
     if (room) {
         const updateFields = ({
             room_id: 0
         });
-        await User.update(updateFields, { returning: true, raw: true, where: { id: req.user.id } })
+        await User.update(updateFields, {
+                returning: true,
+                raw: true,
+                where: {
+                    id: req.user.id
+                }
+            })
             .then(async info => {
                 if (info[1]) {
-                    const users = await User.findAll({ where: { room_id: req.body.room_id } }, { raw: true })
+                    const users = await User.findAll({
+                        where: {
+                            room_id: req.body.room_id
+                        }
+                    }, {
+                        raw: true
+                    })
                     room['users'] = users;
                 }
             })
         return res.status(200).json(room);
     } else {
-        return res.status(404).json({ errors: `No room with name ${req.body.room_name} found` });
+        return res.status(404).json({
+            errors: `No room with name ${req.body.room_name} found`
+        });
     }
 });
 
@@ -226,9 +287,17 @@ router.post('/remove/users', passport.authenticate('jwt', { session: false }), a
  */
 router.put(
     '/remove/users/all',
-    passport.authenticate('jwt', { session: false }),
+    passport.authenticate('jwt', {
+        session: false
+    }),
     async (req, res) => {
-        await Room.updateMany({ $pull: { users: { $in: [req.body.user_id] } } });
+        await Room.updateMany({
+            $pull: {
+                users: {
+                    $in: [req.body.user_id]
+                }
+            }
+        });
 
         const rooms = await Room.find({})
             .populate('user', ['username'])
@@ -239,7 +308,9 @@ router.put(
         if (rooms) {
             return res.status(200).json(rooms);
         } else {
-            return res.status(404).json({ error: 'No Rooms Found' });
+            return res.status(404).json({
+                error: 'No Rooms Found'
+            });
         }
     }
 );

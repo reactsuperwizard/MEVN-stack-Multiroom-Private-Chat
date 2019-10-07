@@ -98,7 +98,7 @@ export default {
               key,
               value
             });
-            console.log("fe: reset put catch", err);
+            console.log("err", err);
           });
 
         setTimeout(() => {

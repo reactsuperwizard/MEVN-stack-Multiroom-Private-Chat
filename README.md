@@ -1,7 +1,7 @@
 # MEVN-stack-Multiroom-Private-Chat
 
 - **git clone https://github.com/AcodeWizard/MEVN-stack-Multiroom-Private-Chat.git**
-- **cd MEVN-stack-Multiroom-Private-Chat.git**
+- **cd MEVN-stack-Multiroom-Private-Chat**
 - **npm install**
 - **cd server**
 - **npm install**
