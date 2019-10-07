@@ -12,9 +12,6 @@
 				@change="uploadImageFile"
 				style="display: none;"
 			/>
-			<button @click="$refs.file.click()" style="width: 50px;">
-				<mdb-icon icon="paperclip" size="2x" />
-			</button>
 			<button @click="toogleDialogEmoji" class="button-emoj" style="width: 50px; font-size:22px;">😃</button>
 			<button class="btn btn--clear btn--info m-0 u-border-rad-0" @click="sendMessage">Send</button>
 		</div>
@@ -103,11 +100,14 @@
 							}
 						})
 						.then(async res => {
-							this.getSocket.emit("newMessage_image", {
-								room: this.getCurrentRoom,
-								user: this.getUserData,
-								content: "!!!image!!!" + res.data.image
-							});
+							if (res.data.success) {
+								this.getSocket.emit("newMessage_image", {
+									room: this.getCurrentRoom,
+									user: this.getUserData,
+									content: "!!!image!!!" + res.data.image
+								});
+							} else {
+							}
 						})
 
 						.catch(err => console.log(err));

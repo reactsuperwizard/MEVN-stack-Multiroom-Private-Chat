@@ -29,7 +29,7 @@
 										<div class="chat__user-item">
 											<div class="chat__user-image">
 												<img
-													:src="(!user.image.includes('www.gravatar.com/avatar') ? '/' : '') + user.image"
+													:src="(!user.image.includes('www.gravatar.com/avatar') ? 'http://localhost:5000/public/avatar/' : '') + user.image"
 													alt
 													class="chat__user-avatar"
 												/>

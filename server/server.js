@@ -8,11 +8,11 @@ if (process.env.NODE_ENV !== 'production') {
 // require('./db/mongoose');
 
 /** Built In Node Dependencies */
-// const path = require('path');
-// const fs = require('fs');
+const path = require('path');
+const fs = require('fs');
 
 /** Logging Dependencies */
-// const morgan = require('morgan');
+const morgan = require('morgan');
 // const winston = require('winston');
 const {
     logger
@@ -56,12 +56,14 @@ const roomRoutes = require('./routes/room');
 // const messageRoutes = require('./routes/messages');
 
 /** Middleware */
-// app.use(
-//     morgan('combined', {
-//         stream: fs.createWriteStream('logs/access.log', { flags: 'a' })
-//     })
-// );
-// app.use(morgan('dev'));
+app.use(
+    morgan('combined', {
+        stream: fs.createWriteStream('logs/access.log', {
+            flags: 'a'
+        })
+    })
+);
+app.use(morgan('dev'));
 
 // if (process.env.NODE_ENV === 'production') {
 //     /** Trust Proto Header for heroku */
@@ -76,6 +78,11 @@ app.use(bodyParser.urlencoded({
     extended: false
 }));
 app.use(bodyParser.json());
+
+// file url
+console.log(path.resolve(__dirname, '../storage'));
+app.use('/public', express.static(path.resolve(__dirname, 'D:\\chat_storage')));
+
 app.use(passport.initialize());
 app.use(expressValidator());
 app.use(cors());

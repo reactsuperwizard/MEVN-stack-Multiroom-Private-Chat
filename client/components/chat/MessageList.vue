@@ -10,9 +10,14 @@
 					>
 						<div class="chat__message-body">
 							<div class="chat__message-content chat__message-content--right">
+								<!-- <img
+									v-if="message.content.includes('!!!image!!!')"
+									:src="'./../public_images/upload_images/'+ message.content.substring(11)"
+									alt="unknowImage"
+								/>-->
 								<img
 									v-if="message.content.includes('!!!image!!!')"
-									:src="'/upload_images/'+ message.content.substring(11)"
+									:src="'http://localhost:5000/public/upload/'+ message.content.substring(11)"
 									alt="unknowImage"
 								/>
 								<span v-else>{{ message.content}}</span>
@@ -23,7 +28,7 @@
 							</div>
 						</div>
 						<img
-							:src="(!message.user.image.includes('www.gravatar.com/avatar') ? '/' : '') + message.user.image"
+							:src="(!message.user.image.includes('www.gravatar.com/avatar') ? 'http://localhost:5000/public/avatar/' : '') + message.user.image"
 							alt
 							class="chat__user-avatar"
 						/>
@@ -35,7 +40,7 @@
 							<div class="chat__message-content">
 								<img
 									v-if="message.content.includes('!!!image!!!')"
-									:src="'/upload_images/'+ message.content.substring(11)"
+									:src="'http://localhost:5000/public/upload/'+ message.content.substring(11)"
 									alt="unknowImage"
 								/>
 								<span v-else>{{ message.content}}</span>
@@ -55,7 +60,7 @@
 							<div class="chat__message-content chat__message-content--left">
 								<img
 									v-if="message.content.includes('!!!image!!!')"
-									:src="'/upload_images/'+ message.content.substring(11)"
+									:src="'http://localhost:5000/public/upload/'+ message.content.substring(11)"
 									alt="unknowImage"
 								/>
 								<span v-else>{{ message.content}}</span>
@@ -70,7 +75,7 @@
 					<!-- Message belongs to another user -->
 					<div class="chat__message-item" v-else>
 						<img
-							:src="(!message.user.image.includes('www.gravatar.com/avatar') ? '/' : '') + message.user.image"
+							:src="(!message.user.image.includes('www.gravatar.com/avatar') ? 'http://localhost:5000/public/avatar/' : '') + message.user.image"
 							alt
 							class="chat__user-avatar"
 						/>
@@ -78,7 +83,7 @@
 							<div class="chat__message-content chat__message-content--left">
 								<img
 									v-if="message.content.includes('!!!image!!!')"
-									:src="'/upload_images/'+ message.content.substring(11)"
+									:src="'http://localhost:5000/public/upload/'+ message.content.substring(11)"
 									alt="unknowImage"
 								/>
 								<span v-else>{{ message.content}}</span>

@@ -16,16 +16,17 @@ const multer = require('multer')
 // upload path for avatar image
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, '../client/public');
+        cb(null, 'D:\\chat_storage\\avatar');
     },
     filename: function (req, file, cb) {
-        cb(null, file.originalname);
+        cb(null, uuidv4() + '.jpg');
     }
 });
 // upload path for upload image
 const storage_upload = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, '../client/public/upload_images');
+        // cb(null, '../client/public_images/upload_images');
+        cb(null, 'D:\\chat_storage\\upload');
     },
     filename: function (req, file, cb) {
         cb(null, uuidv4() + '.jpg');
@@ -85,11 +86,17 @@ router.post(
     '/image', [upload_images.single('image'), passport.authenticate('jwt', {
         session: false
     })], async (req, res) => {
-        console.log('req', req.file.filename);
-        res.json({
-            success: true,
-            image: req.file.filename
-        })
+        console.log('req', req.file);
+        if (req.file) {
+            res.json({
+                success: true,
+                image: req.file.filename
+            })
+        } else {
+            res.json({
+                success: false
+            })
+        }
     });
 
 
