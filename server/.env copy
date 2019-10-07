@@ -1,0 +1,17 @@
+SECRET_KEY = secret
+
+SENDGRID_API_KEY = YOUR_SENDGRID_API_KEY
+
+EXPRESS_SESSION_KEY=EXPRESS_SESSION_KEY
+
+JWT_SECRET=JWT_SECRET
+PORT=5000
+
+db_username = MySQL_USER_NAME
+db_password = MySQL_USER_PASS
+
+myEmailAddress = YOUR_EMAIL_ADDRESS
+mailServerhost = "smtp.mailtrap.io"
+mailServerport = 2525
+mailServeruser = YOUR_SMTP_USER_NAME
+mailServerpass = YOUR_SMTP_USER_PASSWORD
