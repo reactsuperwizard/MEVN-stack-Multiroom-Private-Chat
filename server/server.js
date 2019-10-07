@@ -174,6 +174,15 @@ io.on('connection', socket => {
         // console.log('be:Son newMessage addedMessage ', newMessage);
         io.to(data.room.id).emit('receivedNewMessage', JSON.stringify(newMessage));
     });
+    /** New Image Message Event */
+    socket.on('newMessage_image', async data => {
+        const newMessage = await ADD_MESSAGE(data);
+
+        // Emit data back to the client for display
+        // console.log('be:Son newMessage addedMessage ', newMessage);
+        io.to(data.room.id).emit('receivedNewMessage', JSON.stringify(newMessage));
+    });
+
     /** Room Added Event */
     socket.on('roomAdded', async data => {
         io.emit('roomAdded', JSON.stringify(data));

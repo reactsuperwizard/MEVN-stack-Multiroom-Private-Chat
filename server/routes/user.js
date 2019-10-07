@@ -4,18 +4,31 @@ const router = express.Router();
 const passport = require('passport');
 
 const User = require('../models/User');
+var uuidv4 = require('uuid/v4');
 
-const { checkEditProfileFields } = require('../middleware/authenticate');
+const {
+    checkEditProfileFields
+} = require('../middleware/authenticate');
 
 const bcrypt = require('bcryptjs')
 const multer = require('multer')
 
+// upload path for avatar image
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, '../client/public');
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname);
+    }
+});
+// upload path for upload image
+const storage_upload = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, '../client/public/upload_images');
+    },
+    filename: function (req, file, cb) {
+        cb(null, uuidv4() + '.jpg');
     }
 });
 
@@ -27,10 +40,18 @@ const fileFilter = (req, file, cb) => {
         cb(null, true);
     }
 }
-
+// upload var for avatar image
 
 const upload = multer({
     storage: storage,
+    limits: {
+        fileSize: 1024 * 1024 * 50
+    },
+    fileFilter: fileFilter
+})
+// upload var for upload image
+const upload_images = multer({
+    storage: storage_upload,
     limits: {
         fileSize: 1024 * 1024 * 50
     },
@@ -57,11 +78,20 @@ const upload = multer({
 //         return res.status(404).json({ error: 'No Users Found' });
 //     }
 // });
+/**
+ * @description PUT /api/user/image
+ */
+router.post(
+    '/image', [upload_images.single('image'), passport.authenticate('jwt', {
+        session: false
+    })], async (req, res) => {
+        console.log('req', req.file.filename);
+        res.json({
+            success: true,
+            image: req.file.filename
+        })
+    });
 
-/**Password Encrypt Function */
-encryptPwd = async (pwd) => {
-
-}
 
 /**
  * @description PUT /api/user/current
@@ -73,7 +103,9 @@ encryptPwd = async (pwd) => {
  */
 router.put(
     '/current',
-    [upload.single('image'), passport.authenticate('jwt', { session: false }), checkEditProfileFields],
+    [upload.single('image'), passport.authenticate('jwt', {
+        session: false
+    }), checkEditProfileFields],
     async (req, res) => {
         const updateFields = {};
         // let hash;
@@ -92,21 +124,34 @@ router.put(
             if (req.file) {
                 updateFields['image'] = req.file.filename
             }
-            User.update(updateFields, { returning: true, plain: true, where: { id: req.user.id } })
+            User.update(updateFields, {
+                    returning: true,
+                    plain: true,
+                    where: {
+                        id: req.user.id
+                    }
+                })
                 .then(function (doc) {
                     if (doc[1]) {
                         User.findByPk(req.user.id, {
-                            attributes: { exclude: ['password'] }
-                        })
+                                attributes: {
+                                    exclude: ['password']
+                                }
+                            })
                             .then(doc => {
-                                res.json({ success: true, user: doc })
+                                res.json({
+                                    success: true,
+                                    user: doc
+                                })
                             })
                     }
                 })
                 // .then(doc => res.json({ success: true, user: doc }))
                 .catch(err => {
                     console.log('err', err);
-                    res.json({ error: err })
+                    res.json({
+                        error: err
+                    })
                 });
         })
 
@@ -122,7 +167,9 @@ router.put(
  * @param  {Object} request
  * @param  {Object} response
  */
-router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
+router.get('/current', passport.authenticate('jwt', {
+    session: false
+}), (req, res) => {
     res.json(req.user);
 });
 
