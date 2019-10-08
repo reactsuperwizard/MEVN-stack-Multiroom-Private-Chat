@@ -106,7 +106,49 @@ let userTypings = {};
 /** Socket IO Connections */
 io.on('connection', socket => {
     let currentRoomId = null;
+    /** Socket Events */
+    socket.on('disconnect', async () => {
 
+        if (currentRoomId) {
+            /** Filter through users and remove user from user list in that room */
+            const roomState = await FILTER_ROOM_USERS({
+                roomId: currentRoomId,
+                socketId: socket.id
+            });
+
+            socket.broadcast.to(currentRoomId).emit(
+                'updateUserList',
+                JSON.stringify(
+                    await GET_ROOM_USERS({
+                        room: {
+                            id: currentRoomId
+                        }
+                    })
+                )
+            );
+
+            socket.broadcast.emit(
+                'updateRooms',
+                JSON.stringify({
+                    room: await GET_ROOMS()
+                })
+            );
+
+            socket.broadcast.to(currentRoomId).emit(
+                'receivedNewMessage',
+                JSON.stringify(
+                    await ADD_MESSAGE({
+                        room: {
+                            id: roomState.previous.id
+                        },
+                        user: null,
+                        content: CREATE_MESSAGE_CONTENT(roomState, socket.id),
+                        admin: true
+                    })
+                )
+            );
+        }
+    });
     /** Join User in Room */
     socket.on('userJoined', data => {
         currentRoomId = data.room.id;
@@ -186,9 +228,21 @@ io.on('connection', socket => {
         io.to(data.room.id).emit('receivedNewMessage', JSON.stringify(newMessage));
     });
 
+    /** Room Deleted Event */
+    socket.on('roomDeleted', async data => {
+        io.to(data.room.id).emit('receivedNewMessage', JSON.stringify(data));
+        io.to(data.room.id).emit('roomDeleted', JSON.stringify(data));
+        io.emit('roomListUpdated', JSON.stringify(data));
+    });
+
     /** Room Added Event */
     socket.on('roomAdded', async data => {
         io.emit('roomAdded', JSON.stringify(data));
+    });
+    /** Room Updated Event */
+    socket.on('roomUpdateEvent', async data => {
+        io.in(data.room.id).emit('roomUpdated', JSON.stringify(data));
+        io.emit('roomNameUpdated', JSON.stringify(data));
     });
 });
 /** Serve static assets if production */

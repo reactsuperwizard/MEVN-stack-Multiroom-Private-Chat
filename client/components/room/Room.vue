@@ -1,6 +1,5 @@
 <template>
 	<div class="page page--room">
-		<ion-icon name="add-circle"></ion-icon>
 		<section class="section section--room section--mmt p-0">
 			<div class="section__content u-max-height p-0">
 				<div class="chat">
@@ -67,6 +66,30 @@
 					</div>
 				</div>
 			</div>
+			<Modal name="editRoom" ref="editRoom" v-if="this.getCurrentRoom">
+				<template slot="header">
+					<h2 class="text-upper">Edit Room: {{ this.getCurrentRoom.name }}</h2>
+				</template>
+				<template slot="body">
+					<form @submit="handleEditRoom" slot="body" class="form form--nbs pt-3">
+						<div class="form__input-group">
+							<ion-icon name="pricetags" class="form__icon"></ion-icon>
+							<input
+								type="text"
+								name="roomName"
+								class="form__control"
+								placeholder="Enter New Room Name"
+								pattern=".{3,20}"
+								required
+								v-model.trim="newRoomName"
+							/>
+							<label for="roomName" class="form__label">New Room name</label>
+						</div>
+						<Error :errors="errors" />
+						<button type="submit" class="btn btn--clear btn--info">Update Room Name</button>
+					</form>
+				</template>
+			</Modal>
 		</section>
 	</div>
 </template>
@@ -289,7 +312,12 @@
 					this.getSocket.on("roomDeleted", () => {
 						this.$store.dispatch("saveCurrentRoom", null);
 						setTimeout(() => {
-							this.$router.push({ name: "RoomList" });
+							this.$router.push({
+								name: "RoomList",
+								params: {
+									message: "This room has been deleted"
+								}
+							});
 						}, 2000);
 					});
 
@@ -329,4 +357,5 @@
 	@import "@/assets/scss/views/chat.scss";
 	@import "@/assets/scss/components/infobox.scss";
 	@import "@/assets/scss/components/form.scss";
+	@import "@/assets/scss/views/rooms.scss";
 </style>

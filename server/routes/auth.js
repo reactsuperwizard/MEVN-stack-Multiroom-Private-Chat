@@ -164,7 +164,6 @@ router.post('/forgot', checkForgotFields, async (req, res) => {
     });
     var mailOptions = {
         from: '"Example Team" <from@example.com>',
-        // to: 'harry.potter0409@outlook.com',
         to: process.env.myEmailAddress,
         subject: 'Forgot Password',
         text: 'Hello' + req.body.email,

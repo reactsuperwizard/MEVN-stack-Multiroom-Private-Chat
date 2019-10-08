@@ -40,14 +40,14 @@
             <label for="email" class="form__label">Email</label>
 					</div>-->
 					<div class="form__input-group">
-						<ion-icon name="map" class="form__icon"></ion-icon>
+						<ion-icon name="map" for="age" class="form__icon"></ion-icon>
 						<select class="form__control" v-model="age" name="age" id="age" placeholder="How old are you">
 							<option v-for="ageOp in 30 " :value="ageOp+13" v-bind:key="ageOp+13">{{ageOp+13}}</option>
 						</select>
 						<label for="age" class="form__label">Age</label>
 					</div>
 					<div class="form__input-group">
-						<ion-icon name="map" class="form__icon"></ion-icon>
+						<ion-icon ios="ios-transgender" md="md-transgender" class="form__icon"></ion-icon>
 						<select class="form__control" v-model="sex" name="sex" id="sex" placeholder="How old are you">
 							<option value="male">male</option>
 							<option value="female">female</option>
@@ -56,7 +56,7 @@
 						<label for="sex" class="form__label">Gender</label>
 					</div>
 					<div class="form__input-group">
-						<ion-icon name="map" class="form__icon"></ion-icon>
+						<ion-icon ios="ios-compass" md="md-compass" class="form__icon"></ion-icon>
 						<input
 							type="location"
 							name="location"
@@ -67,7 +67,7 @@
 						<label for="location" class="form__label">Location</label>
 					</div>
 					<div class="form__input-group">
-						<ion-icon name="map" class="form__icon"></ion-icon>
+						<ion-icon name="information-circle" class="form__icon"></ion-icon>
 						<textarea
 							name="bio"
 							class="form__control"

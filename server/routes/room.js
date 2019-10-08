@@ -4,6 +4,7 @@ const passport = require('passport');
 
 const Room = require('../models/Room');
 const User = require('../models/User');
+const Message = require('../models/Message');
 
 const {
     createErrorObject,
@@ -62,23 +63,16 @@ router.get('/:room_id', passport.authenticate('jwt', {
     const room = await Room.findByPk(req.params.room_id, {
         raw: true
     });
-    await User.findAndCountAll({
-            where: {
-                room_id: room['id']
-            }
-        })
-        .then(result => {
-            room['users'] = result.rows;
-        })
-
-    // const user = 
-    // room['user']
-    //     .populate('user', ['username', 'social', 'image', 'handle'])
-    //     .populate('users.lookup', ['username', 'social', 'image', 'handle'])
-    //     .exec();
-
     if (room) {
-        return res.status(200).json(room);
+        await User.findAndCountAll({
+                where: {
+                    room_id: room['id']
+                }
+            })
+            .then(result => {
+                room['users'] = result.rows;
+                return res.status(200).json(room);
+            })
     } else {
         return res.status(404).json({
             error: `No room with name ${req.params.room_name} found`
@@ -184,61 +178,105 @@ router.post(
 //     }
 // });
 
-// /**
-//  * @description DELETE /api/room/:room_name
-//  */
-// router.delete('/:room_name', passport.authenticate('jwt', { session: false }), async (req, res) => {
-//     try {
-//         const room = await Room.findOneAndDelete({ name: req.params.room_name })
-//             .populate('user', ['username'])
-//             .select('-password')
-//             .lean();
+/**
+ * @description DELETE /api/room/:room_name
+ */
+router.delete('/:room_name', passport.authenticate('jwt', {
+    session: false
+}), async (req, res) => {
+    try {
+        const room = await Room.findOne({
+            where: {
+                'name': req.params.room_name
+            }
+        }, {
+            raw: true
+        });
+        const status = await Room.destroy({
+            where: {
+                'name': req.params.room_name
+            }
+        }) && await Message.destroy({
+            where: {
+                'room': room['id']
+            }
+        });
 
-//         if (room) {
-//             return res.status(200).json(room);
-//         } else {
-//             return res.status(404).json({
-//                 errors: `No room with name ${
-//                     req.params.room_name
-//                 } found, You will now be redirected`
-//             });
-//         }
-//     } catch (err) {
-//         return res.status(404).json(err);
-//     }
-// });
+        if (status) {
+            return res.status(200).json(room);
+        } else {
+            return res.status(404).json({
+                errors: `No room with name ${
+                    req.params.room_name
+                } found, You will now be redirected`
+            });
+        }
+    } catch (err) {
+        return res.status(404).json(err);
+    }
+});
 
-// /**
-//  * @description PUT /api/room/update/name
-//  */
-// router.post('/update/name', passport.authenticate('jwt', { session: false }), async (req, res) => {
-//     req.check('new_room_name')
-//         .isString()
-//         .isLength({ min: 3, max: 20 })
-//         .withMessage('New Room Name must be between 3 and 20 characters');
+/**
+ * @description PUT /api/room/update/name
+ */
+router.post('/update/name', passport.authenticate('jwt', {
+    session: false
+}), async (req, res) => {
+    req.check('new_room_name')
+        .isString()
+        .isLength({
+            min: 3,
+            max: 20
+        })
+        .withMessage('New Room Name must be between 3 and 20 characters');
 
-//     let errors = req.validationErrors();
+    let errors = req.validationErrors();
 
-//     if (errors.length > 0) {
-//         return res.send({
-//             errors: createErrorObject(errors)
-//         });
-//     }
+    if (errors.length > 0) {
+        return res.send({
+            errors: createErrorObject(errors)
+        });
+    }
+    const updateFields = {};
 
-//     const room = await Room.findOneAndUpdate(
-//         { name: req.body.room_name },
-//         { name: req.body.new_room_name },
-//         { fields: { password: 0 }, new: true }
-//     )
-//         .populate('user', ['username'])
-//         .populate('users.lookup', ['username']);
-
-//     if (room) {
-//         return res.status(200).json(room);
-//     } else {
-//         return res.status(404).json({ errors: `No room with name ${req.params.room_name} found` });
-//     }
-// });
+    if (req.body) {
+        updateFields['name'] = req.body.new_room_name
+    }
+    Room.update(updateFields, {
+            returning: true,
+            plain: true,
+            where: {
+                'name': req.body.room_name
+            }
+        })
+        .then(function (doc) {
+            if (doc[1]) {
+                Room.findOne({
+                        where: {
+                            'name': req.body.new_room_name
+                        }
+                    })
+                    .then(async doc => {
+                        await User.findAndCountAll({
+                                where: {
+                                    'room_id': doc['id']
+                                }
+                            })
+                            .then(result => {
+                                doc['users'] = result.rows;
+                            })
+                        return res.status(200).json(doc);
+                    })
+            }
+        })
+        // .then(doc => res.json({ success: true, user: doc }))
+        .catch(err => {
+            console.log('err', err);
+            return res.status(404).json({
+                errors: `Room ${req.params.room_name} update failed`
+            });
+        });
+});
 
 /**
  * @description PUT /api/room/remove/users

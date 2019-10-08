@@ -278,6 +278,7 @@
 				axios
 					.delete(`/api/room/${e.target.name}`)
 					.then(res => {
+						console.log("delete res", res);
 						this.$store.dispatch("deleteRoom", res.data);
 						this.getSocket.emit("roomDeleted", {
 							room: res.data,

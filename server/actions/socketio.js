@@ -123,20 +123,36 @@ module.exports = {
         return room;
     },
     FILTER_ROOM_USERS: async data => {
-        const room = await Room.findById(mongoose.Types.ObjectId(data.roomId))
-            .select('-password')
-            .populate('users.lookup', ['username', 'social', 'handle', 'image']);
-        if (room) {
-            let previousUserState = Object.assign({}, room._doc);
-            room.users = room.users.filter(user => user.socketId !== data.socketId);
-            const updatedRoom = await room.save();
-            return {
-                previous: previousUserState,
-                updated: await Room.populate(updatedRoom, {
-                    path: 'user users.lookup',
-                    select: 'username social image handle'
-                })
-            };
+        let room = await Room.findByPk(data.roomId);
+        const updateFields = {
+            'room_id': null
         }
+        await User.update(updateFields, {
+                returning: true,
+                raw: true,
+                where: {
+                    socketid: data.socketId
+                }
+            })
+            .then(async info => {
+                if (info[1]) {
+                    if (room) {
+                        const previousUserState = room;
+
+                        room['users'] = await User.findAll({
+                            where: {
+                                'room_id': room.id
+                            }
+                        }, {
+                            raw: true
+                        });
+
+                        return {
+                            previous: previousUserState,
+                            updated: room
+                        };
+                    }
+                }
+            })
     }
 };
