@@ -117,8 +117,8 @@ CREATE TABLE `user_infos` (
 --
 
 INSERT INTO `user_infos` (`id`, `socketid`, `username`, `handle`, `email`, `password`, `create_time`, `delete_time`, `image`, `age`, `sex`, `location`, `bio`, `status_active`, `status_participate`, `room_id`, `createdAt`, `updatedAt`) VALUES
-(0, '7fhKsYFV5f4GWAXmAAAE', '1user', '1user', '1user@email.com', '$2a$10$bhaWZMo7zLZoEcC1WOgk8Ow.Z2v5mbr8J40gtFRAC1r8.zNqd21Ry', '2019-10-07 15:21:35', NULL, 'c988577f-6910-4e4b-a094-f5e339769fc3.jpg', 19, 'female', 'I live in 1user\'s house.', 'I am a 19 years old girl.', 0, 0, 34, '2019-10-09 03:10:53', '2019-10-09 03:10:53'),
-(63, 'prqCoE7rwzM2jDwAAAAF', '2user', '2user', '2user@email.com', '$2a$10$oKMeKM.TX9v2kemlZ7SzrugHP3XuoXrbU.oenUObNeGnNUPhB6oKO', '2019-10-08 06:01:13', NULL, '3d0a47fb-4d41-4be4-a8ed-cc6a6b7aa30a.jpg', 24, 'female', '2user\'s house', 'i live here.', 0, 0, 34, '2019-10-09 03:10:55', '2019-10-09 03:10:55');
+(0, '7fhKsYFV5f4GWAXmAAAE', '1user', '1user', '1user@email.com', '$2a$10$bhaWZMo7zLZoEcC1WOgk8Ow.Z2v5mbr8J40gtFRAC1r8.zNqd21Ry', '2019-10-07 15:21:35', NULL, 'c988577f-6910-4e4b-a094-f5e339769fc3.jpg', 19, 'female', 'I live in 1user\'s house.', 'I am a 19 years old girl.', 0, 0, NULL, '2019-10-09 03:10:53', '2019-10-09 03:10:53'),
+(63, 'prqCoE7rwzM2jDwAAAAF', '2user', '2user', '2user@email.com', '$2a$10$oKMeKM.TX9v2kemlZ7SzrugHP3XuoXrbU.oenUObNeGnNUPhB6oKO', '2019-10-08 06:01:13', NULL, '3d0a47fb-4d41-4be4-a8ed-cc6a6b7aa30a.jpg', 24, 'female', '2user\'s house', 'i live here.', 0, 0, NULL, '2019-10-09 03:10:55', '2019-10-09 03:10:55');
 
 --
 -- Indexes for dumped tables
