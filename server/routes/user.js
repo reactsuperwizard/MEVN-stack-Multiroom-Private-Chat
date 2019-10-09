@@ -16,7 +16,7 @@ const multer = require('multer')
 // upload path for avatar image
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'D:\\chat_storage\\avatar');
+        cb(null, '../chat_storage/avatar');
     },
     filename: function (req, file, cb) {
         cb(null, uuidv4() + '.jpg');
@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
 const storage_upload = multer.diskStorage({
     destination: function (req, file, cb) {
         // cb(null, '../client/public_images/upload_images');
-        cb(null, 'D:\\chat_storage\\upload');
+        cb(null, '../chat_storage/upload');
     },
     filename: function (req, file, cb) {
         cb(null, uuidv4() + '.jpg');

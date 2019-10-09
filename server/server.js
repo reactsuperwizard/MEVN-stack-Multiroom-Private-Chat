@@ -80,7 +80,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 // file url
-app.use('/public', express.static(path.resolve(__dirname, 'D:\\chat_storage')));
+app.use('/public', express.static(path.resolve(__dirname, '../chat_storage')));
 
 app.use(passport.initialize());
 app.use(expressValidator());

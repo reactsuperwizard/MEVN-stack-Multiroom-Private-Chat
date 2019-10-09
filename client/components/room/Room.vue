@@ -50,9 +50,9 @@
 						<div class="chat__header" v-if="room">
 							<span class="section__title"># {{ room.name }}</span>
 							<div class="chat__actions">
-								<ion-icon name="return-left" @click="leaveRoom" class="icon"></ion-icon>
+								<ion-icon name="md-log-out" @click="leaveRoom" class="icon"></ion-icon>
 								<ion-icon name="create" @click="openEditRoom" class="icon"></ion-icon>
-								<ion-icon name="analytics" @click="viewRoomDetails" class="icon"></ion-icon>
+								<ion-icon name="md-stats" @click="viewRoomDetails" class="icon"></ion-icon>
 								<ion-icon name="people" @click="toggleUserList" class="icon"></ion-icon>
 							</div>
 						</div>
@@ -88,6 +88,30 @@
 						<Error :errors="errors" />
 						<button type="submit" class="btn btn--clear btn--info">Update Room Name</button>
 					</form>
+				</template>
+			</Modal>
+			<Modal name="roomDetails" ref="roomDetails" v-if="this.getCurrentRoom && messages">
+				<template slot="header">
+					<h2 class="lead text-upper">Room Details: {{ this.getCurrentRoom.name }}</h2>
+				</template>
+				<template slot="body">
+					<div class="infobox">
+						<div class="infobox__item">
+							<ion-icon name="planet" class="icon icon-lg"></ion-icon>
+						</div>
+						<div class="infobox__item">
+							<span class="infobox__item--left">Online Users</span>
+							<span class="infobox__item--right">{{ this.getCurrentRoom.users.length }}</span>
+						</div>
+						<div class="infobox__item">
+							<span class="infobox__item--left">Messages</span>
+							<span class="infobox__item--right">{{ messages.length }}</span>
+						</div>
+						<div class="infobox__item">
+							<span class="infobox__item--left">Created</span>
+							<span class="infobox__item--right">{{ moment(this.getCurrentRoom.createdAt).fromNow() }}</span>
+						</div>
+					</div>
 				</template>
 			</Modal>
 		</section>

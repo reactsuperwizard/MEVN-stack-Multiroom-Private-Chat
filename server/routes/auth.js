@@ -167,7 +167,8 @@ router.post('/forgot', checkForgotFields, async (req, res) => {
         to: process.env.myEmailAddress,
         subject: 'Forgot Password',
         text: 'Hello' + req.body.email,
-        html: '<b>Hey there! </b><br><a href="http://localhost:8081/resetpassword/' + token + '">Please click this link</a>'
+        token: `Bearer ${token}`,
+        html: `<b>Hey there! </b><br><a href="${req.get('origin')}/resetpassword/${token}">Please click this link</a>`
     };
     transport.sendMail(mailOptions, (error, info) => {
         if (error) {
@@ -187,7 +188,7 @@ router.post('/forgot', checkForgotFields, async (req, res) => {
     //     from: 'test@example.com',
     //     subject: 'Sending with SendGrid is Fun',
     //     text: 'and easy to do anywhere, even with Node.js',
-    //     html: '<b>Hey there! </b><br><a href="http://localhost:8081/resetpassword/' + token + '">Please click this link</a>'
+    //      html: `<b>Hey there! </b><br><a href="${req.get('origin')}/resetpassword/${token}">Please click this link</a>`
     // };
 
     // sgMail.send(msg, (error, info) => {

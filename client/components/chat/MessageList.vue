@@ -121,7 +121,9 @@
 		methods: {
 			scrollMessages() {
 				var container = this.$refs.messages;
-				container.scrollTop = container.scrollHeight;
+				if (container) {
+					container.scrollTop = container.scrollHeight;
+				}
 			}
 		},
 		mounted() {

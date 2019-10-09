@@ -196,7 +196,8 @@ router.delete('/:room_name', passport.authenticate('jwt', {
             where: {
                 'name': req.params.room_name
             }
-        }) && await Message.destroy({
+        });
+        await Message.destroy({
             where: {
                 'room': room['id']
             }

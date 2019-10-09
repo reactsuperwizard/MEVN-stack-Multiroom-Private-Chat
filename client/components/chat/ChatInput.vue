@@ -12,6 +12,9 @@
 				@change="uploadImageFile"
 				style="display: none;"
 			/>
+			<button @click="$refs.file.click()" style="width: 50px;">
+				<mdb-icon icon="paperclip" size="2x" />
+			</button>
 			<button @click="toogleDialogEmoji" class="button-emoj" style="width: 50px; font-size:22px;">😃</button>
 			<button class="btn btn--clear btn--info m-0 u-border-rad-0" @click="sendMessage">Send</button>
 		</div>

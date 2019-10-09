@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 08, 2019 at 01:32 PM
+-- Generation Time: Oct 09, 2019 at 05:13 AM
 -- Server version: 10.1.37-MariaDB
 -- PHP Version: 7.2.12
 
@@ -46,14 +46,16 @@ CREATE TABLE `messages` (
 --
 
 INSERT INTO `messages` (`id`, `content`, `room`, `user`, `admin`, `createdAt`, `updatedAt`) VALUES
-(820, '2user joined 1user\'s room', 34, NULL, 1, '2019-10-08 11:29:58', '2019-10-08 11:29:58'),
-(821, '1user joined 1user\'s room', 34, NULL, 1, '2019-10-08 11:30:00', '2019-10-08 11:30:00'),
-(822, 'I am 1 user.😝', 34, 0, 0, '2019-10-08 11:30:14', '2019-10-08 11:30:14'),
-(823, 'I am user 2😁', 34, 63, 0, '2019-10-08 11:30:27', '2019-10-08 11:30:27'),
-(824, 'I can see 😦', 34, 0, 0, '2019-10-08 11:30:36', '2019-10-08 11:30:36'),
-(825, '😹I can see you too.😣', 34, 63, 0, '2019-10-08 11:31:04', '2019-10-08 11:31:04'),
-(826, '1user left 1user\'s room', 34, NULL, 1, '2019-10-08 11:31:35', '2019-10-08 11:31:35'),
-(827, '2user left 1user\'s room', 34, NULL, 1, '2019-10-08 11:31:37', '2019-10-08 11:31:37');
+(890, '1user joined 1user\'s changed room', 34, NULL, 1, '2019-10-09 03:10:53', '2019-10-09 03:10:53'),
+(891, '2user joined 1user\'s changed room', 34, NULL, 1, '2019-10-09 03:10:55', '2019-10-09 03:10:55'),
+(892, 'Hi I am user1!😏', 34, 0, 0, '2019-10-09 03:11:20', '2019-10-09 03:11:20'),
+(893, 'I can see. I am user2.😹', 34, 63, 0, '2019-10-09 03:11:36', '2019-10-09 03:11:36'),
+(894, '!!!image!!!05fb4770-f1fc-42d8-be4b-5c972967d874.jpg', 34, 0, 0, '2019-10-09 03:11:55', '2019-10-09 03:11:55'),
+(895, 'What about image?\n', 34, 0, 0, '2019-10-09 03:12:06', '2019-10-09 03:12:06'),
+(896, 'image ok.', 34, 63, 0, '2019-10-09 03:12:15', '2019-10-09 03:12:15'),
+(897, '!!!image!!!47323b7f-5d16-45c2-9cf6-1ed27032c0ae.jpg', 34, 63, 0, '2019-10-09 03:12:20', '2019-10-09 03:12:20'),
+(898, '2user updated room 1user\'s changed room to 2user changed Room', 34, 63, 1, '2019-10-09 03:12:53', '2019-10-09 03:12:53'),
+(899, 'I can see room name changed.', 34, 0, 0, '2019-10-09 03:13:07', '2019-10-09 03:13:07');
 
 -- --------------------------------------------------------
 
@@ -79,7 +81,7 @@ CREATE TABLE `rooms` (
 --
 
 INSERT INTO `rooms` (`id`, `name`, `user`, `password`, `access`, `accessIds`, `users`, `createdAt`, `updatedAt`) VALUES
-(34, '1user\'s room', '0', NULL, 1, NULL, NULL, '2019-10-08 11:29:49', '2019-10-08 11:29:49'),
+(34, '2user changed Room', '0', NULL, 1, NULL, NULL, '2019-10-09 03:12:53', '2019-10-09 03:12:53'),
 (35, '2user\'s room', '63', NULL, 1, NULL, NULL, '2019-10-08 11:29:54', '2019-10-08 11:29:54');
 
 -- --------------------------------------------------------
@@ -115,8 +117,8 @@ CREATE TABLE `user_infos` (
 --
 
 INSERT INTO `user_infos` (`id`, `socketid`, `username`, `handle`, `email`, `password`, `create_time`, `delete_time`, `image`, `age`, `sex`, `location`, `bio`, `status_active`, `status_participate`, `room_id`, `createdAt`, `updatedAt`) VALUES
-(0, '23yP3tVWnLmDIYGFAAAD', '1user', '1user', '1user@email.com', '$2a$10$kWepNTGXCRJOnyUR7BiQKOm7PGHUnjrjSlPc0OUDgUTJVmS.FqiRS', '2019-10-07 15:21:35', NULL, 'db1afb1c-509a-435b-8a53-1f25d7af101c.jpg', 19, 'female', 'I live in 1user\'s house.', 'I am a 19 years old girl.', 0, 0, NULL, '2019-10-08 11:31:35', '2019-10-08 11:31:35'),
-(63, 'osE1QXKuf9SrrATzAAAC', '2user', '2user', '2user@email.com', '$2a$10$oKMeKM.TX9v2kemlZ7SzrugHP3XuoXrbU.oenUObNeGnNUPhB6oKO', '2019-10-08 06:01:13', NULL, '//www.gravatar.com/avatar/d920d7080934a66a52a5d2c6c8182376?s=220&r=pg&d=identicon', NULL, NULL, '', '', 0, 0, NULL, '2019-10-08 11:31:37', '2019-10-08 11:31:37');
+(0, '7fhKsYFV5f4GWAXmAAAE', '1user', '1user', '1user@email.com', '$2a$10$bhaWZMo7zLZoEcC1WOgk8Ow.Z2v5mbr8J40gtFRAC1r8.zNqd21Ry', '2019-10-07 15:21:35', NULL, 'c988577f-6910-4e4b-a094-f5e339769fc3.jpg', 19, 'female', 'I live in 1user\'s house.', 'I am a 19 years old girl.', 0, 0, 34, '2019-10-09 03:10:53', '2019-10-09 03:10:53'),
+(63, 'prqCoE7rwzM2jDwAAAAF', '2user', '2user', '2user@email.com', '$2a$10$oKMeKM.TX9v2kemlZ7SzrugHP3XuoXrbU.oenUObNeGnNUPhB6oKO', '2019-10-08 06:01:13', NULL, '3d0a47fb-4d41-4be4-a8ed-cc6a6b7aa30a.jpg', 24, 'female', '2user\'s house', 'i live here.', 0, 0, 34, '2019-10-09 03:10:55', '2019-10-09 03:10:55');
 
 --
 -- Indexes for dumped tables
@@ -148,7 +150,7 @@ ALTER TABLE `user_infos`
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=828;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=900;
 
 --
 -- AUTO_INCREMENT for table `rooms`
