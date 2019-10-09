@@ -5,6 +5,7 @@ const passport = require('passport');
 const Room = require('../models/Room');
 const User = require('../models/User');
 const Message = require('../models/Message');
+const _ = require('../../node_modules/lodash');
 
 const {
     createErrorObject,
@@ -17,41 +18,36 @@ const {
 router.get('/', passport.authenticate('jwt', {
     session: false
 }), async (req, res) => {
-    const rooms = await Room.findAll({}, {
+    const rooms_p = Room.findAll({}, {
+        raw: true
+    });
+    const users_p = User.findAll({}, {
         raw: true
     });
 
-    for (var i = 0; i < rooms.length; i++) {
-        const room = rooms[i];
-        await User.findOne({
-                where: {
-                    id: room['user']
+    Promise.all([rooms_p, users_p]).then((value => {
+            const rooms = value[0];
+            const users = value[1];
+            for (var i = 0; i < rooms.length; i++) {
+                const room = rooms[i];
+                room['user'] = users.filter((user) => user['id'] == room['user']);
+                if (room['user']) {
+                    room['user'] = room['user'][0];
                 }
-            }, {
-                raw: true
-            })
-            .then(user => {
-                room['user'] = user;
-            })
-        await User.findAndCountAll({
-                where: {
-                    room_id: room['id']
-                }
-            })
-            .then(result => {
-                room['users'] = result.count;
-            })
-            .catch(err => {
-                console.log('err', err);
-            })
-    }
-    if (rooms) {
-        return res.status(200).json(rooms);
-    } else {
-        return res.status(404).json({
-            error: 'No Rooms Found'
+                room['users'] = users.filter((user) => user['room_id'] === room['id']).length;
+            }
+            if (rooms) {
+                return res.status(200).json(rooms);
+            } else {
+                return res.status(404).json({
+                    error: 'No Rooms Found'
+                });
+            }
+        }))
+        .catch(err => {
+            console.log('err', err);
         });
-    }
+
 });
 
 /**
@@ -119,7 +115,7 @@ router.post(
                 .then(room => {
                     User.findOne({
                             where: {
-                                id: room['user']
+                                'id': room['user']
                             }
                         })
                         .then(user => {
@@ -129,6 +125,7 @@ router.post(
                             console.log(err);
                         })
                         .finally(() => {
+                            room['users'] = 0;
                             return res.status(200).json(room);
                         });
                 })
@@ -342,41 +339,38 @@ router.put(
             })
             .then(async info => {
                 if (info[1]) {
-                    const rooms = await Room.findAll({}, {
+                    const rooms_p = Room.findAll({}, {
+                        raw: true
+                    });
+                    const users_p = User.findAll({}, {
                         raw: true
                     });
 
-                    for (var i = 0; i < rooms.length; i++) {
-                        const room = rooms[i];
-                        await User.findOne({
-                                where: {
-                                    id: room['user']
+                    Promise.all([rooms_p, users_p]).then((value => {
+                            const rooms = value[0];
+                            const users = value[1];
+                            for (var i = 0; i < rooms.length; i++) {
+                                const room = rooms[i];
+                                room['user'] = users.filter((user) => user['id'] == room['user']);
+                                if (room['user']) {
+                                    room['user'] = room['user'][0];
                                 }
-                            }, {
-                                raw: true
-                            })
-                            .then(user => {
-                                room['user'] = user;
-                            })
-                        await User.findAndCountAll({
-                                where: {
-                                    room_id: room['id']
-                                }
-                            })
-                            .then(result => {
-                                room['users'] = result.count;
-                            })
-                            .catch(err => {
-                                console.log('err', err);
-                            })
-                    }
-                    if (rooms) {
-                        return res.status(200).json(rooms);
-                    } else {
-                        return res.status(404).json({
-                            error: 'No Rooms Found'
+                                room['users'] = users.filter((user) => user['room_id'] === room['id']).length;
+                            }
+                            if (rooms) {
+                                return res.status(200).json(rooms);
+                            } else {
+                                return res.status(404).json({
+                                    error: 'No Rooms Found'
+                                });
+                            }
+                        }))
+                        .catch(err => {
+                            console.log('err', err);
+                            return res.status(404).json({
+                                error: 'No Rooms Found'
+                            });
                         });
-                    }
                 }
             });
     }
