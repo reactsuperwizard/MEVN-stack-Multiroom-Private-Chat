@@ -330,28 +330,55 @@ router.put(
         session: false
     }),
     async (req, res) => {
-        await Room.updateMany({
-            $pull: {
-                users: {
-                    $in: [req.body.user_id]
-                }
-            }
-        });
-
-        const rooms = await Room.find({})
-            .populate('user', ['username'])
-            .populate('users.lookup', ['username'])
-            .select('-password')
-            .exec();
-
-        if (rooms) {
-            return res.status(200).json(rooms);
-        } else {
-            return res.status(404).json({
-                error: 'No Rooms Found'
-            });
+        const updateFields = {
+            'room_id': null
         }
+        await User.update(updateFields, {
+                returning: true,
+                raw: true,
+                where: {
+                    id: req.body.userid
+                }
+            })
+            .then(async info => {
+                if (info[1]) {
+                    const rooms = await Room.findAll({}, {
+                        raw: true
+                    });
+
+                    for (var i = 0; i < rooms.length; i++) {
+                        const room = rooms[i];
+                        await User.findOne({
+                                where: {
+                                    id: room['user']
+                                }
+                            }, {
+                                raw: true
+                            })
+                            .then(user => {
+                                room['user'] = user;
+                            })
+                        await User.findAndCountAll({
+                                where: {
+                                    room_id: room['id']
+                                }
+                            })
+                            .then(result => {
+                                room['users'] = result.count;
+                            })
+                            .catch(err => {
+                                console.log('err', err);
+                            })
+                    }
+                    if (rooms) {
+                        return res.status(200).json(rooms);
+                    } else {
+                        return res.status(404).json({
+                            error: 'No Rooms Found'
+                        });
+                    }
+                }
+            });
     }
 );
-
 module.exports = router;

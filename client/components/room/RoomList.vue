@@ -203,26 +203,15 @@
 				}
 				return 0;
 			},
-			checkLingeringUser(data) {
-				// for (const room of data) {
-				//   if (room.users.some(room => room.id === this.getUserData.id)) {
-				//     return true;
-				//   }
-				// }
-				return false;
-			},
 			fetchRoomData() {
 				axios
 					.get("/api/room")
-					.then(res => {
-						if (this.checkLingeringUser(res.data)) {
-							return axios.put(`/api/room/remove/users/all`, {
-								userid: this.getUserData.id
-							});
-						} else {
-							this.$store.dispatch("updateRoomData", res.data);
-							this.rooms = res.data;
-						}
+					.then(async res => {
+						await axios.put(`/api/room/remove/users/all`, {
+							userid: this.getUserData.id
+						});
+						this.$store.dispatch("updateRoomData", res.data);
+						this.rooms = res.data;
 					})
 					.then(res => {
 						if (res && res.data) {
@@ -278,7 +267,6 @@
 				axios
 					.delete(`/api/room/${e.target.name}`)
 					.then(res => {
-						console.log("delete res", res);
 						this.$store.dispatch("deleteRoom", res.data);
 						this.getSocket.emit("roomDeleted", {
 							room: res.data,
