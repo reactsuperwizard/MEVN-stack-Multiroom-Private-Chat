@@ -1,3 +1,16 @@
+.selected {
+    background-color: grey;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.blocked {
+    border-style: solid;
+    border-radius: 10px;
+    border-color: red;
+    border-width: 5px;
+}
+
 .chat {
     height: 100%;
     position: relative;

@@ -69,20 +69,6 @@ li .nav__link.router-link-exact-active {
     color: crimson;
 }
 
-.selected {
-    background-color: grey;
-    padding: 10px;
-    border-radius: 10px;
-}
-
-.blocked {
-    background-color: darkgrey;
-    padding: 10px;
-    border-style: solid;
-    border-radius: 10px;
-    border-color: red;
-    border-width: 5px;
-}
 
 .lead {
     display: flex;
@@ -233,6 +219,13 @@ li .nav__link.router-link-exact-active {
         width: auto;
         display: inline-block;
         font-family: 'Russo One', sans-serif;
+    }
+
+    .private {
+        background-color: skyblue;
+        color: darkgreen;
+        border-radius: 5px;
+        padding: 5px;
     }
 
     &__lead {

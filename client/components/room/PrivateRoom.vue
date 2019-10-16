@@ -63,7 +63,7 @@
 					</Sidebar>
 					<div class="chat__content" v-bind:class="{ mlzero: !sidebarVisible }">
 						<div class="chat__header" v-if="room">
-							<span class="section__title"># {{ room.name }}</span>
+							<span class="section__title private"># {{ room.name }}</span>
 							<div class="chat__actions">
 								<ion-icon name="md-log-out" @click="leaveRoom" class="icon"></ion-icon>
 								<ion-icon name="md-stats" @click="viewRoomDetails" class="icon"></ion-icon>
