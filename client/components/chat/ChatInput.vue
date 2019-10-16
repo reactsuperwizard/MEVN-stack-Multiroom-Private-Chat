@@ -43,7 +43,12 @@
 			mdbIcon
 		},
 		computed: {
-			...mapGetters(["getUserData", "getCurrentRoom", "getSocket"]),
+			...mapGetters([
+				"getUserData",
+				"getCurrentRoom",
+				"getSocket",
+				"getCurrentSelect"
+			]),
 
 			emojisNative() {
 				return packEmoji;
@@ -58,38 +63,17 @@
 				// Optional
 				this.toogleDialogEmoji();
 			},
-			sendUserTyping() {
-				this.getSocket.emit("userTyping", {
-					room: this.getCurrentRoom,
-					user: this.getUserData
-				});
-			},
-			sendUserNotTyping() {
-				this.getSocket.emit("removeUserTyping", {
-					room: this.getCurrentRoom,
-					user: this.getUserData
-				});
-			},
-			triggerMessageSend(e) {
-				e.preventDefault();
-				if (e.keyCode === 13 && !e.shiftKey) {
-					this.sendMessage();
-				} else {
-					if (this.valueInput !== "") {
-						this.sendUserTyping();
-					} else {
-						this.sendUserNotTyping();
-					}
-				}
-			},
 			sendMessage() {
+				console.log(this.getSocket.id);
+				if (this.valueInput) {
 				this.getSocket.emit("newMessage", {
 					room: this.getCurrentRoom,
 					user: this.getUserData,
+					select: this.getCurrentSelect,
 					content: this.valueInput
 				});
 				this.valueInput = "";
-				this.sendUserNotTyping();
+				}
 			},
 			uploadImageFile() {
 				const files = this.$refs.file.files;
@@ -104,9 +88,10 @@
 						})
 						.then(async res => {
 							if (res.data.success) {
-								this.getSocket.emit("newMessage_image", {
+								this.getSocket.emit("newMessage", {
 									room: this.getCurrentRoom,
 									user: this.getUserData,
+									select: this.getCurrentSelect,
 									content: "!!!image!!!" + res.data.image
 								});
 							} else {

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-// import axios from 'axios';
+import axios from 'axios';
 import router from './router';
 
 Vue.use(Vuex);
@@ -11,14 +11,16 @@ export default new Vuex.Store({
         authUser: {},
         currentRoom: null,
         rooms: [],
-        socket: null
+        socket: null,
+        selected_user: null
     },
     getters: {
         getUserData: state => state.authUser,
         getRoomData: state => state.rooms,
         isAuthorized: state => state.authState,
         getSocket: state => state.socket,
-        getCurrentRoom: state => state.currentRoom
+        getCurrentRoom: state => state.currentRoom,
+        getCurrentSelect: state => state.selected_user
     },
     mutations: {
         ASSIGN_USER_DATA: (state, payload) => {
@@ -46,15 +48,22 @@ export default new Vuex.Store({
         // LEAVE_ROOM: (state, payload) => {
         //     state.currentRoom.users = payload;
         // },
+        SAVE_CURRENT_SELECT: (state, payload) => {
+            state.selected_user = payload;
+        },
         // REMOVE_ACCESS_ID: (state, payload) => {
         //     state.currentRoom = payload;
         // },
-        // RESET_STATE: state => {
-        //     state.authState = false;
-        //     state.authUser = {};
-        //     state.currentRoom = null;
-        //     state.rooms = [];
-        // }
+        RESET_STATE: state => {
+            state.authState = false;
+            state.authUser = {};
+            state.currentRoom = null;
+            state.rooms = [];
+        },
+        DELETE_EVENT: state => {
+            console.log('store delete event socket id', state.socket)
+            state.socket.emit("UserDeleted", {});
+        }
     },
     actions: {
         saveUserData: (context, payload) => {
@@ -81,15 +90,21 @@ export default new Vuex.Store({
         leaveRoom: (context, payload) => {
             context.commit('REMOVE_USER_ID', payload);
         },
+        saveCurrentSelect: (context, payload) => {
+            context.commit('SAVE_CURRENT_SELECT', payload);
+        },
         // removeAccessId: (context, payload) => {
         //     context.commit('REMOVE_ACCESS_ID', payload);
         // },
-        // deleteUserAccount: context => {
-        //     axios.delete('/api/user/current').then(() => {
-        //         context.commit('RESET_STATE');
-        //         localStorage.clear();
-        //         router.push({ name: 'Login' });
-        //     });
-        // }
+        deleteUserAccount: context => {
+            axios.delete('/api/user/current').then(() => {
+                context.commit('DELETE_EVENT');
+                context.commit('RESET_STATE');
+                localStorage.clear();
+                router.push({
+                    name: 'Login'
+                });
+            });
+        }
     }
 });

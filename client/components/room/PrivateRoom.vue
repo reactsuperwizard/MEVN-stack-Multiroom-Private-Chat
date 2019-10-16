@@ -24,8 +24,18 @@
 							/>
 							<ul class="chat__userlist" v-if="this.getCurrentRoom && filteredUsers">
 								<transition-group name="slideDown">
-									<li class="chat__user" v-for="user in filteredUsers" :key="user.id">
-										<div class="chat__user-item">
+									<li
+										class="chat__user"
+										v-for="user in filteredUsers"
+										:key="user.id"
+										v-bind:class="{selected:user.id==getCurrentSelect, blocked:checked[user.id]==0, }"
+									>
+										<div
+											:id="user.id"
+											v-if="user.id != getUserData.id"
+											class="chat__user-item"
+											@click="selectUser(`${user.id}`)"
+										>
 											<div class="chat__user-image">
 												<img
 													:src="(!user.image.includes('www.gravatar.com/avatar') ? 'http://localhost:5000/public/avatar/' : '') + user.image"
@@ -36,6 +46,11 @@
 
 											<div class="chat__user-details">
 												<span>{{ user.handle }}</span>
+											</div>
+											<div class="chat__user-details">
+												<span>
+													<input type="checkbox" id="checkbox" v-model="checked[`${user.id}`]" />
+												</span>
 											</div>
 										</div>
 									</li>
@@ -51,7 +66,6 @@
 							<span class="section__title"># {{ room.name }}</span>
 							<div class="chat__actions">
 								<ion-icon name="md-log-out" @click="leaveRoom" class="icon"></ion-icon>
-								<ion-icon name="create" @click="openEditRoom" class="icon"></ion-icon>
 								<ion-icon name="md-stats" @click="viewRoomDetails" class="icon"></ion-icon>
 								<ion-icon name="people" @click="toggleUserList" class="icon"></ion-icon>
 							</div>
@@ -66,30 +80,6 @@
 					</div>
 				</div>
 			</div>
-			<Modal name="editRoom" ref="editRoom" v-if="this.getCurrentRoom">
-				<template slot="header">
-					<h2 class="text-upper">Edit Room: {{ this.getCurrentRoom.name }}</h2>
-				</template>
-				<template slot="body">
-					<form @submit="handleEditRoom" slot="body" class="form form--nbs pt-3">
-						<div class="form__input-group">
-							<ion-icon name="pricetags" class="form__icon"></ion-icon>
-							<input
-								type="text"
-								name="roomName"
-								class="form__control"
-								placeholder="Enter New Room Name"
-								pattern=".{3,20}"
-								required
-								v-model.trim="newRoomName"
-							/>
-							<label for="roomName" class="form__label">New Room name</label>
-						</div>
-						<Error :errors="errors" />
-						<button type="submit" class="btn btn--clear btn--info">Update Room Name</button>
-					</form>
-				</template>
-			</Modal>
 			<Modal name="roomDetails" ref="roomDetails" v-if="this.getCurrentRoom && messages">
 				<template slot="header">
 					<h2 class="lead text-upper">Room Details: {{ this.getCurrentRoom.name }}</h2>
@@ -146,12 +136,18 @@
 				newRoomName: "",
 				sidebarVisible: window.innerWidth < 768 ? false : true,
 				searchInput: "",
+				checked: [],
 				errors: [],
 				roomLeft: false
 			};
 		},
 		computed: {
-			...mapGetters(["getUserData", "getCurrentRoom", "getSocket"]),
+			...mapGetters([
+				"getUserData",
+				"getCurrentRoom",
+				"getSocket",
+				"getCurrentSelect"
+			]),
 			filteredUsers: function() {
 				return this.users
 					? this.users
@@ -171,7 +167,7 @@
 			}
 		},
 		methods: {
-			...mapActions(["saveCurrentRoom"]),
+			...mapActions(["saveCurrentRoom", "saveCurrentSelect"]),
 			checkUserTabs(room) {
 				if (
 					room &&
@@ -197,63 +193,11 @@
 				if (e) {
 					e.preventDefault();
 				}
-				axios
-					.post("/api/room/remove/users", {
-						room_id: this.getCurrentRoom.id
-					})
-					.then(res => {
-						this.getSocket.emit("exitRoom", {
-							room: res.data,
-							user: null,
-							admin: true,
-							content: `${this.getUserData.handle} left ${this.getCurrentRoom.name}`
-						});
-						this.roomLeft = true;
-						if (!newPage) {
-							this.$router.push({ name: "RoomList" });
-						}
-					});
-			},
-			openEditRoom() {
-				this.$refs.editRoom.open();
-			},
-			handleEditRoom(e) {
-				e.preventDefault();
-				axios
-					.post("/api/room/update/name", {
-						room_name: this.getCurrentRoom.name,
-						new_room_name: this.newRoomName
-					})
-					.then(res => {
-						if (res.data.errors) {
-							for (const error of res.data.errors) {
-								const [key] = Object.keys(error);
-								const [value] = Object.values(error);
-								this.errors.push({
-									key,
-									value
-								});
-							}
-						} else {
-							this.$refs.editRoom.close();
-							this.getSocket.emit("roomUpdateEvent", {
-								oldRoomName: this.getCurrentRoom.name,
-								room: res.data
-							});
-							this.getSocket.emit("newMessage", {
-								room: this.getCurrentRoom,
-								user: this.getUserData,
-								admin: true,
-								content: `${this.getUserData.username} updated room ${this.getCurrentRoom.name} to ${this.newRoomName}`
-							});
-							this.newRoomName = "";
-						}
-
-						setTimeout(() => {
-							this.errors = [];
-						}, 1500);
-					})
-					.catch(err => console.log(err));
+				this.roomLeft = true;
+				this.$store.dispatch("saveCurrentSelect", null);
+				if (!newPage) {
+					this.$router.push({ name: "RoomList" });
+				}
 			},
 			viewRoomDetails() {
 				this.$refs.roomDetails.open();
@@ -261,7 +205,26 @@
 			toggleUserList() {
 				this.$refs.userList.toggle();
 				this.sidebarVisible = !this.sidebarVisible;
-			}
+			},
+			selectUser(id) {
+				if (id != this.getCurrentSelect) {
+					const roomname = this.users.filter(obj => obj.id == id);
+					this.room.name = `Chat with ${roomname[0]["handle"]}`;
+					axios.get(`/api/privateMsg/${id}`).then(res => {
+						console.log(res);
+						if (res.data.status == 0) {
+							console.log("blocked");
+						} else if (res.data.status == 1) {
+							console.log("ignored");
+						} else {
+							console.log("active", res.data.message);
+							this.$store.dispatch("saveCurrentSelect", id);
+							this.messages = res.data.message;
+						}
+					});
+				}
+			},
+			block(id) {}
 		},
 		created() {
 			axios
@@ -270,9 +233,7 @@
 					this.room = res.data;
 					this.users = res.data.users;
 					this.$store.dispatch("saveCurrentRoom", res.data);
-
 					/** Socket IO: User join event, get latest messages from room */
-					console.log(this.getSocket.id);
 					this.getSocket.emit("userJoined", {
 						room: this.getCurrentRoom,
 						user: this.getUserData,
@@ -280,19 +241,19 @@
 						admin: true
 					});
 
-					/** Socket IO: Received New User Event */
-					this.getSocket.on("updateRoomData", data => {
-						data = JSON.parse(data);
-						if (data.messages) {
-							this.messages = data.messages;
-						}
+					// /** Socket IO: Received New User Event */
+					// this.getSocket.on("updateRoomData", data => {
+					// 	data = JSON.parse(data);
+					// 	if (data.messages) {
+					// 		this.messages = data.messages;
+					// 	}
 
-						if (data.room) {
-							this.room = data.room;
-							this.users = data.room.users;
-							this.$store.dispatch("saveCurrentRoom", data.room);
-						}
-					});
+					// 	if (data.room) {
+					// 		this.room = data.room;
+					// 		this.users = data.room.users;
+					// 		this.$store.dispatch("saveCurrentRoom", data.room);
+					// 	}
+					// });
 
 					/** Socket IO: Reconnect User Event */
 					this.getSocket.on("reconnect", () => {
@@ -304,11 +265,11 @@
 					});
 
 					this.getSocket.on("reconnected", () => {
-						console.log("Reconnected");
+						console.warn("Reconnected");
 					});
 
 					this.getSocket.on("disconnect", () => {
-						console.log("Disconnected");
+						console.warn("Disconnected");
 					});
 
 					/** Socket IO: User Exit Event - Update User List */
@@ -320,27 +281,18 @@
 					this.getSocket.on("receivedUserExit", room => {
 						this.checkUserTabs(room);
 					});
-
 					/** Socket IO: New Messaage Event - Append the new message to the messages array */
 					this.getSocket.on("receivedNewMessage", message => {
 						const message_parsed = JSON.parse(message);
-						if (message_parsed["touser"]) {
-						} else {
+						console.log(message_parsed, this.getCurrentSelect);
+						if (
+							message_parsed["user"]["id"] == this.getCurrentSelect ||
+							message_parsed["user"]["id"] == this.getUserData.id
+						) {
+							console.log(message_parsed);
 							this.messages.push(message_parsed);
+						} else {
 						}
-					});
-
-					/** Socket IO: Room Deleted Event - Redirect all users */
-					this.getSocket.on("roomDeleted", () => {
-						this.$store.dispatch("saveCurrentRoom", null);
-						setTimeout(() => {
-							this.$router.push({
-								name: "RoomList",
-								params: {
-									message: "This room has been deleted"
-								}
-							});
-						}, 2000);
 					});
 
 					/** Socket IO: Room Updated Event */
@@ -350,6 +302,13 @@
 							"saveCurrentRoom",
 							JSON.parse(data).room
 						);
+					});
+
+					this.getSocket.on("UserRegistered", data => {
+						this.users.push(JSON.parse(data));
+					});
+					this.getSocket.on("userListUpdated", data => {
+						this.users = JSON.parse(data);
 					});
 				})
 				.catch(err => {

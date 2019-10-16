@@ -14,14 +14,6 @@
 								Total Rooms:
 								<span class="badge badge--info">{{ rooms.length }}</span>
 							</div>
-							<div class="rooms__details-item">
-								Private Rooms:
-								<span class="badge badge--danger">{{ getPrivateRooms.length }}</span>
-							</div>
-							<div class="rooms__details-item">
-								Public Rooms:
-								<span class="badge badge--success">{{ getPublicRooms.length }}</span>
-							</div>
 						</div>
 						<input
 							type="text"
@@ -50,8 +42,8 @@
 													{{ room.users }}
 												</p>
 												<p>
-													<strong>Room Admin:</strong>
-													{{ room.user ? room.user.username : 'Unknown User' }}
+													<strong>{{room.access === true ? 'Room Admin:' : ''}}</strong>
+													{{ room.access === false ? 'Your private chat room' : room.user ? room.user.username : 'Unknown User' }}
 												</p>
 											</div>
 											<div class="rooms__item-actions">
@@ -228,6 +220,9 @@
 			enterRoom(room) {
 				this.$router.push({ name: "Room", params: { id: room.id } });
 			},
+			enterPrivateRoom(room) {
+				this.$router.push({ name: "PrivateRoom", params: { id: room.id } });
+			},
 			handleCreateRoom(e) {
 				e.preventDefault();
 
@@ -278,16 +273,10 @@
 					.catch(err => console.log(err));
 			},
 			handleRoomClick(room) {
-				if (
-					room.access ||
-					this.getUserData.id === room.user.id ||
-					room.accessIds.includes(this.getUserData.id)
-				) {
+				if (room.access) {
 					this.enterRoom(room);
 				} else {
-					this.privateRoomName = room.name;
-					this.$refs.privateRoom.setData("room", room);
-					this.$refs.privateRoom.open();
+					this.enterPrivateRoom(room);
 				}
 			},
 			handlePrivateRoomCheck(e) {

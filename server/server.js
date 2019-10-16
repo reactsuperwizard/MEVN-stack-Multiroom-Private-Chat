@@ -37,8 +37,10 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const {
     ADD_MESSAGE,
+    ADD_PRIVATE_MESSAGE,
     UPDATE_ROOM_USERS,
     GET_ROOMS,
+    GET_USERS,
     GET_ROOM_USERS,
     FILTER_ROOM_USERS,
     CREATE_MESSAGE_CONTENT
@@ -53,6 +55,8 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 // const profileRoutes = require('./routes/profile');
 const roomRoutes = require('./routes/room');
+// const relationRoutes = require('./routes/relation');
+const privateMsgRoutes = require('./routes/privateMsg');
 // const messageRoutes = require('./routes/messages');
 
 /** Middleware */
@@ -92,6 +96,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 // app.use('/api/profile', profileRoutes);
 app.use('/api/room', roomRoutes);
+// app.use('/api/relation', relationRoutes);
+app.use('/api/privateMsg', privateMsgRoutes);
 // app.use('/api/messages', messageRoutes);
 
 // if (process.env.NODE_ENV !== 'production') {
@@ -111,6 +117,7 @@ io.on('connection', socket => {
 
         if (currentRoomId) {
             /** Filter through users and remove user from user list in that room */
+            console.log('______be:disconnect', currentRoomId, socket.id);
             const roomState = await FILTER_ROOM_USERS({
                 roomId: currentRoomId,
                 socketId: socket.id
@@ -184,21 +191,6 @@ io.on('connection', socket => {
         });
     });
 
-    /** User Typing Events */
-    socket.on('userTyping', data => {
-        if (!userTypings[data.room.id]) {
-            userTypings[data.room.id] = [];
-        } else {
-            if (!userTypings[data.room.id].includes(data.user.handle)) {
-                userTypings[data.room.id].push(data.user.handle);
-            }
-        }
-
-        socket.broadcast
-            .to(data.room.id)
-            .emit('receivedUserTyping', JSON.stringify(userTypings[data.room.id]));
-    });
-
     socket.on('removeUserTyping', data => {
         if (userTypings[data.room.id]) {
             if (userTypings[data.room.id].includes(data.user.handle)) {
@@ -215,10 +207,22 @@ io.on('connection', socket => {
 
     /** New Message Event */
     socket.on('newMessage', async data => {
-        const newMessage = await ADD_MESSAGE(data);
+        if (data.room.access) {
+            //public message arrived
+            const newMessage = await ADD_MESSAGE(data);
 
-        // Emit data back to the client for display
-        io.to(data.room.id).emit('receivedNewMessage', JSON.stringify(newMessage));
+            // Emit data back to the client for display
+            io.to(data.room.id).emit('receivedNewMessage', JSON.stringify(newMessage));
+        } else {
+            //private message arrived
+            const newMessage = await ADD_PRIVATE_MESSAGE(data);
+
+            // Emit data to the select client for display
+            console.log(newMessage['touser']['socketid']);
+            console.log(newMessage['user']['socketid']);
+            io.to(newMessage['touser']['socketid']).emit('receivedNewMessage', JSON.stringify(newMessage));
+            io.to(newMessage['user']['socketid']).emit('receivedNewMessage', JSON.stringify(newMessage));
+        }
     });
     /** New Image Message Event */
     socket.on('newMessage_image', async data => {
@@ -243,6 +247,37 @@ io.on('connection', socket => {
     socket.on('roomUpdateEvent', async data => {
         io.in(data.room.id).emit('roomUpdated', JSON.stringify(data));
         io.emit('roomNameUpdated', JSON.stringify(data));
+    });
+    /** User Register Event */
+    socket.on('UserRegistered', async data => {
+        io.emit('UserRegistered', JSON.stringify(data));
+        socket.broadcast.emit(
+            'updateRooms',
+            JSON.stringify({
+                room: await GET_ROOMS()
+            })
+        );
+    });
+    /** User Edited Event */
+    socket.on('userEdited', async data => {
+        io.emit('userListUpdated',
+            JSON.stringify(
+                await GET_USERS({})
+            ));
+    });
+    /** User Deleted Event */
+    socket.on('UserDeleted', async data => {
+        console.log('be Son : UserDeleted')
+        io.emit('userListUpdated',
+            JSON.stringify(
+                await GET_USERS({})
+            ));
+        socket.broadcast.emit(
+            'updateRooms',
+            JSON.stringify({
+                room: await GET_ROOMS()
+            })
+        );
     });
 });
 /** Serve static assets if production */

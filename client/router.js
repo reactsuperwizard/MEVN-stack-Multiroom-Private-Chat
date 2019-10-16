@@ -1,7 +1,9 @@
 import _ from 'lodash';
 import Vue from 'vue';
 import Router from 'vue-router';
-import { checkUserData } from './helpers/user';
+import {
+    checkUserData
+} from './helpers/user';
 import store from './store';
 
 Vue.use(Router);
@@ -9,8 +11,7 @@ Vue.use(Router);
 const router = new Router({
     mode: 'history',
     base: process.env.BASE_URL,
-    routes: [
-        {
+    routes: [{
             path: '/',
             name: 'Home',
             component: () => import('@/views/Home.vue'),
@@ -116,6 +117,16 @@ const router = new Router({
             }
         },
         {
+            path: '/privateroom/:id',
+            name: 'PrivateRoom',
+            component: () => import('@/components/room/PrivateRoom.vue'),
+            meta: {
+                requiresAuth: true,
+                transitionName: 'router-anim',
+                enterActive: 'animated fadeIn'
+            }
+        },
+        {
             path: '*',
             component: () => import('@/components/error/NotFound.vue')
         }
@@ -129,7 +140,9 @@ router.beforeEach(async (to, from, next) => {
             localStorage.clear();
             next({
                 name: 'Login',
-                params: { message: 'You are unauthorized, Please login to access' }
+                params: {
+                    message: 'You are unauthorized, Please login to access'
+                }
             });
         } else {
             next();
@@ -138,7 +151,9 @@ router.beforeEach(async (to, from, next) => {
         if (localStorage.getItem('authToken')) {
             next({
                 name: 'UserProfile',
-                params: { handle: store.getters.getUserData.handle }
+                params: {
+                    handle: store.getters.getUserData.handle
+                }
             });
         } else {
             next();

@@ -69,6 +69,21 @@ li .nav__link.router-link-exact-active {
     color: crimson;
 }
 
+.selected {
+    background-color: grey;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.blocked {
+    background-color: darkgrey;
+    padding: 10px;
+    border-style: solid;
+    border-radius: 10px;
+    border-color: red;
+    border-width: 5px;
+}
+
 .lead {
     display: flex;
     justify-content: center;
@@ -266,8 +281,9 @@ li .nav__link.router-link-exact-active {
         width: 80%;
         margin: 4em auto;
 
-        & > img {
+        &>img {
             width: 70%;
+
             @include respond(phone) {
                 width: 100%;
             }
@@ -276,6 +292,7 @@ li .nav__link.router-link-exact-active {
 
     &--room {
         height: calc(100vh - 68px);
+
         @include respond(phone) {
             margin-top: 70px;
         }

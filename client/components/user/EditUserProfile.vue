@@ -113,7 +113,7 @@
 			};
 		},
 		computed: {
-			...mapGetters(["getUserData", "isAuthorized"])
+			...mapGetters(["getUserData", "isAuthorized", "getSocket"])
 		},
 		methods: {
 			...mapActions(["saveUserData"]),
@@ -178,6 +178,7 @@
 									res.data.user
 								);
 								this.user = res.data.user;
+								this.getSocket.emit("userEdited", res.data.user);
 								this.$router.push({
 									name: "UserProfile",
 									params: {

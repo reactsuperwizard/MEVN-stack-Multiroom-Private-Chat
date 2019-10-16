@@ -72,6 +72,28 @@
 						</div>
 					</div>
 
+					<!-- Message belongs to private sender user -->
+					<div class="chat__message-item" v-else-if="message.touser">
+						<img
+							:src="(!message.user.image.includes('www.gravatar.com/avatar') ? 'http://localhost:5000/public/avatar/' : '') + message.user.image"
+							alt
+							class="chat__user-avatar"
+						/>
+						<div class="chat__message-body">
+							<div class="chat__message-content chat__message-content--left">
+								<img
+									v-if="message.content.includes('!!!image!!!')"
+									:src="'http://localhost:5000/public/upload/'+ message.content.substring(11)"
+									alt="unknowImage"
+								/>
+								<span v-else>{{ message.content}}</span>
+							</div>
+							<div class="chat__message-details">
+								<span>{{ message.user.handle }}</span>
+								<span>{{ moment(message.createdAt).fromNow() }}</span>
+							</div>
+						</div>
+					</div>
 					<!-- Message belongs to another user -->
 					<div class="chat__message-item" v-else>
 						<img
@@ -116,6 +138,7 @@
 			};
 		},
 		created() {
+			console.log(this.getUserData);
 			this.user = this.getUserData;
 		},
 		methods: {
@@ -127,9 +150,11 @@
 			}
 		},
 		mounted() {
+			console.log("mounted");
 			this.scrollMessages();
 		},
 		updated() {
+			console.log(this.messages.length);
 			this.scrollMessages();
 		}
 	};

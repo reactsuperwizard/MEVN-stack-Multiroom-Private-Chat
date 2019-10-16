@@ -46,16 +46,16 @@
 						/>
 						<label for="password" class="form__label">Password</label>
 					</div>
-					<div class="form__info-group mb-3">
+					<Error :errors="errors" />
+					<button type="submit" class="form__submit">Login</button>
+					<div class="form__info-group mt-3">
 						<span>Forgotten password?</span>
 						<router-link to="/forgotpassword" class="form__link btn btn--rounded">Forgot password</router-link>
 					</div>
-					<div class="form__info-group">
+					<div class="form__info-group mt-3">
 						<span>Don't have an account?</span>
 						<router-link to="/register" class="form__link btn btn--rounded">Register</router-link>
 					</div>
-					<Error :errors="errors" />
-					<button type="submit" class="form__submit">Login</button>
 				</form>
 			</div>
 		</section>

@@ -10,6 +10,10 @@ const {
     checkEditProfileFields
 } = require('../middleware/authenticate');
 
+const {
+    DELETE_USER
+} = require('../actions/socketio');
+
 const bcrypt = require('bcryptjs')
 const multer = require('multer')
 
@@ -58,27 +62,33 @@ const upload_images = multer({
     },
     fileFilter: fileFilter
 })
-// /**
-//  * @description  GET /api/user/users
-//  * @param  {Middleware} passport.authenticate
-//  * @param  {false} session
-//  * @param  {Object} request
-//  * @param  {Object} response
-//  * @access private
-//  */
+/**
+ * @description  GET /api/user/users
+ * @param  {Middleware} passport.authenticate
+ * @param  {false} session
+ * @param  {Object} request
+ * @param  {Object} response
+ * @access private
+ */
 
-// router.get('/users', passport.authenticate('jwt', { session: false }), async (req, res) => {
-//     const users = await User.find({}, 'image email username location').exec();
+router.get('/users', passport.authenticate('jwt', {
+    session: false
+}), async (req, res) => {
+    const users = await User.findAll({}, {
+        raw: true
+    });
 
-//     if (users) {
-//         return res
-//             .status(200)
-//             .json(users)
-//             .end();
-//     } else {
-//         return res.status(404).json({ error: 'No Users Found' });
-//     }
-// });
+    if (users) {
+        return res
+            .status(200)
+            .json(users)
+            .end();
+    } else {
+        return res.status(404).json({
+            error: 'No Users Found'
+        });
+    }
+});
 /**
  * @description PUT /api/user/image
  */
@@ -177,19 +187,22 @@ router.get('/current', passport.authenticate('jwt', {
     res.json(req.user);
 });
 
-// /**
-//  * @description DELETE api/user/current
-//  * @param  {String} id
-//  * @param  {Middleware} passport.authenticate
-//  * @param  {false} session
-//  * @param  {Object} request
-//  * @param  {Object} response
-//  */
-// router.delete('/current', passport.authenticate('jwt', { session: false }), async (req, res) => {
-//     /** Delete the user */
-//     await User.findOneAndDelete({ _id: req.user.id });
-
-//     res.json({ success: true });
-// });
+/**
+ * @description DELETE api/user/current
+ * @param  {String} id
+ * @param  {Middleware} passport.authenticate
+ * @param  {false} session
+ * @param  {Object} request
+ * @param  {Object} response
+ */
+router.delete('/current', passport.authenticate('jwt', {
+    session: false
+}), async (req, res) => {
+    /** Delete the user */
+    const status = await DELETE_USER(req.user.id);
+    res.json({
+        success: status
+    });
+});
 
 module.exports = router;

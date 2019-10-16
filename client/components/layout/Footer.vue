@@ -2,7 +2,7 @@
 	<footer class="footer section__footer">
 		<div class="footer__content">
 			<div class="footer__left">
-				<span>Copyright &copy; 2018</span>
+				<span>Copyright &copy; 2018 - 2019</span>
 			</div>
 			<div class="footer__right">
 				<span>Created under the MIT License</span>
