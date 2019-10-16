@@ -35,7 +35,7 @@
 											<div class="rooms__item-details">
 												<p>{{ room.name }}</p>
 												<p
-													:class="{ public: room.access, private: !room.access}"
+													:class="{ public: room.access, private_name: !room.access}"
 												>{{ room.access === true ? 'Public': 'Private' }}</p>
 												<p>
 													<strong>Users:</strong>

@@ -64,15 +64,14 @@
 				this.toogleDialogEmoji();
 			},
 			sendMessage() {
-				console.log(this.getSocket.id);
 				if (this.valueInput) {
-				this.getSocket.emit("newMessage", {
-					room: this.getCurrentRoom,
-					user: this.getUserData,
-					select: this.getCurrentSelect,
-					content: this.valueInput
-				});
-				this.valueInput = "";
+					this.getSocket.emit("newMessage", {
+						room: this.getCurrentRoom,
+						user: this.getUserData,
+						select: this.getCurrentSelect,
+						content: this.valueInput
+					});
+					this.valueInput = "";
 				}
 			},
 			uploadImageFile() {

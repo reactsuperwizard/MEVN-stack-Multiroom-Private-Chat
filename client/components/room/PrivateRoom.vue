@@ -211,7 +211,6 @@
 					const roomname = this.users.filter(obj => obj.id == id);
 					this.room.name = `Chat with ${roomname[0]["handle"]}`;
 					axios.get(`/api/privateMsg/${id}`).then(res => {
-						console.log(res);
 						if (res.data.status == 0) {
 							console.log("blocked");
 						} else if (res.data.status == 1) {
@@ -272,25 +271,23 @@
 						console.warn("Disconnected");
 					});
 
-					/** Socket IO: User Exit Event - Update User List */
-					this.getSocket.on("updateUserList", data => {
-						this.users = JSON.parse(data);
-					});
-
 					/** Socket IO: User Exit Event - Check other tabs of the same room and redirect */
 					this.getSocket.on("receivedUserExit", room => {
 						this.checkUserTabs(room);
 					});
 					/** Socket IO: New Messaage Event - Append the new message to the messages array */
+					var _this = this;
 					this.getSocket.on("receivedNewMessage", message => {
 						const message_parsed = JSON.parse(message);
-						console.log(message_parsed, this.getCurrentSelect);
 						if (
-							message_parsed["user"]["id"] == this.getCurrentSelect ||
-							message_parsed["user"]["id"] == this.getUserData.id
+							_this.getUserData &&
+							message_parsed["user"] &&
+							(message_parsed["user"]["id"] ==
+								_this.getCurrentSelect ||
+								message_parsed["user"]["id"] ==
+									_this.getUserData.id)
 						) {
-							console.log(message_parsed);
-							this.messages.push(message_parsed);
+							_this.messages.push(message_parsed);
 						} else {
 						}
 					});

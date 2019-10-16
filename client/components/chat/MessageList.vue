@@ -138,7 +138,6 @@
 			};
 		},
 		created() {
-			console.log(this.getUserData);
 			this.user = this.getUserData;
 		},
 		methods: {
@@ -150,11 +149,9 @@
 			}
 		},
 		mounted() {
-			console.log("mounted");
 			this.scrollMessages();
 		},
 		updated() {
-			console.log(this.messages.length);
 			this.scrollMessages();
 		}
 	};

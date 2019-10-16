@@ -272,7 +272,6 @@
 					this.$store.dispatch("saveCurrentRoom", res.data);
 
 					/** Socket IO: User join event, get latest messages from room */
-					console.log(this.getSocket.id);
 					this.getSocket.emit("userJoined", {
 						room: this.getCurrentRoom,
 						user: this.getUserData,

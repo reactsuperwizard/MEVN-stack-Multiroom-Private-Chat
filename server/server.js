@@ -117,7 +117,6 @@ io.on('connection', socket => {
 
         if (currentRoomId) {
             /** Filter through users and remove user from user list in that room */
-            console.log('______be:disconnect', currentRoomId, socket.id);
             const roomState = await FILTER_ROOM_USERS({
                 roomId: currentRoomId,
                 socketId: socket.id
@@ -218,8 +217,6 @@ io.on('connection', socket => {
             const newMessage = await ADD_PRIVATE_MESSAGE(data);
 
             // Emit data to the select client for display
-            console.log(newMessage['touser']['socketid']);
-            console.log(newMessage['user']['socketid']);
             io.to(newMessage['touser']['socketid']).emit('receivedNewMessage', JSON.stringify(newMessage));
             io.to(newMessage['user']['socketid']).emit('receivedNewMessage', JSON.stringify(newMessage));
         }
@@ -267,7 +264,6 @@ io.on('connection', socket => {
     });
     /** User Deleted Event */
     socket.on('UserDeleted', async data => {
-        console.log('be Son : UserDeleted')
         io.emit('userListUpdated',
             JSON.stringify(
                 await GET_USERS({})

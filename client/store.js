@@ -61,7 +61,6 @@ export default new Vuex.Store({
             state.rooms = [];
         },
         DELETE_EVENT: state => {
-            console.log('store delete event socket id', state.socket)
             state.socket.emit("UserDeleted", {});
         }
     },

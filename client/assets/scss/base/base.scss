@@ -57,7 +57,7 @@ li .nav__link.router-link-exact-active {
 }
 
 .public,
-.private {
+.private_name {
     font-weight: bold;
 }
 
@@ -65,7 +65,7 @@ li .nav__link.router-link-exact-active {
     color: lightgreen;
 }
 
-.private {
+.private_name {
     color: crimson;
 }
 
