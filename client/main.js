@@ -6,6 +6,7 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import setAuthToken from './utils/authToken';
 import moment from 'moment';
+import Notifications from 'vue-notification'
 
 Vue.config.productionTip = false;
 Vue.config.ignoredElements = ['ion-icons', /^ion-/];
@@ -49,12 +50,16 @@ axios.interceptors.response.use(
             store.dispatch('toggleAuthState', false);
             router.push({
                 name: 'Login',
-                params: { message: 'Session has expired, please login again' }
+                params: {
+                    message: 'Session has expired, please login again'
+                }
             });
         }
         return Promise.reject(err);
     }
 );
+
+Vue.use(Notifications)
 
 new Vue({
     router,

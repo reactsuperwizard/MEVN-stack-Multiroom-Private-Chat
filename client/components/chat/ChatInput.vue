@@ -4,7 +4,7 @@
 			<VEmojiPicker :pack="emojisNative" labelSearch="Search" @select="onSelectEmoji" />
 		</div>
 		<div class="chat__input">
-			<textarea type="text" v-model="valueInput" class="chat__input-control" />
+			<input type="text" v-model="valueInput" class="chat__input-control" @focus="$emit('enterText')" />
 			<input
 				ref="file"
 				type="file"
@@ -55,6 +55,9 @@
 			}
 		},
 		methods: {
+			onFocusInput() {
+				alert("focus");
+			},
 			toogleDialogEmoji() {
 				this.dialogHidden = !this.dialogHidden;
 			},

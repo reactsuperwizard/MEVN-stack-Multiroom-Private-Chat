@@ -43,9 +43,9 @@
 													class="chat__user-avatar"
 												/>
 											</div>
-
 											<div class="chat__user-details">
 												<span>{{ user.handle }}</span>
+												<span v-show="newMessage.includes(user.id)" class="badge badge--success">!</span>
 											</div>
 											<div class="chat__user-details">
 												<span>
@@ -76,7 +76,7 @@
 								<span>{{ getUsersTyping }}</span>
 							</div>
 						</transition>
-						<ChatInput />
+						<ChatInput v-on:enterText="onEnterText()" />
 					</div>
 				</div>
 			</div>
@@ -129,6 +129,7 @@
 		},
 		data: function() {
 			return {
+				newMessage: [],
 				room: [],
 				users: [],
 				usersTyping: [],
@@ -164,10 +165,21 @@
 				if (this.usersTyping.length > 0) {
 					return `${this.usersTyping.join(", ")} is typing...`;
 				}
+			},
+			isUnread(id) {
+				// return this.newMessage ? this.newMessage.includes(id) : false;
 			}
 		},
 		methods: {
 			...mapActions(["saveCurrentRoom", "saveCurrentSelect"]),
+			onEnterText() {
+				const index = this.newMessage.indexOf(
+					Number(this.getCurrentSelect)
+				);
+				if (index > -1) {
+					this.newMessage.splice(index, 1);
+				}
+			},
 			checkUserTabs(room) {
 				if (
 					room &&
@@ -208,6 +220,10 @@
 			},
 			selectUser(id) {
 				if (id != this.getCurrentSelect) {
+					const index = this.newMessage.indexOf(Number(id));
+					if (index > -1) {
+						this.newMessage.splice(index, 1);
+					}
 					const roomname = this.users.filter(obj => obj.id == id);
 					this.room.name = `Chat with ${roomname[0]["handle"]}`;
 					axios.get(`/api/privateMsg/${id}`).then(res => {
@@ -222,8 +238,7 @@
 						}
 					});
 				}
-			},
-			block(id) {}
+			}
 		},
 		created() {
 			axios
@@ -276,19 +291,20 @@
 						this.checkUserTabs(room);
 					});
 					/** Socket IO: New Messaage Event - Append the new message to the messages array */
-					var _this = this;
+					const _this = this;
 					this.getSocket.on("receivedNewMessage", message => {
-						const message_parsed = JSON.parse(message);
-						if (
-							_this.getUserData &&
-							message_parsed["user"] &&
-							(message_parsed["user"]["id"] ==
-								_this.getCurrentSelect ||
-								message_parsed["user"]["id"] ==
-									_this.getUserData.id)
-						) {
-							_this.messages.push(message_parsed);
-						} else {
+						const msg = JSON.parse(message);
+						const msg_sender = Number(msg["user"]["id"]);
+						if (msg["touser"]) {
+							if (
+								msg_sender == _this.getCurrentSelect ||
+								msg_sender == _this.getUserData.id
+							) {
+								_this.messages.push(msg);
+							}
+							if (!this.newMessage.includes(msg_sender)) {
+								this.newMessage.push(msg_sender);
+							}
 						}
 					});
 

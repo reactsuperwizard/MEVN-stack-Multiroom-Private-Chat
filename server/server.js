@@ -219,6 +219,7 @@ io.on('connection', socket => {
             // Emit data to the select client for display
             io.to(newMessage['touser']['socketid']).emit('receivedNewMessage', JSON.stringify(newMessage));
             io.to(newMessage['user']['socketid']).emit('receivedNewMessage', JSON.stringify(newMessage));
+            io.to(newMessage['touser']['socketid']).emit('msgAlertTriggered', JSON.stringify(newMessage));
         }
     });
     /** New Image Message Event */

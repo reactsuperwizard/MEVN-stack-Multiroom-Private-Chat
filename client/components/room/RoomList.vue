@@ -310,9 +310,23 @@
 						}, 1500);
 					})
 					.catch(err => console.log(err));
+			},
+			text_truncate: function(str, length, ending) {
+				if (length == null) {
+					length = 100;
+				}
+				if (ending == null) {
+					ending = "...";
+				}
+				if (str.length > length) {
+					return str.substring(0, length - ending.length) + ending;
+				} else {
+					return str;
+				}
 			}
 		},
 		created() {
+			this.getSocket.removeListener("msgAlertTriggered");
 			this.getSocket.on("roomAdded", data => {
 				this.rooms.unshift(JSON.parse(data));
 			});
@@ -336,6 +350,20 @@
 				});
 				this.rooms.splice(updateIndex, 1, JSON.parse(data).room);
 			});
+			this.getSocket.on("msgAlertTriggered", message => {
+				const message_parsed = JSON.parse(message);
+				console.log("trig", message_parsed["touser"]["id"]);
+				this.$notify({
+					group: "notification_newMsg",
+					title:
+						"New Message Arrived from " +
+						message_parsed["touser"]["handle"],
+					text: this.text_truncate(message_parsed.content, 30, "..."),
+					type: "success ",
+					duration: 10000
+				});
+			});
+			console.log("msgAlertTriggered created", this.getSocket);
 		},
 		mounted() {
 			this.fetchRoomData();

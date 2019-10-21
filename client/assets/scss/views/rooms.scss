@@ -1,6 +1,13 @@
 @import '../abstract/variables.scss';
 
+.vue-notification {
+    // Style of the notification itself 
+    padding: 15px;
+    font-size: 15px;
+}
+
 .rooms {
+
     background: $primary-container-background;
     box-shadow: $primary-container-box-shadow;
     width: 60%;
@@ -112,7 +119,7 @@
         width: 100%;
 
         @include respond(phone) {
-            & > * {
+            &>* {
                 width: 100%;
                 margin: 0.5em 0;
             }
