@@ -352,18 +352,19 @@
 			});
 			this.getSocket.on("msgAlertTriggered", message => {
 				const message_parsed = JSON.parse(message);
-				console.log("trig", message_parsed["touser"]["id"]);
-				this.$notify({
-					group: "notification_newMsg",
-					title:
-						"New Message Arrived from " +
-						message_parsed["touser"]["handle"],
-					text: this.text_truncate(message_parsed.content, 30, "..."),
-					type: "success ",
-					duration: 10000
-				});
+				console.log("trig", message_parsed);
+				if (!message_parsed["user"]["status"]) {
+					this.$notify({
+						group: "notification_newMsg",
+						title:
+							"New Message Arrived from " +
+							message_parsed["touser"]["handle"],
+						text: this.text_truncate(message_parsed.content, 30, "..."),
+						type: "success ",
+						duration: 10000
+					});
+				}
 			});
-			console.log("msgAlertTriggered created", this.getSocket);
 		},
 		mounted() {
 			this.fetchRoomData();

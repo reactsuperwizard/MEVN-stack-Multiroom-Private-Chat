@@ -39,6 +39,7 @@ const {
     ADD_MESSAGE,
     ADD_PRIVATE_MESSAGE,
     UPDATE_ROOM_USERS,
+    GET_USER_SOCKET,
     GET_ROOMS,
     GET_USERS,
     GET_ROOM_USERS,
@@ -55,7 +56,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 // const profileRoutes = require('./routes/profile');
 const roomRoutes = require('./routes/room');
-// const relationRoutes = require('./routes/relation');
+const relationRoutes = require('./routes/relation');
 const privateMsgRoutes = require('./routes/privateMsg');
 // const messageRoutes = require('./routes/messages');
 
@@ -96,7 +97,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 // app.use('/api/profile', profileRoutes);
 app.use('/api/room', roomRoutes);
-// app.use('/api/relation', relationRoutes);
+app.use('/api/relation', relationRoutes);
 app.use('/api/privateMsg', privateMsgRoutes);
 // app.use('/api/messages', messageRoutes);
 
@@ -262,6 +263,15 @@ io.on('connection', socket => {
             JSON.stringify(
                 await GET_USERS({})
             ));
+    });
+    /** User Status Change Event */
+    socket.on('statusChanged', async data => {
+        const socketid = await GET_USER_SOCKET(data);
+        console.log(socketid);
+        io.to(socketid).emit('statusChanged', JSON.stringify({
+            user: data.user,
+            status: data.status
+        }));
     });
     /** User Deleted Event */
     socket.on('UserDeleted', async data => {

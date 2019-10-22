@@ -4,6 +4,7 @@ const passport = require('passport');
 
 const Room = require('../models/Room');
 const User = require('../models/User');
+const Relation = require('../models/Relation');
 const Message = require('../models/Message');
 
 const {
@@ -23,11 +24,10 @@ router.get('/', passport.authenticate('jwt', {
     const users_p = User.findAll({}, {
         raw: true
     });
-
     Promise.all([rooms_p, users_p]).then((value => {
             const rooms = value[0];
             const users = value[1];
-            for (var i = 0; i < rooms.length; i++) {
+            for (let i = 0; i < rooms.length; i++) {
                 const room = rooms[i];
                 room['user'] = users.filter((user) => user['id'] == room['user']);
                 if (room['user']) {
@@ -64,6 +64,9 @@ router.get('/:room_id', passport.authenticate('jwt', {
     const room = await Room.findByPk(req.params.room_id, {
         raw: true
     });
+    const relations = await Relation.findAll({
+        raw: true
+    });
     if (room) {
         if (room['access']) {
             //public room
@@ -83,6 +86,12 @@ router.get('/:room_id', passport.authenticate('jwt', {
                 })
                 .then(result => {
                     room['users'] = result;
+                    for (const user of room['users']) {
+                        const from_st = relations.filter((relation) => (relation['user'] == req.user.id) && (relation['touser'] == user.id));
+                        const to_st = relations.filter((relation) => (relation['touser'] == req.user.id) && (relation['user'] == user.id));
+                        user['dataValues']['from'] = from_st[0] ? from_st[0].status : false;
+                        user['dataValues']['to'] = to_st[0] ? to_st[0].status : false;
+                    }
                     return res.status(200).json(room);
                 })
         }

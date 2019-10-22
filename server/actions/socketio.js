@@ -31,6 +31,15 @@ module.exports = {
             touser: data.select ? data.select : null
         });
 
+        const relat = await Relation.findOne({
+            where: {
+                touser: data.user.id,
+                user: data.select
+            }
+        });
+
+        if (relat && relat.status == 2) return null;
+
         let messageData = await newMessage.save();
         if (data.user) {
             const userData = await User.findByPk(data.user.id, {
@@ -41,8 +50,15 @@ module.exports = {
             });
             messageData['user'] = userData;
             messageData['touser'] = touserData;
+            messageData['user']['status'] = relat ? relat.status : 0;
         }
         return messageData;
+    },
+    GET_USER_SOCKET: async data => {
+        const userData = await User.findByPk(data.touser, {
+            raw: true
+        });
+        return userData.socketid;
     },
     GET_MESSAGES: async data => {
 

@@ -1,14 +1,15 @@
 .selected {
     background-color: grey;
-    padding: 10px;
+    border-style: solid;
     border-radius: 10px;
 }
 
 .blocked {
-    border-style: solid;
-    border-radius: 10px;
-    border-color: red;
-    border-width: 5px;
+    border-color: red !important;
+}
+
+.banned {
+    border-color: yellowgreen !important;
 }
 
 .chat {
@@ -75,6 +76,9 @@
         width: 100%;
         margin: 1rem 0;
         transition: all 0.5s ease;
+        border-style: solid;
+        border-radius: 10px;
+        border-color: transparent;
 
         &-item {
             display: flex;
@@ -100,6 +104,20 @@
             align-items: center;
             margin: 0 2rem;
             width: 80%;
+        }
+
+        &-checkboxs {
+            position: absolute;
+            right: 20px;
+
+            .cursor {
+                cursor: pointer;
+            }
+
+            label {
+                user-select: none;
+                font-size: 1.3rem;
+            }
         }
     }
 

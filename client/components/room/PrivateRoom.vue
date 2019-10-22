@@ -28,7 +28,7 @@
 										class="chat__user"
 										v-for="user in filteredUsers"
 										:key="user.id"
-										v-bind:class="{selected:user.id==getCurrentSelect, blocked:checked[user.id]==0, }"
+										v-bind:class="{selected:user.id==getCurrentSelect, blocked:user.from==2, banned:user.from==1}"
 									>
 										<div
 											:id="user.id"
@@ -47,10 +47,17 @@
 												<span>{{ user.handle }}</span>
 												<span v-show="newMessage.includes(user.id)" class="badge badge--success">!</span>
 											</div>
-											<div class="chat__user-details">
-												<span>
-													<input type="checkbox" id="checkbox" v-model="checked[`${user.id}`]" />
-												</span>
+											<div class="chat__user-checkboxs">
+												<label>
+													<span v-if="user.to == 2">🚫</span>
+													<span v-else-if="user.to == 1">🛡️</span>
+													<span v-else>✔️</span>
+												</label>
+												<label class="cursor" @click="onStatusChange(user.id)">
+													<span v-if="user.from == 2">🚫</span>
+													<span v-else-if="user.from == 1">🛡️</span>
+													<span v-else>✔️</span>
+												</label>
 											</div>
 										</div>
 									</li>
@@ -76,7 +83,7 @@
 								<span>{{ getUsersTyping }}</span>
 							</div>
 						</transition>
-						<ChatInput v-on:enterText="onEnterText()" />
+						<ChatInput v-on:enterText="onEnterText()" v-if="getStatus(this.getCurrentSelect)" />
 					</div>
 				</div>
 			</div>
@@ -137,7 +144,6 @@
 				newRoomName: "",
 				sidebarVisible: window.innerWidth < 768 ? false : true,
 				searchInput: "",
-				checked: [],
 				errors: [],
 				roomLeft: false
 			};
@@ -172,6 +178,32 @@
 		},
 		methods: {
 			...mapActions(["saveCurrentRoom", "saveCurrentSelect"]),
+			getStatus(id) {
+				if (!id) return true;
+				const touser = this.users.find(x => x.id == id);
+				console.log(id, touser);
+				return touser.from != 2 && touser.to != 2;
+			},
+			onStatusChange(id) {
+				const user = this.users.find(x => x.id == id);
+				const from = (user.from + 1) % 3;
+				axios
+					.post("/api/relation", { to: id, status: from })
+					.then(res => {
+						if (res.status) {
+							user.from = from;
+							this.getSocket.emit("statusChanged", {
+								user: this.getUserData.id,
+								touser: user.id,
+								status: user.from
+							});
+						}
+					})
+					.catch(err => {
+						console.log("err", err);
+					});
+			},
+
 			onEnterText() {
 				const index = this.newMessage.indexOf(
 					Number(this.getCurrentSelect)
@@ -227,15 +259,9 @@
 					const roomname = this.users.filter(obj => obj.id == id);
 					this.room.name = `Chat with ${roomname[0]["handle"]}`;
 					axios.get(`/api/privateMsg/${id}`).then(res => {
-						if (res.data.status == 0) {
-							console.log("blocked");
-						} else if (res.data.status == 1) {
-							console.log("ignored");
-						} else {
-							console.log("active", res.data.message);
-							this.$store.dispatch("saveCurrentSelect", id);
-							this.messages = res.data.message;
-						}
+						console.log("active", res.data.message);
+						this.$store.dispatch("saveCurrentSelect", id);
+						this.messages = res.data.message;
 					});
 				}
 			}
@@ -246,6 +272,7 @@
 				.then(res => {
 					this.room = res.data;
 					this.users = res.data.users;
+					console.log(this.users);
 					this.$store.dispatch("saveCurrentRoom", res.data);
 					/** Socket IO: User join event, get latest messages from room */
 					this.getSocket.emit("userJoined", {
@@ -294,8 +321,9 @@
 					const _this = this;
 					this.getSocket.on("receivedNewMessage", message => {
 						const msg = JSON.parse(message);
-						const msg_sender = Number(msg["user"]["id"]);
-						if (msg["touser"]) {
+						console.log(msg);
+						if (msg["touser"] && msg["user"]) {
+							const msg_sender = Number(msg["user"]["id"]);
 							if (
 								msg_sender == _this.getCurrentSelect ||
 								msg_sender == _this.getUserData.id
@@ -322,6 +350,11 @@
 					});
 					this.getSocket.on("userListUpdated", data => {
 						this.users = JSON.parse(data);
+					});
+					this.getSocket.on("statusChanged", data => {
+						const _data = JSON.parse(data);
+						const user = this.users.find(x => x.id == _data.user);
+						user.to = _data.status;
 					});
 				})
 				.catch(err => {

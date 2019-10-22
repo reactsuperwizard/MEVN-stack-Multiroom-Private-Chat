@@ -35,57 +35,37 @@ router.get('/', passport.authenticate('jwt', {
 router.get('/:user_id', passport.authenticate('jwt', {
     session: false
 }), async (req, res) => {
-    Relation.findAndCountAll({
-            where: {
+    const user = await User.findByPk(req.user.id, {
+        raw: true
+    });
+    const touser = await User.findByPk(req.params.user_id, {
+        raw: true
+    });
+    PrivateMessage.findAll({
+            where: Sequelize.or({
                 'user': req.user.id,
                 'touser': req.params.user_id
-            }
+            }, {
+                'user': req.params.user_id,
+                'touser': req.user.id
+            })
         }, {
             raw: true
         })
-        .then(async relation => {
-            //block ( status : 0), ignore ( status : 1), active (status : 2)
-            if (relation.count > 0 && (relation.rows[0].status == 0 || relation.rows[0].status == 1)) {
-                return res.status(200).json({
-                    'status': res['status']
-                });
+        .then(msgs => {
+            for (let i = 0; i < msgs.length; i++) {
+                msgs[i].user = msgs[i].user == req.user.id ? user : touser;
+                msgs[i].touser = msgs[i].touser == req.user.id ? touser : user;
+                // msgs[i].touser = touser;
             }
-            const user = await User.findByPk(req.user.id, {
-                raw: true
+            return res.status(200).json({
+                'status': 2,
+                'message': msgs
             });
-            const touser = await User.findByPk(req.params.user_id, {
-                raw: true
-            });
-            PrivateMessage.findAll({
-                    where: Sequelize.or({
-                        'user': req.user.id,
-                        'touser': req.params.user_id
-                    }, {
-                        'user': req.params.user_id,
-                        'touser': req.user.id
-                    })
-                }, {
-                    raw: true
-                })
-                .then(msgs => {
-                    for (let i = 0; i < msgs.length; i++) {
-                        msgs[i].user = msgs[i].user == req.user.id ? user : touser;
-                        msgs[i].touser = msgs[i].touser == req.user.id ? touser : user;
-                        // msgs[i].touser = touser;
-                    }
-                    return res.status(200).json({
-                        'status': 2,
-                        'message': msgs
-                    });
-                })
-                .catch(err => {
-                    console.log('err', err);
-                })
         })
         .catch(err => {
             console.log('err', err);
-            return res.status(200).json(err);
-        })
+        });
 });
 
 /**
