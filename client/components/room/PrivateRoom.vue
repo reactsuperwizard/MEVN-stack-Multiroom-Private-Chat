@@ -181,7 +181,6 @@
 			getStatus(id) {
 				if (!id) return true;
 				const touser = this.users.find(x => x.id == id);
-				console.log(id, touser);
 				return touser.from != 2 && touser.to != 2;
 			},
 			onStatusChange(id) {
@@ -259,7 +258,6 @@
 					const roomname = this.users.filter(obj => obj.id == id);
 					this.room.name = `Chat with ${roomname[0]["handle"]}`;
 					axios.get(`/api/privateMsg/${id}`).then(res => {
-						console.log("active", res.data.message);
 						this.$store.dispatch("saveCurrentSelect", id);
 						this.messages = res.data.message;
 					});
@@ -272,7 +270,6 @@
 				.then(res => {
 					this.room = res.data;
 					this.users = res.data.users;
-					console.log(this.users);
 					this.$store.dispatch("saveCurrentRoom", res.data);
 					/** Socket IO: User join event, get latest messages from room */
 					this.getSocket.emit("userJoined", {
@@ -321,7 +318,6 @@
 					const _this = this;
 					this.getSocket.on("receivedNewMessage", message => {
 						const msg = JSON.parse(message);
-						console.log(msg);
 						if (msg["touser"] && msg["user"]) {
 							const msg_sender = Number(msg["user"]["id"]);
 							if (

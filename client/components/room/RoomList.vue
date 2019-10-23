@@ -352,14 +352,20 @@
 			});
 			this.getSocket.on("msgAlertTriggered", message => {
 				const message_parsed = JSON.parse(message);
-				console.log("trig", message_parsed);
 				if (!message_parsed["user"]["status"]) {
 					this.$notify({
 						group: "notification_newMsg",
 						title:
 							"New Message Arrived from " +
 							message_parsed["touser"]["handle"],
-						text: this.text_truncate(message_parsed.content.replace('!!!image!!!', 'Image name - '), 30, "..."),
+						text: this.text_truncate(
+							message_parsed.content.replace(
+								"!!!image!!!",
+								"Image name - "
+							),
+							30,
+							"..."
+						),
 						type: "success ",
 						duration: 10000
 					});

@@ -24,6 +24,7 @@ module.exports = {
         return messageData;
     },
     ADD_PRIVATE_MESSAGE: async data => {
+        if (!data.user || !data.select || !data.content) return null;
         const newMessage = new PrivateMessage({
             content: data.content,
             admin: data.admin ? true : false,
@@ -39,7 +40,6 @@ module.exports = {
         });
 
         if (relat && relat.status == 2) return null;
-
         let messageData = await newMessage.save();
         if (data.user) {
             const userData = await User.findByPk(data.user.id, {
