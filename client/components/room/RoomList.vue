@@ -359,7 +359,7 @@
 						title:
 							"New Message Arrived from " +
 							message_parsed["touser"]["handle"],
-						text: this.text_truncate(message_parsed.content, 30, "..."),
+						text: this.text_truncate(message_parsed.content.replace('!!!image!!!', 'Image name - '), 30, "..."),
 						type: "success ",
 						duration: 10000
 					});
