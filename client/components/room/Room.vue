@@ -51,7 +51,7 @@
 							<span class="section__title"># {{ room.name }}</span>
 							<div class="chat__actions">
 								<ion-icon name="md-log-out" @click="leaveRoom" class="icon"></ion-icon>
-								<ion-icon name="create" @click="openEditRoom" class="icon"></ion-icon>
+								<ion-icon v-if="room.user == this.getUserData.id" name="create" @click="openEditRoom" class="icon"></ion-icon>
 								<ion-icon name="md-stats" @click="viewRoomDetails" class="icon"></ion-icon>
 								<ion-icon name="people" @click="toggleUserList" class="icon"></ion-icon>
 							</div>

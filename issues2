@@ -2,6 +2,9 @@
 
 !!!recent issues!!!
 -Show notifications even loged out.
+*-Only room admin can change room name.
+*-tooltip for icons
+*-change icons (block,ban,exclam)
 
 
 - Messages should be send by pressing Enter as well as clicking the Send button. 

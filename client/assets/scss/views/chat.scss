@@ -107,18 +107,38 @@
         }
 
         &-checkboxs {
-            position: absolute;
-            right: 20px;
+            // position: absolute;
+            // right: 20px;
 
             .cursor {
                 cursor: pointer;
             }
 
-            label {
+            img {
+                position: relative;
                 user-select: none;
                 font-size: 1.3rem;
+                width: 20px;
+                height: 20px;
+            }
+
+            .tooltiptext {
+                visibility: hidden;
+                width: 120px;
+                background-color: black;
+                color: #fff;
+                text-align: center;
+                border-radius: 6px;
+                padding: 5px 0;
+                position: absolute;
+                z-index: 1;
+            }
+
+            img:hover+.tooltiptext {
+                visibility: visible;
             }
         }
+
     }
 
     /** Message List */

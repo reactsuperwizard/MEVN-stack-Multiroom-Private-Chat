@@ -49,14 +49,44 @@
 											</div>
 											<div class="chat__user-checkboxs">
 												<label>
-													<span v-if="user.to == 2">🚫</span>
-													<span v-else-if="user.to == 1">🛡️</span>
-													<span v-else>✔️</span>
+													<span v-if="user.to == 2">
+														<img
+															src="https://cdn4.iconfinder.com/data/icons/pink_moustache/68_68/71.png"
+															:title = "user.handle + ' blocked you'"
+														/>
+													</span>
+													<span v-else-if="user.to == 1">
+														<img
+															src="https://cdn2.iconfinder.com/data/icons/applications-windows/24/Ad_Block_-512.png"
+															:title = "user.handle + ' banned you'"
+														/>
+													</span>
+													<span v-else>
+														<img
+															src="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678134-sign-check-512.png"
+															:title = "user.handle + ' actived you'"
+														/>
+													</span>
 												</label>
 												<label class="cursor" @click="onStatusChange(user.id)">
-													<span v-if="user.from == 2">🚫</span>
-													<span v-else-if="user.from == 1">🛡️</span>
-													<span v-else>✔️</span>
+													<span v-if="user.from == 2">
+														<img
+															src="https://cdn4.iconfinder.com/data/icons/pink_moustache/68_68/71.png"
+															:title = "'You blocked ' + user.handle"
+														/>
+													</span>
+													<span v-else-if="user.from == 1">
+														<img
+															src="https://cdn2.iconfinder.com/data/icons/applications-windows/24/Ad_Block_-512.png"
+															:title = "'You banned ' + user.handle + ', you will not receive notifications from this user.'"
+														/>
+													</span>
+													<span v-else>
+														<img
+															src="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678134-sign-check-512.png"
+															:title = "'You actived ' + user.handle"
+														/>
+													</span>
 												</label>
 											</div>
 										</div>

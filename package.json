@@ -15,14 +15,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/luvuong-le/astro-chat.git"
+        "url": "https://github.com/AcodeWizard/MEVN-stack-Multiroom-Private-Chat.git"
     },
     "author": "",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/luvuong-le/astro-chat/issues"
+        "url": "https://github.com/AcodeWizard/MEVN-stack-Multiroom-Private-Chat.git/issues2"
     },
-    "homepage": "https://github.com/luvuong-le/astro-chat#readme",
+    "homepage": "https://github.com/AcodeWizard/MEVN-stack-Multiroom-Private-Chat.git",
     "devDependencies": {
         "concurrently": "^4.1.0"
     },
