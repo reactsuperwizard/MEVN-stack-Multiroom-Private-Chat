@@ -19,10 +19,10 @@
 - A 'Home' room should always be present as the default room at the top of the rooms list.
 - Other rooms should appear  in the rooms list sorted by number of joined members. 
 - Empty rooms should be automatically removed from the rooms list
-- A room admin should be able to ban/unban a user, so that user can stay in the room but not allowed to post anymore in that room
-- A room admin should be able to block a user, so that user is kick out of the room and never can join that room again
+*- A room admin should be able to ban/unban a user, so that user can stay in the room but not allowed to post anymore in that room
+*- A room admin should be able to block a user, so that user is kick out of the room and never can join that room again
 - When a user is blocked from a room, all of his messages are removed from the room.
-- A user X should be able to block another user Y in a room, so that X does not see any more public or private messages posted by Y
+*- A user X should be able to block another user Y in a room, so that X does not see any more public or private messages posted by Y
 - Users should be able to post audio and video (.mp3 and .mp4) files into rooms
 *- Login button should be above 'forget password' and 'Register' links
 *- Copyright year at the footer should be 2018-present year 
