@@ -104,7 +104,14 @@
 				}
 			}
 		},
-		mounted() {}
+		mounted() {
+			const _this = this;
+			window.addEventListener("keyup", function(event) {
+				if (event.keyCode === 13) {
+					_this.sendMessage();
+				}
+			});
+		}
 	};
 </script>
 <style lang="css" scoped>

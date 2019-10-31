@@ -137,6 +137,12 @@
             img:hover+.tooltiptext {
                 visibility: visible;
             }
+
+            .chkselected {
+                background-color: darkgrey;
+                border: 2px solid dimgrey;
+                border-radius: 50%;
+            }
         }
 
     }

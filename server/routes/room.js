@@ -5,6 +5,7 @@ const passport = require('passport');
 const Room = require('../models/Room');
 const User = require('../models/User');
 const Relation = require('../models/Relation');
+const roomRelation = require('../models/roomRelation');
 const Message = require('../models/Message');
 
 const {
@@ -12,6 +13,9 @@ const {
     checkCreateRoomFields
 } = require('../middleware/authenticate');
 
+const {
+    GET_RELATIONS
+} = require('../actions/socketio');
 /**
  * @description GET /api/room
  */
@@ -64,23 +68,37 @@ router.get('/:room_id', passport.authenticate('jwt', {
     const room = await Room.findByPk(req.params.room_id, {
         raw: true
     });
-    const relations = await Relation.findAll({
-        raw: true
-    });
     if (room) {
         if (room['access']) {
             //public room
-            await User.findAndCountAll({
+            const relations = await GET_RELATIONS({
+                room: req.params.room_id,
+                roomAdmin: room.user,
+                user: req.user.id
+            });
+
+            console.log('___________relations', JSON.stringify(relations));
+            if (relations.privateR == 2 || relations.roomR == 2) {
+                return res.status(200).json({
+                    msg: 'You are blocked'
+                });
+            }
+            User.findAndCountAll({
                     where: {
                         room_id: room['id']
                     }
                 })
-                .then(result => {
+                .then(async result => {
                     room['users'] = result.rows;
+                    room['privateRs'] = relations.privateRs;
+                    room['status'] = relations.roomR;
                     return res.status(200).json(room);
                 })
         } else {
             //private room
+            const relations = await Relation.findAll({
+                raw: true
+            });
             await User.findAll({}, {
                     raw: true
                 })
@@ -220,7 +238,12 @@ router.delete('/:room_name', passport.authenticate('jwt', {
                 'name': req.params.room_name
             }
         });
-        await Message.destroy({
+        Message.destroy({
+            where: {
+                'room': room['id']
+            }
+        });
+        roomRelation.destroy({
             where: {
                 'room': room['id']
             }
@@ -343,6 +366,38 @@ router.post('/remove/users', passport.authenticate('jwt', {
         });
     }
 });
+
+/**
+ * @description GET /api/room/userRelations/:room_id
+ */
+router.get(
+    '/userRelations/:room_id',
+    passport.authenticate('jwt', {
+        session: false
+    }),
+    async (req, res) => {
+        const privateRs = await Relation.findAll({
+            where: {
+                user: req.user.id
+            }
+        }, {
+            raw: true
+        });
+        User.findAndCountAll({
+                where: {
+                    room_id: req.params.room_id
+                }
+            })
+            .then(async result => {
+                const users = result.rows;
+                for (const user of users) {
+                    const from_st = privateRs.find((privateR) => (privateR['touser'] == user.id));
+                    user['dataValues']['from'] = from_st ? from_st.status : 0;
+                }
+                return res.status(200).json(users);
+            })
+    }
+);
 
 /**
  * @description PUT /api/room/remove/users/:id/all

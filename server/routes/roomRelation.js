@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 
-const Relation = require('../models/Relation');
+const RoomRelation = require('../models/RoomRelation');
 const _ = require('../../node_modules/lodash');
 const Sequelize = require("sequelize")
 
@@ -12,7 +12,7 @@ const {
 } = require('../middleware/authenticate');
 
 /**
- * @description POST /api/relation
+ * @description POST /api/RoomRelation
  * id : touser
  * status: status
  */
@@ -23,14 +23,14 @@ const {
 router.post('/', passport.authenticate('jwt', {
     session: false
 }), async (req, res) => {
-    const arr = await Relation.findOrCreate({
+    const arr = await RoomRelation.findOrCreate({
         where: {
-            'user': req.user.id,
-            'touser': req.body.to
+            'room': req.body.room,
+            'user': req.body.user
         }
     });
     const instance = arr[0]; // the first element is the instance
-    await Relation.update({
+    await RoomRelation.update({
             status: req.body.status
         }, {
             where: {
@@ -38,13 +38,12 @@ router.post('/', passport.authenticate('jwt', {
             }
         })
         .then(result => {
-            console.log(req.body.status);
             res.status(200).send({
                 status: true
             });
         })
         .catch(err => {
-            console.log('be:relation post upsert err', err);
+            console.log('be:RoomRelation post upsert err', err);
         });
 });
 module.exports = router;

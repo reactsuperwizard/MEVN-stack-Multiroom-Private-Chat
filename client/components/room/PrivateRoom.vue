@@ -44,48 +44,35 @@
 												/>
 											</div>
 											<div class="chat__user-details">
-												<span>{{ user.handle }}</span>
-												<span v-show="newMessage.includes(user.id)" class="badge badge--success">!</span>
+												<span>{{ text_truncate(user.handle, 10, '...') }}</span>
+												<span v-show="newMessage.includes(user.id)">
+													<img src="@/assets/img/newMsg.png" style="width:30px; height:30px; margin-left:5px;" />
+												</span>
 											</div>
 											<div class="chat__user-checkboxs">
 												<label>
 													<span v-if="user.to == 2">
-														<img
-															src="https://cdn4.iconfinder.com/data/icons/pink_moustache/68_68/71.png"
-															:title = "user.handle + ' blocked you'"
-														/>
+														<img src="@/assets/img/block.png" :title="user.handle + ' blocked you'" />
 													</span>
 													<span v-else-if="user.to == 1">
-														<img
-															src="https://cdn2.iconfinder.com/data/icons/applications-windows/24/Ad_Block_-512.png"
-															:title = "user.handle + ' banned you'"
-														/>
+														<img src="@/assets/img/ban.png" :title="user.handle + ' banned you'" />
 													</span>
 													<span v-else>
-														<img
-															src="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678134-sign-check-512.png"
-															:title = "user.handle + ' actived you'"
-														/>
+														<img src="@/assets/img/active.png" :title="user.handle + ' actived you'" />
 													</span>
 												</label>
 												<label class="cursor" @click="onStatusChange(user.id)">
 													<span v-if="user.from == 2">
-														<img
-															src="https://cdn4.iconfinder.com/data/icons/pink_moustache/68_68/71.png"
-															:title = "'You blocked ' + user.handle"
-														/>
+														<img src="@/assets/img/block.png" :title="'You blocked ' + user.handle" />
 													</span>
 													<span v-else-if="user.from == 1">
 														<img
-															src="https://cdn2.iconfinder.com/data/icons/applications-windows/24/Ad_Block_-512.png"
-															:title = "'You banned ' + user.handle + ', you will not receive notifications from this user.'"
+															src="@/assets/img/ban.png"
+															:title="'You banned ' + user.handle + ', you will not receive notifications from this user.'"
 														/>
 													</span>
 													<span v-else>
-														<img
-															src="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678134-sign-check-512.png"
-															:title = "'You actived ' + user.handle"
-														/>
+														<img src="@/assets/img/active.png" :title="'You actived ' + user.handle" />
 													</span>
 												</label>
 											</div>
@@ -113,7 +100,7 @@
 								<span>{{ getUsersTyping }}</span>
 							</div>
 						</transition>
-						<ChatInput v-on:enterText="onEnterText()" v-if="getStatus(this.getCurrentSelect)" />
+						<ChatInput v-on:enterText="onEnterText()" v-if="getStatus" />
 					</div>
 				</div>
 			</div>
@@ -202,24 +189,29 @@
 					return `${this.usersTyping.join(", ")} is typing...`;
 				}
 			},
+			getStatus() {
+				const id = this.getCurrentSelect;
+				if (!id || !this.users) return true;
+				const touser = this.users.find(x => x.id == id);
+				console.log("touser", touser);
+				return !touser || (touser.from != 2 && touser.to != 2);
+			},
 			isUnread(id) {
 				// return this.newMessage ? this.newMessage.includes(id) : false;
 			}
 		},
 		methods: {
 			...mapActions(["saveCurrentRoom", "saveCurrentSelect"]),
-			getStatus(id) {
-				if (!id) return true;
-				const touser = this.users.find(x => x.id == id);
-				return touser.from != 2 && touser.to != 2;
+			text_truncate(str, length, ending) {
+				return this.$root.$children[0].text_truncate(str, length, ending);
 			},
 			onStatusChange(id) {
 				const user = this.users.find(x => x.id == id);
-				const from = (user.from + 1) % 3;
+				const from = (user.from ? user.from + 1 : 1) % 3;
 				axios
 					.post("/api/relation", { to: id, status: from })
 					.then(res => {
-						if (res.status) {
+						if (res.data.status) {
 							user.from = from;
 							this.getSocket.emit("statusChanged", {
 								user: this.getUserData.id,
@@ -378,6 +370,7 @@
 						this.users = JSON.parse(data);
 					});
 					this.getSocket.on("statusChanged", data => {
+						console.log("SOn prv statuschanged", JSON.parse(data));
 						const _data = JSON.parse(data);
 						const user = this.users.find(x => x.id == _data.user);
 						user.to = _data.status;

@@ -35,7 +35,36 @@
 											</div>
 
 											<div class="chat__user-details">
-												<span>{{ user.handle }}</span>
+												<span>{{ text_truncate(user.handle, 10, '...') }}</span>
+											</div>
+											<div class="chat__user-checkboxs">
+												<label class="cursor">
+													{{getStatus(user.id)}}
+													<span>
+														<img
+															src="@/assets/img/block.png"
+															:title="'You blocked ' + user.handle"
+															v-bind:class="{chkselected:getStatus(user.id) == 2}"
+															@click="onStatusChange(user.id, 2)"
+														/>
+													</span>
+													<span>
+														<img
+															src="@/assets/img/ban.png"
+															:title="'You banned ' + user.handle + ', you will not receive notifications from this user.'"
+															v-bind:class="{chkselected:getStatus(user.id) == 1}"
+															@click="onStatusChange(user.id, 1)"
+														/>
+													</span>
+													<span>
+														<img
+															src="@/assets/img/active.png"
+															:title="'You actived ' + user.handle"
+															v-bind:class="{chkselected: getStatus(user.id) == 0}"
+															@click="onStatusChange(user.id, 0)"
+														/>
+													</span>
+												</label>
 											</div>
 										</div>
 									</li>
@@ -51,18 +80,23 @@
 							<span class="section__title"># {{ room.name }}</span>
 							<div class="chat__actions">
 								<ion-icon name="md-log-out" @click="leaveRoom" class="icon"></ion-icon>
-								<ion-icon v-if="room.user == this.getUserData.id" name="create" @click="openEditRoom" class="icon"></ion-icon>
+								<ion-icon
+									v-if="room.user && room.user == this.getUserData.id"
+									name="create"
+									@click="openEditRoom"
+									class="icon"
+								></ion-icon>
 								<ion-icon name="md-stats" @click="viewRoomDetails" class="icon"></ion-icon>
 								<ion-icon name="people" @click="toggleUserList" class="icon"></ion-icon>
 							</div>
 						</div>
-						<MessageList :messages="messages" />
+						<MessageList :messages="filteredMessages" />
 						<transition name="slideDown">
 							<div class="chat__utyping" v-show="usersTyping.length > 0">
 								<span>{{ getUsersTyping }}</span>
 							</div>
 						</transition>
-						<ChatInput />
+						<ChatInput v-if="this.status==null || this.status != 1" />
 					</div>
 				</div>
 			</div>
@@ -140,7 +174,9 @@
 		data: function() {
 			return {
 				room: [],
+				status,
 				users: [],
+				privateRs: [],
 				usersTyping: [],
 				messages: [],
 				newRoomName: "",
@@ -153,25 +189,145 @@
 		computed: {
 			...mapGetters(["getUserData", "getCurrentRoom", "getSocket"]),
 			filteredUsers: function() {
+				if (this.privateRs == null) {
+					this.privateRs = [];
+				}
+				const block_members = this.privateRs.filter(
+					privateR => privateR.status == 2
+				);
 				return this.users
 					? this.users
 							.slice()
 							.sort(this.sortAlphabetical)
-							.filter(user =>
-								user.username
-									.toLowerCase()
-									.includes(this.searchInput.toLowerCase())
-							)
+							.filter(user => {
+								let isActive = 1;
+								if (block_members.length == 0) isActive = 1;
+								if (
+									block_members.find(
+										blockMember => blockMember.touser == user.id
+									)
+								)
+									isActive = 0;
+								return (
+									user.username
+										.toLowerCase()
+										.includes(this.searchInput.toLowerCase()) &&
+									isActive
+								);
+							})
 					: "";
 			},
 			getUsersTyping() {
 				if (this.usersTyping.length > 0) {
 					return `${this.usersTyping.join(", ")} is typing...`;
 				}
+			},
+			filteredMessages: function() {
+				if (this.privateRs == null) {
+					this.privateRs = [];
+				}
+				const block_members = this.privateRs.filter(
+					privateR =>
+						privateR.status == 2 && privateR.user == this.getUserData.id
+				);
+				return this.messages.filter(message => {
+					if (block_members.length == 0 || message.user == null)
+						return true;
+
+					const block = block_members.find(
+						blockMember => blockMember.touser == message.user.id
+					);
+					if (block) {
+						return false;
+					}
+					return true;
+				});
 			}
 		},
 		methods: {
 			...mapActions(["saveCurrentRoom"]),
+			text_truncate(str, length, ending) {
+				return this.$root.$children[0].text_truncate(str, length, ending);
+			},
+			getStatus(id) {
+				console.log("gettingn Status ", id, this.privateRs);
+				if (!this.privateRs) {
+					console.log("_______________0", id);
+					return 0;
+				}
+				const user = this.privateRs.find(privateR => privateR.touser == id);
+				console.log("_______________", user ? user.status : 0, id);
+				return user ? user.status : 0;
+			},
+			FfilteredUsers: function() {
+				return this.users
+					? this.users
+							.slice()
+							.sort(this.sortAlphabetical)
+							.filter(user => {
+								console.log("filter", user.from);
+								return (
+									user.username
+										.toLowerCase()
+										.includes(this.searchInput.toLowerCase()) &&
+									user.from != 2
+								);
+							})
+					: "";
+			},
+
+			onStatusChange(id, from) {
+				const user = this.users.find(x => x.id == id);
+				if (this.getUserData.id != id) {
+					if (
+						this.getCurrentRoom.user &&
+						this.getCurrentRoom.user == this.getUserData.id
+					) {
+						axios
+							.post("/api/roomRelation", {
+								room: this.getCurrentRoom.id,
+								user: id,
+								status: from
+							})
+							.then(res => {
+								if (res.data.status) {
+									this.getSocket.emit("roomRelationChanged", {
+										room: this.getCurrentRoom.id,
+										user: id,
+										status: from
+									});
+									console.log("status change", user);
+								}
+							})
+							.catch(err => {
+								console.log("err", err);
+							});
+					}
+					axios
+						.post("/api/relation", { to: id, status: from })
+						.then(res => {
+							if (res.data.status) {
+								this.users = this.FfilteredUsers();
+								const privateR = this.privateRs.find(
+									privateR =>
+										privateR.user == this.getUserData.id &&
+										privateR.touser == id
+								);
+
+								if (!privateR)
+									this.privateRs.push({
+										user: this.getUserData.id,
+										touser: id,
+										status: 2
+									});
+								else privateR.status = from;
+							}
+						})
+						.catch(err => {
+							console.log("err", err);
+						});
+				}
+			},
 			checkUserTabs(room) {
 				if (
 					room &&
@@ -202,6 +358,7 @@
 						room_id: this.getCurrentRoom.id
 					})
 					.then(res => {
+						console.log("leave room", res.data);
 						this.getSocket.emit("exitRoom", {
 							room: res.data,
 							user: null,
@@ -267,11 +424,52 @@
 			axios
 				.get(`/api/room/${this.$route.params.id}`)
 				.then(res => {
+					if (res.data.msg) {
+						this.roomLeft = 1;
+						setTimeout(() => {
+							this.$router.push({
+								name: "RoomList",
+								params: {
+									message: "You are blocked by the room admin"
+								}
+							});
+						}, 0);
+						return;
+					}
 					this.room = res.data;
 					this.users = res.data.users;
+					this.privateRs = res.data.privateRs;
+					this.privateRs = this.privateRs ? this.privateRs : [];
+					this.users = this.FfilteredUsers();
+					this.status = this.room.status;
+					console.log(
+						"created and saveCurrentRoom",
+						this.privateRs,
+						res.data
+					);
 					this.$store.dispatch("saveCurrentRoom", res.data);
 
 					/** Socket IO: User join event, get latest messages from room */
+
+					this.getSocket.on("roomRelationChanged", data => {
+						const _data = JSON.parse(data);
+						console.log(this.getUserData.id, _data.user, _data.status);
+						if (
+							this.getUserData.id == _data.user &&
+							this.getCurrentRoom &&
+							!this.roomLeft
+						) {
+							console.log("roomRelation Changed", _data.status);
+							this.room.status = _data.status;
+							this.status = _data.status;
+							if (_data.status == 2) {
+								this.leaveRoom();
+								return;
+							}
+						}
+					});
+
+					console.log("user Joined Emitting", this.getCurrentRoom);
 					this.getSocket.emit("userJoined", {
 						room: this.getCurrentRoom,
 						user: this.getUserData,
@@ -288,7 +486,9 @@
 
 						if (data.room) {
 							this.room = data.room;
+							// this.status = this.room.status;
 							this.users = data.room.users;
+							console.log("son updateRoomData", data.room.users);
 							this.$store.dispatch("saveCurrentRoom", data.room);
 						}
 					});
@@ -313,6 +513,7 @@
 					/** Socket IO: User Exit Event - Update User List */
 					this.getSocket.on("updateUserList", data => {
 						this.users = JSON.parse(data);
+						console.log("updateUserList", this.users);
 					});
 
 					/** Socket IO: User Exit Event - Check other tabs of the same room and redirect */
@@ -345,6 +546,7 @@
 					/** Socket IO: Room Updated Event */
 					this.getSocket.on("roomUpdated", data => {
 						this.room = JSON.parse(data).room;
+						// this.status = this.room.status;
 						this.$store.dispatch(
 							"saveCurrentRoom",
 							JSON.parse(data).room
@@ -352,6 +554,7 @@
 					});
 				})
 				.catch(err => {
+					console.log("err", err);
 					if (err.response.status === 404) {
 						this.$router.push({
 							name: "RoomList",

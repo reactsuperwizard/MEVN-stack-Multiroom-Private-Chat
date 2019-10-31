@@ -45,6 +45,19 @@
 				this.transitionName = DEFAULT_TRANSITION;
 				this.enterActive = DEFAULT_ENTER_ACTIVE_CLASS;
 				this.leaveActive = DEFAULT_LEAVE_ACTIVE_CLASS;
+			},
+			text_truncate: function(str, length, ending) {
+				if (length == null) {
+					length = 100;
+				}
+				if (ending == null) {
+					ending = "...";
+				}
+				if (str.length > length) {
+					return str.substring(0, length - ending.length) + ending;
+				} else {
+					return str;
+				}
 			}
 		},
 		created() {

@@ -3,9 +3,48 @@ const PrivateMessage = require('../models/PrivateMessage');
 const Room = require('../models/Room');
 const User = require('../models/User');
 const Relation = require('../models/Relation');
+const RoomRelation = require('../models/roomRelation');
 const Sequelize = require("sequelize")
 
 module.exports = {
+    //room, roomAdmin, user
+    GET_RELATIONS: async data => {
+        console.log('BE GET_RELATIONS', data.room, data.roomAdmin, data.user);
+        const relations = {};
+        relations.roomR = 0;
+        relations.privateR = 0;
+        relations.privateRs = {};
+
+        const roomRs = RoomRelation.findOne({
+            where: {
+                room: data.room,
+                user: data.user
+            }
+        }, {
+            raw: true
+        });
+        const privateRs = Relation.findAll({
+            where: {
+                user: data.user
+            }
+        }, {
+            raw: true
+        });
+        const privateR = Relation.findOne({
+            where: {
+                user: data.roomAdmin,
+                touser: data.user
+            }
+        }, {
+            raw: true
+        });
+        const value = await Promise.all([roomRs, privateRs, privateR]);
+        relations.roomR = value[0] ? value[0].status : relations.roomR;
+        relations.privateRs = value[1] ? value[1] : relations.privateRs;
+        relations.privateR = value[2] ? value[2].status : relations.privateR;
+        console.log('_______in getrelations func', JSON.stringify(relations.privateRs))
+        return relations;
+    },
     ADD_MESSAGE: async data => {
         const newMessage = new Message({
             content: data.content,
@@ -21,6 +60,7 @@ module.exports = {
             });
             messageData['user'] = userData;
         }
+        console.log('++++++++++++++++++++BE', JSON.stringify(messageData));
         return messageData;
     },
     ADD_PRIVATE_MESSAGE: async data => {
@@ -104,12 +144,21 @@ module.exports = {
         }
         return messages;
     },
-    CREATE_MESSAGE_CONTENT: (room, socketId) => {
-        const user = room.previous.users.find(user => user.socketId === socketId);
-
+    // 0 - left content, 1 - Room Admin changed status for user
+    CREATE_MESSAGE_CONTENT: async (room, socketId, status = 0) => {
+        if (!status) {
+            const user = room.previous.users.find(user => user.socketId === socketId);
+            return user && user.handle ?
+                `${user.handle} has left ${room.updated.name}` :
+                `Unknown User has left ${room.updated.name}`;
+        }
+        const user = await User.findByPk(socketId.user, {
+            raw: true
+        });
+        const status_text = !socketId.status ? ' was actived' : socketId.status == 1 ? ' was banned' : ' was blocked';
         return user && user.handle ?
-            `${user.handle} has left ${room.updated.name}` :
-            `Unknown User has left ${room.updated.name}`;
+            `${user.handle} ${status_text}` :
+            `Unknown User ${status_text}`;
     },
     GET_ROOMS: async () => {
         const rooms = await Room.findAll({}, {
@@ -142,9 +191,28 @@ module.exports = {
         });
     },
     GET_USERS: async () => {
-        return await User.findAll({}, {
+        //Get All Users
+        const relations = await Relation.findAll({
             raw: true
         });
+        const users = [];
+        await User.findAll({}, {
+                raw: true
+            })
+            .then(result => {
+                users = result;
+                for (const user of users) {
+                    const from_st = relations.filter((relation) => (relation['user'] == req.user.id) && (relation['touser'] == user.id));
+                    const to_st = relations.filter((relation) => (relation['touser'] == req.user.id) && (relation['user'] == user.id));
+                    user['dataValues']['from'] = from_st[0] ? from_st[0].status : false;
+                    user['dataValues']['to'] = to_st[0] ? to_st[0].status : false;
+                }
+                return res.status(200).json(users);
+            })
+            .catch(err => {
+                console.log('err', err);
+                return res.status(200).json(null);
+            })
     },
     UPDATE_ROOM_USERS: async data => {
         let room;

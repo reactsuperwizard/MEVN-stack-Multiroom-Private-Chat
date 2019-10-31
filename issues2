@@ -5,9 +5,9 @@
 *-Only room admin can change room name.
 *-tooltip for icons
 *-change icons (block,ban,exclam)
+-image url
 
-
-- Messages should be send by pressing Enter as well as clicking the Send button. 
+*- Messages should be send by pressing Enter as well as clicking the Send button. 
 - The text align of the message field should be RTL (as most users use Arabic) and the buttons come to right of the field.
 *- Remove 'Private Rooms' and 'Private Rooms' from rooms list. They servs no purpose, as all rooms are public. 
 - Admins should be able to create/edit avatars for their rooms

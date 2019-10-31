@@ -357,7 +357,7 @@
 						group: "notification_newMsg",
 						title:
 							"New Message Arrived from " +
-							message_parsed["touser"]["handle"],
+							message_parsed["user"]["handle"],
 						text: this.text_truncate(
 							message_parsed.content.replace(
 								"!!!image!!!",

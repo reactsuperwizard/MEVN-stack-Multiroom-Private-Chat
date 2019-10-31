@@ -57,6 +57,7 @@ const userRoutes = require('./routes/user');
 // const profileRoutes = require('./routes/profile');
 const roomRoutes = require('./routes/room');
 const relationRoutes = require('./routes/relation');
+const roomRelationRoutes = require('./routes/roomRelation');
 const privateMsgRoutes = require('./routes/privateMsg');
 // const messageRoutes = require('./routes/messages');
 
@@ -98,8 +99,10 @@ app.use('/api/user', userRoutes);
 // app.use('/api/profile', profileRoutes);
 app.use('/api/room', roomRoutes);
 app.use('/api/relation', relationRoutes);
+app.use('/api/roomRelation', roomRelationRoutes);
 app.use('/api/privateMsg', privateMsgRoutes);
 // app.use('/api/messages', messageRoutes);
+
 
 // if (process.env.NODE_ENV !== 'production') {
 //     logger.add(
@@ -122,6 +125,7 @@ io.on('connection', socket => {
                 roomId: currentRoomId,
                 socketId: socket.id
             });
+
 
             socket.broadcast.to(currentRoomId).emit(
                 'updateUserList',
@@ -269,12 +273,39 @@ io.on('connection', socket => {
     /** User Status Change Event */
     socket.on('statusChanged', async data => {
         const socketid = await GET_USER_SOCKET(data);
-        console.log(socketid);
-        io.to(socketid).emit('statusChanged', JSON.stringify({
+        if (socketid) {
+            io.to(socketid).emit('statusChanged', JSON.stringify({
+                user: data.user,
+                status: data.status
+            }));
+        }
+    });
+
+    socket.on('roomRelationChanged', async data => {
+        //public message arrived
+        const content = await CREATE_MESSAGE_CONTENT(data.room, {
+            user: data.user,
+            status: data.status
+        }, 1);
+
+        const newMessage = await ADD_MESSAGE({
+            room: {
+                id: data.room
+            },
+            user: null,
+            content: content,
+            admin: true
+        });
+
+        // Emit data back to the client for display
+        console.log('++++++++++++emigitin new message', JSON.stringify(newMessage));
+        io.to(data.room).emit('receivedNewMessage', JSON.stringify(newMessage));
+        io.to(data.room).emit('roomRelationChanged', JSON.stringify({
             user: data.user,
             status: data.status
         }));
     });
+
     /** User Deleted Event */
     socket.on('UserDeleted', async data => {
         io.emit('userListUpdated',
