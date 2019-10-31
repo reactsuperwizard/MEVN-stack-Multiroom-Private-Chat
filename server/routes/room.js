@@ -5,7 +5,7 @@ const passport = require('passport');
 const Room = require('../models/Room');
 const User = require('../models/User');
 const Relation = require('../models/Relation');
-const roomRelation = require('../models/roomRelation');
+const roomRelation = require('../models/RoomRelation');
 const Message = require('../models/Message');
 
 const {

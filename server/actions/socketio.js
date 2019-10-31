@@ -3,7 +3,7 @@ const PrivateMessage = require('../models/PrivateMessage');
 const Room = require('../models/Room');
 const User = require('../models/User');
 const Relation = require('../models/Relation');
-const RoomRelation = require('../models/roomRelation');
+const RoomRelation = require('../models/RoomRelation');
 const Sequelize = require("sequelize")
 
 module.exports = {
