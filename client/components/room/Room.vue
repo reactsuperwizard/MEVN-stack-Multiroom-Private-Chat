@@ -39,7 +39,6 @@
 											</div>
 											<div class="chat__user-checkboxs">
 												<label class="cursor">
-													{{getStatus(user.id)}}
 													<span>
 														<img
 															src="@/assets/img/block.png"
