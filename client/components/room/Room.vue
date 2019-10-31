@@ -258,22 +258,6 @@
 				console.log("_______________", user ? user.status : 0, id);
 				return user ? user.status : 0;
 			},
-			FfilteredUsers: function() {
-				return this.users
-					? this.users
-							.slice()
-							.sort(this.sortAlphabetical)
-							.filter(user => {
-								console.log("filter", user.from);
-								return (
-									user.username
-										.toLowerCase()
-										.includes(this.searchInput.toLowerCase()) &&
-									user.from != 2
-								);
-							})
-					: "";
-			},
 
 			onStatusChange(id, from) {
 				const user = this.users.find(x => x.id == id);
@@ -306,7 +290,10 @@
 						.post("/api/relation", { to: id, status: from })
 						.then(res => {
 							if (res.data.status) {
-								this.users = this.FfilteredUsers();
+								console.log(
+									"status Change Call api relation",
+									this.privateRs
+								);
 								const privateR = this.privateRs.find(
 									privateR =>
 										privateR.user == this.getUserData.id &&
@@ -317,9 +304,13 @@
 									this.privateRs.push({
 										user: this.getUserData.id,
 										touser: id,
-										status: 2
+										status: from
 									});
 								else privateR.status = from;
+								console.log(
+									"status Change Call api relation",
+									this.privateRs
+								);
 							}
 						})
 						.catch(err => {
@@ -439,7 +430,6 @@
 					this.users = res.data.users;
 					this.privateRs = res.data.privateRs;
 					this.privateRs = this.privateRs ? this.privateRs : [];
-					this.users = this.FfilteredUsers();
 					this.status = this.room.status;
 					console.log(
 						"created and saveCurrentRoom",
