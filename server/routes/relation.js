@@ -16,10 +16,7 @@ const {
  * id : touser
  * status: status
  */
-// , Sequelize.and({
-// 'user': req.user.id,
-// 'touser': req.params.user_id
-// }))
+
 router.post('/', passport.authenticate('jwt', {
     session: false
 }), async (req, res) => {

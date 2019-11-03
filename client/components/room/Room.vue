@@ -26,49 +26,89 @@
 								<transition-group name="slideDown">
 									<li class="chat__user" v-for="user in filteredUsers" :key="user.id">
 										<div class="chat__user-item">
-											<div class="chat__user-image">
+											<!-- <div class="chat__user-image chat__user-dropupContainer">
+												<div class="dropup">
+													<button class="dropbtn_noPadding">
+														<img
+															:src="(!user.image.includes('www.gravatar.com/avatar') ? 'http://localhost:5000/public/avatar/' : '') + user.image"
+															alt
+															class="chat__user-avatar"
+														/>
+														<div v-if="room.user && room.user== user.id">
+															<img src="@/assets/img/admin5.png" class="chat__user-adminBadge1" title="Room Admin" />
+														</div>
+													</button>
+													<div class="dropup-content adjustForAvatar">
+														<a href="#">
+															Name :
+															<span>{{ user.username }}</span>
+														</a>
+														<a href="#">
+															<span>Handle : {{ user.handle }}</span>
+														</a>
+														<a href="#">
+															<span>sex : {{ user.sex || 'Unknown' }}</span>
+														</a>
+														<a href="#">
+															<span>age : {{ user.age || 'Unknown' }}</span>
+														</a>
+														<a href="#">
+															<span>located in : {{ user.location || 'Unknown' }}</span>
+														</a>
+														<a href="#">
+															<span>Bio : {{ user.bio || 'Unknown' }}</span>
+														</a>
+													</div>
+												</div>
+											</div>-->
+
+											<div
+												class="chat__user-image"
+												:title="'Name : ' + user.username + 
+												'\nHandle : ' + user.handle+ 
+												'\nAge : ' + (user.age || 'Unknown')+ 
+												'\nSex : ' + (user.sex || 'Unknown')+ 
+												'\nLocated : ' + (user.location || 'Unknown')+ 
+												'\nBio : ' + (user.bio || 'Unknown')"
+											>
 												<img
 													:src="(!user.image.includes('www.gravatar.com/avatar') ? 'http://localhost:5000/public/avatar/' : '') + user.image"
 													alt
 													class="chat__user-avatar"
 												/>
+												<div v-if="room.user && room.user== user.id">
+													<img src="@/assets/img/admin5.png" class="chat__user-adminBadge1" title="Room Admin" />
+												</div>
 											</div>
 
 											<div class="chat__user-details">
 												<span>{{ text_truncate(user.handle, 10, '...') }}</span>
 											</div>
-											<div class="chat__user-checkboxs">
-												<label class="cursor">
-													<span>
-														<img
-															src="@/assets/img/block.png"
-															:title="'You blocked ' + user.handle"
-															v-bind:class="{chkselected:getStatus(user.id) == 2}"
-															@click="onStatusChange(user.id, 2)"
-														/>
-													</span>
-													<span>
-														<img
-															src="@/assets/img/ban.png"
-															:title="'You banned ' + user.handle + ', you will not receive notifications from this user.'"
-															v-bind:class="{chkselected:getStatus(user.id) == 1}"
-															@click="onStatusChange(user.id, 1)"
-														/>
-													</span>
-													<span>
-														<img
-															src="@/assets/img/active.png"
-															:title="'You actived ' + user.handle"
-															v-bind:class="{chkselected: getStatus(user.id) == 0}"
-															@click="onStatusChange(user.id, 0)"
-														/>
-													</span>
-												</label>
+											<div class="chat__user-dropupContainer">
+												<div class="dropup">
+													<button class="dropbtn">
+														<i class="fa fa-caret-down"></i>
+													</button>
+													<div class="dropup-content">
+														<a href="#">
+															<img src="@/assets/img/block.png" @click="onStatusChange(user.id, 2)" />
+															<span>{{getStatus(user.id) == 2 ? 'Active' : 'Block'}} {{user.handle}}</span>
+														</a>
+														<a
+															href="#"
+															@click="getStatus(user.id) == 1 ? onStatusChange(user.id, 0) :  onStatusChange(user.id, 1)"
+														>
+															<img src="@/assets/img/ban.png" />
+															<span>{{getStatus(user.id) == 1 ? 'Unban' : 'Ban'}} {{user.handle}}</span>
+														</a>
+													</div>
+												</div>
 											</div>
 										</div>
 									</li>
 								</transition-group>
 							</ul>
+							<div style="height:100px"></div>
 						</template>
 						<template slot="footer">
 							<button @click="leaveRoom" class="btn btn--clear btn--danger center">Leave Room</button>
@@ -211,7 +251,8 @@
 									user.username
 										.toLowerCase()
 										.includes(this.searchInput.toLowerCase()) &&
-									isActive
+									isActive &&
+									user.id != this.getUserData.id
 								);
 							})
 					: "";

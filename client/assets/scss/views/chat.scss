@@ -95,8 +95,37 @@
         &-avatar {
             height: 60px;
             width: 60px;
+            position: relative;
             border-radius: 100%;
             border: 2px solid green;
+        }
+
+        &-adminBadge1 {
+            // position: absolute;
+            display: block;
+            border-radius: 100%;
+            border: 2px solid green;
+            margin-top: -70px;
+            margin-left: 60px;
+            height: 20px;
+            width: 20px;
+        }
+
+        &-adminBadge {
+            // position: absolute;
+            height: 17px;
+            width: 17px;
+            border-radius: 100%;
+            border: 2px solid green;
+            top: 0px;
+            right: 0px;
+            float: left;
+        }
+
+        &-adminBadgeTxt {
+            margin-left: 5px;
+            font-size: 12px;
+            float: left;
         }
 
         &-details {
@@ -106,45 +135,88 @@
             width: 80%;
         }
 
-        &-checkboxs {
-            // position: absolute;
-            // right: 20px;
-
-            .cursor {
-                cursor: pointer;
+        &-dropupContainer {
+            .dropbtn {
+                background-color: transparent;
+                color: white;
+                padding: 16px;
+                font-size: 16px;
+                border: none;
             }
 
-            img {
+            .dropbtn_noPadding {
+                background-color: transparent;
+                color: white;
+                font-size: 16px;
+                border: none;
+            }
+
+            .dropup {
                 position: relative;
-                user-select: none;
-                font-size: 1.3rem;
-                width: 20px;
-                height: 20px;
+                display: inline-block;
             }
 
-            .tooltiptext {
-                visibility: hidden;
-                width: 120px;
-                background-color: black;
-                color: #fff;
-                text-align: center;
-                border-radius: 6px;
-                padding: 5px 0;
+            .adjustForAvatar {
+                top: -50px !important;
+                left: 80px;
+
+                border-radius: 5px;
+
+                a {
+                    padding: 3px !important;
+                    text-align: left;
+                }
+            }
+
+            .dropup-content {
+                display: none;
                 position: absolute;
+                background-color: #f1f1f1;
+                min-width: 160px;
+                top: 50px;
+                right: 0px;
                 z-index: 1;
+                overflow: hidden;
             }
 
-            img:hover+.tooltiptext {
-                visibility: visible;
+            .dropup-content a {
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+
+                img {
+                    position: relative;
+                    user-select: none;
+                    font-size: 1.3rem;
+                    width: 20px;
+                    height: 20px;
+                    float: left;
+                }
+
+                span {
+                    text-align: left;
+                    font-size: 12px;
+                }
             }
 
-            .chkselected {
-                background-color: darkgrey;
-                border: 2px solid dimgrey;
-                border-radius: 50%;
+            .dropup-content a:hover {
+                background-color: #ccc;
             }
+
+            .dropup:hover .dropup-content {
+                display: block;
+            }
+
+            .dropup:hover .dropbtn {
+                background-color: #2980B9;
+            }
+
         }
 
+        .cursor {
+            cursor: pointer;
+        }
     }
 
     /** Message List */
