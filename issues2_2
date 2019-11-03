@@ -35,15 +35,15 @@ Login/Profile area
 
 Rooms
 - `Online Users` column should not display offline users
-- `Online Users` column should not display my name as a user. That serves no purpose.
+*- `Online Users` column should not display my name as a user. That serves no purpose.
 - Remove `Rooms3`, which seems to be a glitch
-- Remove the option `You activated ...`. It is superflous and confusing. 
-- In `Online Users` columsn, move the ban/block options to a dropdown menu, placed instead of the current ticks.
-- When user A bans user B, A will not receive any message from B.
+*- Remove the option `You activated ...`. It is superflous and confusing. 
+*- In `Online Users` columsn, move the ban/block options to a dropdown menu, placed instead of the current ticks.
+*- When user A bans user B, A will not receive any message from B.
 - When user A chatting with user B, and A sends a message to B, do not show green notification to B. There is no need for that.
-- When user A blocked user B, B should be removed from A's `Online Users` column. 
-- A room's admin should have a golden badge/crown near his/her avatar to show others who is the boss here. 
-- Hovering on a user's avatar should display a tooltip containing that user's profile. 
+*- When user A blocked user B, B should be removed from A's `Online Users` column. 
+*- A room's admin should have a golden badge/crown near his/her avatar to show others who is the boss here. 
+*- Hovering on a user's avatar should display a tooltip containing that user's profile. 
 - A 'Home' room should always be present as the default room at the top of the rooms list.
 - Apart from 'Home',  rooms should appear  in the rooms list sorted by number of joined members. 
 - An empty room should be automatically removed from the rooms list
