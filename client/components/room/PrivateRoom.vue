@@ -30,12 +30,7 @@
 										:key="user.id"
 										v-bind:class="{selected:user.id==getCurrentSelect, blocked:user.from==2, banned:user.from==1}"
 									>
-										<div
-											:id="user.id"
-											v-if="user.id != getUserData.id"
-											class="chat__user-item"
-											@click="selectUser(`${user.id}`)"
-										>
+										<div :id="user.id" class="chat__user-item" @click="selectUser(`${user.id}`)">
 											<div class="chat__user-image">
 												<img
 													:src="(!user.image.includes('www.gravatar.com/avatar') ? 'http://localhost:5000/public/avatar/' : '') + user.image"
@@ -177,10 +172,12 @@
 					? this.users
 							.slice()
 							.sort(this.sortAlphabetical)
-							.filter(user =>
-								user.username
-									.toLowerCase()
-									.includes(this.searchInput.toLowerCase())
+							.filter(
+								user =>
+									user.username
+										.toLowerCase()
+										.includes(this.searchInput.toLowerCase()) &&
+									user.id != this.getUserData.id
 							)
 					: "";
 			},

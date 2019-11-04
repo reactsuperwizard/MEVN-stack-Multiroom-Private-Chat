@@ -214,10 +214,16 @@
 
         }
 
-        .cursor {
-            cursor: pointer;
+        &-checkboxs {
+            img {
+                font-size: 1.3rem;
+                width: 20px;
+                height: 20px;
+                float: left;
+            }
         }
     }
+
 
     /** Message List */
     &__c-messagelist {

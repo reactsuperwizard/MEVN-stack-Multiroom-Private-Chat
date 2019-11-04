@@ -1,4 +1,5 @@
 // const passport = require('passport');
+const Sequelize = require("sequelize")
 const User = require("../models/User")
 
 const createErrorObject = errors => {
@@ -17,22 +18,35 @@ const checkRegistrationFields = async (req, res, next) => {
     req.check('email').isEmail();
     req.check('username')
         .isString()
-        .isLength({ min: 5, max: 15 })
-        .withMessage('Username must be between 5 and 15 characters');
+        .isLength({
+            min: 3,
+            max: 15
+        })
+        .withMessage('Username must be between 3 and 15 characters');
     req.check('password')
         .isString()
-        .isLength({ min: 5, max: 15 })
-        .withMessage('Password must be between 5 and 15 characters');
+        .isLength({
+            min: 3,
+            max: 15
+        })
+        .withMessage('Password must be between 3 and 15 characters');
 
     let errors = req.validationErrors() || [];
 
 
 
-    const user = await User.findOne({ where: { username: req.body.username } });
+    const user = await User.findOne({
+        where: {
+            username: req.body.username
+        }
+    });
 
 
     if (user) {
-        errors.push({ param: 'username', msg: 'Username already taken' });
+        errors.push({
+            param: 'username',
+            msg: 'Username already taken'
+        });
     }
 
     if (errors.length > 0) {
@@ -46,12 +60,24 @@ const checkRegistrationFields = async (req, res, next) => {
 
 const checkLoginFields = async (req, res, next) => {
     let errors = [];
-    const user = await User.findOne({ where: { email: req.body.email } });
+    const user = await User.findOne({
+        where: Sequelize.or({
+            email: req.body.email
+        }, {
+            username: req.body.email
+        })
+    });
     if (!user) {
-        errors.push({ param: 'email', msg: 'Invalid Details Entered' });
+        errors.push({
+            param: 'email',
+            msg: 'Invalid Details Entered'
+        });
     } else {
         if (req.body.password !== null && !(await user.isValidPassword(req.body.password))) {
-            errors.push({ param: 'password', msg: 'Invalid Details Entered' });
+            errors.push({
+                param: 'password',
+                msg: 'Invalid Details Entered'
+            });
         }
     }
 
@@ -66,9 +92,16 @@ const checkLoginFields = async (req, res, next) => {
 
 const checkForgotFields = async (req, res, next) => {
     let errors = [];
-    const user = await User.findOne({ where: { email: req.body.email } });
+    const user = await User.findOne({
+        where: {
+            email: req.body.email
+        }
+    });
     if (!user) {
-        errors.push({ param: 'email', msg: 'Invalid Details Entered' });
+        errors.push({
+            param: 'email',
+            msg: 'Invalid Details Entered'
+        });
     }
 
     if (errors.length !== 0) {
@@ -84,14 +117,28 @@ const checkEditProfileFields = async (req, res, next) => {
     let errors = [];
 
     if (req.body.email) {
-        if (await User.findOne({ where: { email: req.body.email } })) {
-            errors.push({ param: 'email', msg: 'Email is already taken' });
+        if (await User.findOne({
+                where: {
+                    email: req.body.email
+                }
+            })) {
+            errors.push({
+                param: 'email',
+                msg: 'Email is already taken'
+            });
         }
     }
 
     if (req.body.handle) {
-        if (await User.findOne({ where: { handle: req.body.handle } })) {
-            errors.push({ param: 'handle', msg: 'Handle is already taken' });
+        if (await User.findOne({
+                where: {
+                    handle: req.body.handle
+                }
+            })) {
+            errors.push({
+                param: 'handle',
+                msg: 'Handle is already taken'
+            });
         }
     }
     if (errors.length !== 0) {
@@ -112,7 +159,10 @@ const checkCreateRoomFields = async (req, res, next) => {
     } else {
         req.check('room_name')
             .isString()
-            .isLength({ min: 3, max: 20 })
+            .isLength({
+                min: 3,
+                max: 20
+            })
             .withMessage('Room name must be between 5 and 20 characters');
     }
 
@@ -120,7 +170,10 @@ const checkCreateRoomFields = async (req, res, next) => {
         req.check('password')
             .not()
             .isEmpty()
-            .isLength({ min: 5, max: 15 })
+            .isLength({
+                min: 5,
+                max: 15
+            })
             .withMessage('Password should be between 5 and 15 characters');
     }
 

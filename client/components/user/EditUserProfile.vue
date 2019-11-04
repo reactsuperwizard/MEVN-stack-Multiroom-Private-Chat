@@ -48,9 +48,16 @@
 					</div>
 					<div class="form__input-group">
 						<ion-icon ios="ios-transgender" md="md-transgender" class="form__icon"></ion-icon>
-						<select class="form__control" v-model="sex" name="sex" id="sex" placeholder="How old are you">
-							<option value="male">male</option>
-							<option value="female">female</option>
+						<select
+							class="form__control"
+							v-model="sex"
+							name="sex"
+							id="sex"
+							placeholder="Gender"
+							style="font-size:18px; padding:8px 0px 8px 10px;"
+						>
+							<option value="male" class="padding_5">male</option>
+							<option value="female" class="padding_5">female</option>
 						</select>
 
 						<label for="sex" class="form__label">Gender</label>

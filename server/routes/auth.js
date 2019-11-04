@@ -10,6 +10,8 @@ const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs')
 var nodemailer = require('nodemailer')
 const sgMail = require('@sendgrid/mail');
+const Sequelize = require("sequelize")
+
 /** Middleware */
 const {
     checkRegistrationFields,
@@ -106,9 +108,11 @@ router.post('/register', [checkRegistrationFields], (req, res) => {
  */
 router.post('/login', checkLoginFields, async (req, res) => {
     const user = await User.findOne({
-        where: {
+        where: Sequelize.or({
             email: req.body.email
-        },
+        }, {
+            username: req.body.email
+        }),
         raw: true
     });
 

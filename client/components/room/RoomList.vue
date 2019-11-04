@@ -43,7 +43,7 @@
 												</p>
 												<p>
 													<strong>{{room.access === true ? 'Room Admin:' : ''}}</strong>
-													{{ room.access === false ? 'Your private chat room' : room.user ? room.user.username : 'Unknown User' }}
+													{{ room.access === false ? 'Your private chat room' : room.user ? room.user.username : room.name=='HOME' ? 'ADMIN' : 'Unknown User' }}
 												</p>
 											</div>
 											<div class="rooms__item-actions">
@@ -153,7 +153,12 @@
 			};
 		},
 		computed: {
-			...mapGetters(["getUserData", "getRoomData", "getSocket"]),
+			...mapGetters([
+				"getUserData",
+				"getRoomData",
+				"getSocket",
+				"getCurrentSelect"
+			]),
 			getPrivateRooms() {
 				return this.rooms.filter(room => room.access === false);
 			},
@@ -168,7 +173,7 @@
 				} else {
 					return this.rooms
 						.slice()
-						.sort(this.sortAlphabetical)
+						.sort(this.roomSortFunc)
 						.filter(room =>
 							room.name
 								.toLowerCase()
@@ -184,15 +189,27 @@
 				"deleteRoom",
 				"saveCurrentRoom"
 			]),
-			sortAlphabetical(a, b) {
+			roomSortFunc(a, b) {
+				console.log(a, b);
 				let roomA = a.name.toUpperCase();
 				let roomB = b.name.toUpperCase();
-				if (roomA < roomB) {
+
+				//ROOM - HOME should be first
+				if (roomA == "HOME") return -1;
+				if (roomB == "HOME") return 1;
+
+				//private chat room should be first
+				if (!a.access) return -1;
+				if (!b.access) return 1;
+
+				//sort by users count
+				if (a.users < b.users) {
 					return -1;
 				}
-				if (roomA > roomB) {
+				if (a.users > b.users) {
 					return 1;
 				}
+
 				return 0;
 			},
 			fetchRoomData() {
@@ -353,22 +370,26 @@
 			this.getSocket.on("msgAlertTriggered", message => {
 				const message_parsed = JSON.parse(message);
 				if (!message_parsed["user"]["status"]) {
-					this.$notify({
-						group: "notification_newMsg",
-						title:
-							"New Message Arrived from " +
-							message_parsed["user"]["handle"],
-						text: this.text_truncate(
-							message_parsed.content.replace(
-								"!!!image!!!",
-								"Image name - "
+					if (
+						!this.getCurrentSelect ||
+						this.getCurrentSelect != message_parsed["user"]["id"]
+					)
+						this.$notify({
+							group: "notification_newMsg",
+							title:
+								"New Message Arrived from " +
+								message_parsed["user"]["handle"],
+							text: this.text_truncate(
+								message_parsed.content.replace(
+									"!!!image!!!",
+									"Image name - "
+								),
+								30,
+								"..."
 							),
-							30,
-							"..."
-						),
-						type: "success ",
-						duration: 10000
-					});
+							type: "success ",
+							duration: 10000
+						});
 				}
 			});
 		},

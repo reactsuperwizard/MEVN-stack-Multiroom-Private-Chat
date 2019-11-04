@@ -23,14 +23,13 @@
 					<div class="form__input-group">
 						<ion-icon name="person" class="form__icon"></ion-icon>
 						<input
-							type="email"
 							name="email"
 							class="form__control"
-							placeholder="Enter Email"
+							placeholder="Enter Email or User Name"
 							required
 							v-model.trim="email"
 						/>
-						<label for="email" class="form__label">Email</label>
+						<label for="email" class="form__label">Email / User Name</label>
 					</div>
 					<div class="form__input-group">
 						<ion-icon name="lock" class="form__icon"></ion-icon>
@@ -39,8 +38,8 @@
 							name="password"
 							class="form__control"
 							placeholder="Enter Password"
-							pattern=".{5,15}"
-							title="Password must be between 5 and 15 characters"
+							pattern=".{3,15}"
+							title="Password must be between 3 and 15 characters"
 							required
 							v-model.trim="password"
 						/>

@@ -50,8 +50,8 @@
 							name="password"
 							class="form__control"
 							placeholder="Enter Password"
-							pattern=".{5,15}"
-							title="Password must be between 5 and 15 characters"
+							pattern=".{3,15}"
+							title="Password must be between 3 and 15 characters"
 							required
 							v-model.trim="password"
 						/>
