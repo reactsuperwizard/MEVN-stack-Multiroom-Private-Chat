@@ -5,13 +5,15 @@
 				<form @submit.prevent="handleSubmit" class="form" method="post" enctype="multipart/form-data">
 					<p class="lead">Edit Profile Details</p>
 					<div class="profile__item">
-						<img v-if="selected_url" :src="selected_url" class="profile__image" />
-						<img
-							v-else
-							:src="(!user.image.includes('www.gravatar.com/avatar') ? 'http://localhost:5000/public/avatar/' : '') + user.image"
-							alt
-							class="profile__image"
-						/>
+						<label for="image">
+							<img v-if="selected_url" :src="selected_url" class="profile__image" />
+							<img
+								v-else
+								:src="(!user.image.includes('www.gravatar.com/avatar') ? 'http://localhost:5000/public/avatar/' : '') + user.image"
+								alt
+								class="profile__image"
+							/>
+						</label>
 						<input
 							class="form__control"
 							type="file"
@@ -20,6 +22,7 @@
 							name="image"
 							@change="handleFileUpload"
 							accept=".jpg, .jpeg"
+							style="display: none;"
 						/>
 					</div>
 					<br />
@@ -144,7 +147,7 @@
 					handle:
 						this.handle === this.getUserData.handle
 							? null
-							: slugify(this.handle.toLowerCase()),
+							: this.handle,
 					// email: this.email === this.getUserData.email ? null : this.email,
 					age: this.age === this.getUserData.age ? null : this.age,
 					sex: this.sex === this.getUserData.sex ? null : this.sex,
@@ -161,6 +164,7 @@
 						formData.append(property, updatedUserDetails[property]);
 					}
 				}
+				console.log(updatedUserDetails.handle);
 
 				if (localStorage.getItem("authToken")) {
 					axios

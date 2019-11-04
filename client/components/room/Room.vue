@@ -144,7 +144,18 @@
 					<h2 class="text-upper">Edit Room: {{ this.getCurrentRoom.name }}</h2>
 				</template>
 				<template slot="body">
-					<form @submit="handleEditRoom" slot="body" class="form form--nbs pt-3">
+					<form
+						@submit.prevent="handleEditRoom"
+						slot="body"
+						class="form form--nbs pt-3"
+						method="post"
+						enctype="multipart/form-data"
+					>
+						<div class="form__input-group">
+							<label for="room_avatar" title="Select Room Avatar">
+								<img :src="selected_url" class="room_avatar" />
+							</label>
+						</div>
 						<div class="form__input-group">
 							<ion-icon name="pricetags" class="form__icon"></ion-icon>
 							<input
@@ -157,6 +168,18 @@
 								v-model.trim="newRoomName"
 							/>
 							<label for="roomName" class="form__label">New Room name</label>
+						</div>
+						<div class="form__input-group">
+							<input
+								class="form__control"
+								type="file"
+								id="room_avatar"
+								ref="room_avatar"
+								name="room_avatar"
+								@change="handleFileUpload"
+								accept=".jpg, .jpeg"
+								style="display: none"
+							/>
 						</div>
 						<Error :errors="errors" />
 						<button type="submit" class="btn btn--clear btn--info">Update Room Name</button>
@@ -212,6 +235,8 @@
 		},
 		data: function() {
 			return {
+				selected_url: null,
+				room_avatar: "",
 				room: [],
 				status,
 				users: [],
@@ -268,7 +293,10 @@
 				}
 				const block_members = this.privateRs.filter(
 					privateR =>
-						privateR.status == 2 && privateR.user == this.getUserData.id
+						//blocked / banned user's message won't be displayed
+						(privateR.status == 2 || privateR.status == 1) &&
+						//
+						privateR.user == this.getUserData.id
 				);
 				return this.messages.filter(message => {
 					if (block_members.length == 0 || message.user == null)
@@ -286,6 +314,11 @@
 		},
 		methods: {
 			...mapActions(["saveCurrentRoom", "deleteRoom"]),
+			handleFileUpload(e) {
+				this.room_avatar = this.$refs.room_avatar.files[0];
+				const file = e.target.files[0];
+				this.selected_url = URL.createObjectURL(file);
+			},
 			text_truncate(str, length, ending) {
 				return this.$root.$children[0].text_truncate(str, length, ending);
 			},
@@ -407,41 +440,59 @@
 			},
 			handleEditRoom(e) {
 				e.preventDefault();
-				axios
-					.post("/api/room/update/name", {
-						room_name: this.getCurrentRoom.name,
-						new_room_name: this.newRoomName
-					})
-					.then(res => {
-						if (res.data.errors) {
-							for (const error of res.data.errors) {
-								const [key] = Object.keys(error);
-								const [value] = Object.values(error);
-								this.errors.push({
-									key,
-									value
-								});
-							}
-						} else {
-							this.$refs.editRoom.close();
-							this.getSocket.emit("roomUpdateEvent", {
-								oldRoomName: this.getCurrentRoom.name,
-								room: res.data
-							});
-							this.getSocket.emit("newMessage", {
-								room: this.getCurrentRoom,
-								user: this.getUserData,
-								admin: true,
-								content: `${this.getUserData.username} updated room ${this.getCurrentRoom.name} to ${this.newRoomName}`
-							});
-							this.newRoomName = "";
-						}
+				let formData = new FormData();
 
-						setTimeout(() => {
-							this.errors = [];
-						}, 1500);
-					})
-					.catch(err => console.log(err));
+				const updatedRoomData = {
+					room_name: this.getCurrentRoom.name,
+					new_room_name: this.newRoomName,
+					room_avatar: this.room_avatar
+				};
+
+				for (const property in updatedRoomData) {
+					if (updatedRoomData[property]) {
+						formData.append(property, updatedRoomData[property]);
+					}
+				}
+
+				console.log(updatedRoomData, formData);
+				if (localStorage.getItem("authToken")) {
+					axios
+						.post("/api/room/update/name", formData, {
+							headers: {
+								"Content-Type": "multipart/form-data"
+							}
+						})
+						.then(res => {
+							if (res.data.errors) {
+								for (const error of res.data.errors) {
+									const [key] = Object.keys(error);
+									const [value] = Object.values(error);
+									this.errors.push({
+										key,
+										value
+									});
+								}
+							} else {
+								this.$refs.editRoom.close();
+								this.getSocket.emit("roomUpdateEvent", {
+									oldRoomName: this.getCurrentRoom.name,
+									room: res.data
+								});
+								this.getSocket.emit("newMessage", {
+									room: this.getCurrentRoom,
+									user: this.getUserData,
+									admin: true,
+									content: `${this.getUserData.username} updated room ${this.getCurrentRoom.name} to ${this.newRoomName}`
+								});
+								this.newRoomName = "";
+							}
+
+							setTimeout(() => {
+								this.errors = [];
+							}, 1500);
+						})
+						.catch(err => console.log(err));
+				}
 			},
 			viewRoomDetails() {
 				this.$refs.roomDetails.open();

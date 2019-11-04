@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
+const multer = require('multer')
+var uuidv4 = require('uuid/v4');
+var path = require('path')
+
 
 const Room = require('../models/Room');
 const User = require('../models/User');
@@ -16,6 +20,33 @@ const {
 const {
     GET_RELATIONS
 } = require('../actions/socketio');
+
+// upload path for avatar image
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, '../chat_storage/room_avatar');
+    },
+    filename: function (req, file, cb) {
+        cb(null, uuidv4() + path.extname(file.originalname));
+    }
+});
+const fileFilter = (req, file, cb) => {
+    var ext = path.extname(file.originalname);
+    if (ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
+        cb(null, false);
+    } else {
+        cb(null, true);
+    }
+}
+// upload var for avatar image
+
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 1024 * 1024 * 50
+    },
+    fileFilter: fileFilter
+})
 /**
  * @description GET /api/room
  */
@@ -125,17 +156,27 @@ router.get('/:room_id', passport.authenticate('jwt', {
  */
 router.post(
     '/',
-    [passport.authenticate('jwt', {
+    [upload.single('room_avatar'), passport.authenticate('jwt', {
         session: false
     }), checkCreateRoomFields],
     async (req, res) => {
         let errors = [];
 
-        const room = await Room.findOne({
-            where: {
-                name: req.body.room_name
-            }
+        if (!req.file) {
+            errors.push({
+                param: 'room_taken',
+                msg: 'Room Avatar is Required'
+            });
+            return res.json({
+                errors: createErrorObject(errors)
+            });
+        }
+        const totalRoom = await Room.findAll({}, {
+            raw: true
         });
+        const room = totalRoom.find(room => room.name == req.body.room_name);
+        const roomByUser = totalRoom.filter(room => room.user == req.user.id).length;
+
         if (room) {
             if (room.name === req.body.room_name) {
                 errors.push({
@@ -143,40 +184,57 @@ router.post(
                     msg: 'Roomname already taken'
                 });
             }
+        }
+        //Maximum Total Room - 100
+        if (totalRoom.length > 99) {
+            errors.push({
+                param: 'totalRoomExceeds',
+                msg: 'Already created 100 rooms'
+            });
+        }
+        //One user can create 3 Rooms as a maximum
+        if (roomByUser > 2) {
+            errors.push({
+                param: 'UserRoomExceeds',
+                msg: 'You already created 3 rooms'
+            });
+        }
+
+        if (errors.length) {
             return res.json({
                 errors: createErrorObject(errors)
             });
-        } else {
-            const newRoom = new Room({
-                name: req.body.room_name,
-                user: req.user.id,
-                access: req.body.password ? false : true,
-                password: req.body.password
-            });
-
-            newRoom
-                .save()
-                .then(room => {
-                    User.findOne({
-                            where: {
-                                'id': room['user']
-                            }
-                        })
-                        .then(user => {
-                            room['user'] = user;
-                        })
-                        .catch(err => {
-                            console.log(err);
-                        })
-                        .finally(() => {
-                            room['users'] = 0;
-                            return res.status(200).json(room);
-                        });
-                })
-                .catch(err => {
-                    return res.json(err);
-                });
         }
+        const newRoom = new Room({
+            name: req.body.room_name,
+            user: req.user.id,
+            avatar: req.file.filename,
+            access: req.body.password ? false : true,
+            password: req.body.password
+        });
+
+        newRoom
+            .save()
+            .then(room => {
+                User.findOne({
+                        where: {
+                            'id': room['user']
+                        }
+                    })
+                    .then(user => {
+                        room['user'] = user;
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+                    .finally(() => {
+                        room['users'] = 0;
+                        return res.status(200).json(room);
+                    });
+            })
+            .catch(err => {
+                return res.json(err);
+            });
     }
 );
 
@@ -268,9 +326,9 @@ router.delete('/:room_name', passport.authenticate('jwt', {
 /**
  * @description PUT /api/room/update/name
  */
-router.post('/update/name', passport.authenticate('jwt', {
+router.post('/update/name', [upload.single('room_avatar'), passport.authenticate('jwt', {
     session: false
-}), async (req, res) => {
+})], async (req, res) => {
     req.check('new_room_name')
         .isString()
         .isLength({
@@ -287,9 +345,11 @@ router.post('/update/name', passport.authenticate('jwt', {
         });
     }
     const updateFields = {};
-
     if (req.body) {
         updateFields['name'] = req.body.new_room_name
+    }
+    if (req.file.filename) {
+        updateFields['avatar'] = req.file.filename
     }
     Room.update(updateFields, {
             returning: true,

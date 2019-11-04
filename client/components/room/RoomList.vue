@@ -32,6 +32,9 @@
 										@click.prevent="handleRoomClick(room)"
 									>
 										<div class="rooms__item-container">
+											<div class="rooms__item-avatar">
+												<img :src="'http://localhost:5000/public/room_avatar/' + room.avatar" />
+											</div>
 											<div class="rooms__item-details">
 												<p>{{ room.name }}</p>
 												<p
@@ -87,7 +90,18 @@
 							<h2 class="text-upper">Create Room</h2>
 						</template>
 						<template slot="body">
-							<form @submit="handleCreateRoom" slot="body" class="form form--nbs pt-3">
+							<form
+								@submit.prevent="handleCreateRoom"
+								slot="body"
+								class="form form--nbs pt-3"
+								method="post"
+								enctype="multipart/form-data"
+							>
+								<div class="form__input-group">
+									<label for="room_avatar" title="Select Room Avatar">
+										<img :src="selected_url" class="room_avatar" />
+									</label>
+								</div>
 								<div class="form__input-group">
 									<ion-icon name="list-box" class="form__icon"></ion-icon>
 									<input
@@ -99,19 +113,18 @@
 									/>
 									<label for="room_name" class="form__label">Room Name</label>
 								</div>
-								<!-- <div class="form__input-group">
-                  <ion-icon name="key" class="form__icon"></ion-icon>
-                  <input
-                    type="password"
-                    name="password"
-                    class="form__control"
-                    placeholder="Enter Password"
-                    pattern=".{5,10}"
-                    title="Password must be between 5 and 15 characters"
-                    v-model.trim="password"
-                  />
-                  <label for="password" class="form__label">Password (Optional)</label>
-								</div>-->
+								<div class="form__input-group">
+									<input
+										class="form__control"
+										type="file"
+										id="room_avatar"
+										ref="room_avatar"
+										name="room_avatar"
+										@change="handleFileUpload"
+										accept=".jpg, .jpeg"
+										style="display: none"
+									/>
+								</div>
 								<Error :errors="errors" />
 								<button type="submit" class="btn btn--clear btn--danger">Create Room</button>
 							</form>
@@ -142,8 +155,10 @@
 		},
 		data: function() {
 			return {
+				selected_url: null,
 				rooms: [],
 				room_name: null,
+				room_avatar: "",
 				privateRoomName: null,
 				password: null,
 				privateRoomPassword: null,
@@ -189,6 +204,11 @@
 				"deleteRoom",
 				"saveCurrentRoom"
 			]),
+			handleFileUpload(e) {
+				this.room_avatar = this.$refs.room_avatar.files[0];
+				const file = e.target.files[0];
+				this.selected_url = URL.createObjectURL(file);
+			},
 			roomSortFunc(a, b) {
 				console.log(a, b);
 				let roomA = a.name.toUpperCase();
@@ -242,37 +262,53 @@
 			},
 			handleCreateRoom(e) {
 				e.preventDefault();
+				let formData = new FormData();
 
-				axios
-					.post("/api/room", {
-						room_name: this.room_name,
-						password: this.password
-					})
-					.then(res => {
-						if (res.data.errors) {
-							for (const error of res.data.errors) {
-								const [key] = Object.keys(error);
-								const [value] = Object.values(error);
-								this.errors.push({
-									key,
-									value
-								});
+				const updatedRoomData = {
+					room_name: this.room_name,
+					room_avatar: this.room_avatar
+				};
+
+				for (const property in updatedRoomData) {
+					if (updatedRoomData[property]) {
+						formData.append(property, updatedRoomData[property]);
+					}
+				}
+
+				console.log(updatedRoomData, formData);
+				if (localStorage.getItem("authToken")) {
+					axios
+						.post(`/api/room`, formData, {
+							headers: {
+								"Content-Type": "multipart/form-data"
 							}
-						} else {
-							this.$store.dispatch("addRoom", res.data);
-							this.room_name = null;
-							this.password = null;
-							this.$refs.createRoom.close();
-							this.getSocket.emit("roomAdded", res.data);
-						}
-					})
-					.catch(err => {
-						console.log(err);
-					});
+						})
+						.then(res => {
+							if (res.data.errors) {
+								for (const error of res.data.errors) {
+									const [key] = Object.keys(error);
+									const [value] = Object.values(error);
+									this.errors.push({
+										key,
+										value
+									});
+								}
+							} else {
+								this.$store.dispatch("addRoom", res.data);
+								this.room_name = null;
+								this.password = null;
+								this.$refs.createRoom.close();
+								this.getSocket.emit("roomAdded", res.data);
+							}
+						})
+						.catch(err => {
+							console.log(err);
+						});
 
-				setTimeout(() => {
-					this.errors = [];
-				}, 1500);
+					setTimeout(() => {
+						this.errors = [];
+					}, 1500);
+				}
 			},
 			handleDelete(e) {
 				e.preventDefault();

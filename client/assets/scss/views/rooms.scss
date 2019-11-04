@@ -22,6 +22,7 @@
         padding: 1rem 0;
     }
 
+
     &__details {
         display: flex;
         justify-content: center;
@@ -81,8 +82,29 @@
             }
         }
 
+        &-avatar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            width: 20%;
+            margin-right: 10px;
+
+            @include respond(phone) {
+                width: 100%;
+
+                img {
+                    width: 50%;
+                }
+            }
+
+            img {
+                border-radius: 10%;
+            }
+        }
+
         &-details {
-            width: 50%;
+            width: 40%;
             text-align: left;
 
             @include respond(phone) {
@@ -94,7 +116,6 @@
         /** List Item Actions */
         &-actions {
             display: flex;
-            justify-content: flex-end;
 
             @include respond(phone) {
                 justify-content: center;
@@ -102,9 +123,8 @@
         }
 
         &-action {
-            width: 50%;
+            width: 40%;
             align-self: center;
-            text-align: right;
 
             @include respond(phone) {
                 width: initial;

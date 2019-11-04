@@ -163,18 +163,17 @@ const checkCreateRoomFields = async (req, res, next) => {
                 min: 3,
                 max: 20
             })
-            .withMessage('Room name must be between 5 and 20 characters');
+            .withMessage('Room name must be between 3 and 20 characters');
     }
-
     if (req.body.password) {
         req.check('password')
             .not()
             .isEmpty()
             .isLength({
-                min: 5,
+                min: 3,
                 max: 15
             })
-            .withMessage('Password should be between 5 and 15 characters');
+            .withMessage('Password should be between 3 and 15 characters');
     }
 
     const errors = req.validationErrors();

@@ -19,14 +19,14 @@ const router = new Router({
                 requiresAuth: false
             }
         },
-        // {
-        //     path: '/about',
-        //     name: 'About',
-        //     component: () => import('@/views/About.vue'),
-        //     meta: {
-        //         requiresAuth: false
-        //     }
-        // },
+        {
+            path: '/about',
+            name: 'About',
+            component: () => import('@/views/About.vue'),
+            meta: {
+                requiresAuth: false
+            }
+        },
         {
             path: '/login',
             name: 'Login',

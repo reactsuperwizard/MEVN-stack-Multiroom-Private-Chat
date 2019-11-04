@@ -10,12 +10,12 @@
 @@- Messages should be send by pressing Enter as well as clicking the Send button. 
 - The text align of the message field should be RTL (as most users use Arabic) and the buttons come to right of the field.
 @@- Remove 'Private Rooms' and 'Private Rooms' from rooms list. They servs no purpose, as all rooms are public. 
-- Admins should be able to create/edit avatars for their rooms
-- Room avatars should appear in the rooms list as shown in the wirefiremes
-- Create About page
-- 'DISPLAY HANDLE' should accept unicode names (like 'رضا')
-- Limit the maximum number of rooms that a user can create to 3 
-- Maximum number of rooms at any given time should not exceed 100.
+@@- Admins should be able to create/edit avatars for their rooms
+@@- Room avatars should appear in the rooms list as shown in the wirefiremes
+@@- Create About page
+@@- 'DISPLAY HANDLE' should accept unicode names (like 'رضا')
+@@- Limit the maximum number of rooms that a user can create to 3 
+@@- Maximum number of rooms at any given time should not exceed 100.
 @@- A room admin should be able to ban/unban a user, so that user can stay in the room but not allowed to post anymore in that room
 @@- A room admin should be able to block a user, so that user is kick out of the room and never can join that room again
 @@- When a user is blocked from a room, all of his messages are removed from the room.

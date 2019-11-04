@@ -126,6 +126,7 @@ router.put(
         const updateFields = {};
         // let hash;
 
+        console.log('be______________________', JSON.stringify(req.body));
         for (let key of Object.keys(req.body)) {
             if (req.body[key] !== null) {
                 updateFields[key] = req.body[key];
