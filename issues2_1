@@ -1,0 +1,32 @@
+﻿Issues 2: I will set * as a complete mark.
+
+!!!recent issues!!!
+-Show notifications even loged out.
+*-Only room admin can change room name.
+*-tooltip for icons
+*-change icons (block,ban,exclam)
+-image url
+
+*- Messages should be send by pressing Enter as well as clicking the Send button. 
+- The text align of the message field should be RTL (as most users use Arabic) and the buttons come to right of the field.
+*- Remove 'Private Rooms' and 'Private Rooms' from rooms list. They servs no purpose, as all rooms are public. 
+- Admins should be able to create/edit avatars for their rooms
+- Room avatars should appear in the rooms list as shown in the wirefiremes
+- Create About page
+- 'DISPLAY HANDLE' should accept unicode names (like 'رضا')
+- Limit the maximum number of rooms that a user can create to 3 
+- Maximum number of rooms at any given time should not exceed 100.
+- A 'Home' room should always be present as the default room at the top of the rooms list.
+- Other rooms should appear  in the rooms list sorted by number of joined members. 
+- Empty rooms should be automatically removed from the rooms list
+*- A room admin should be able to ban/unban a user, so that user can stay in the room but not allowed to post anymore in that room
+*- A room admin should be able to block a user, so that user is kick out of the room and never can join that room again
+- When a user is blocked from a room, all of his messages are removed from the room.
+*- A user X should be able to block another user Y in a room, so that X does not see any more public or private messages posted by Y
+- Users should be able to post audio and video (.mp3 and .mp4) files into rooms
+*- Login button should be above 'forget password' and 'Register' links
+*- Copyright year at the footer should be 2018-present year 
+
+
+
+
