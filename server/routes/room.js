@@ -225,41 +225,43 @@ router.post(
 router.delete('/:room_name', passport.authenticate('jwt', {
     session: false
 }), async (req, res) => {
-    try {
-        const room = await Room.findOne({
-            where: {
-                'name': req.params.room_name
-            }
-        }, {
-            raw: true
-        });
-        const status = await Room.destroy({
-            where: {
-                'name': req.params.room_name
-            }
-        });
-        Message.destroy({
-            where: {
-                'room': room['id']
-            }
-        });
-        roomRelation.destroy({
-            where: {
-                'room': room['id']
-            }
-        });
+    if (req.params.room_name != 'HOME') {
+        try {
+            const room = await Room.findOne({
+                where: {
+                    'name': req.params.room_name
+                }
+            }, {
+                raw: true
+            });
+            const status = await Room.destroy({
+                where: {
+                    'name': req.params.room_name
+                }
+            });
+            Message.destroy({
+                where: {
+                    'room': room['id']
+                }
+            });
+            roomRelation.destroy({
+                where: {
+                    'room': room['id']
+                }
+            });
 
-        if (status) {
-            return res.status(200).json(room);
-        } else {
-            return res.status(404).json({
-                errors: `No room with name ${
+            if (status) {
+                return res.status(200).json(room);
+            } else {
+                return res.status(404).json({
+                    errors: `No room with name ${
                     req.params.room_name
                 } found, You will now be redirected`
-            });
+                });
+            }
+        } catch (err) {
+            return res.status(404).json(err);
         }
-    } catch (err) {
-        return res.status(404).json(err);
     }
 });
 

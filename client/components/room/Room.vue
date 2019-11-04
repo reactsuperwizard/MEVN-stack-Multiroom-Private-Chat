@@ -285,7 +285,7 @@
 			}
 		},
 		methods: {
-			...mapActions(["saveCurrentRoom"]),
+			...mapActions(["saveCurrentRoom", "deleteRoom"]),
 			text_truncate(str, length, ending) {
 				return this.$root.$children[0].text_truncate(str, length, ending);
 			},
@@ -601,6 +601,20 @@
 				this.leaveRoom(null, true);
 			}
 			this.getSocket.removeListener("userJoined");
+			if (this.getCurrentRoom && this.getCurrentRoom.users.length == 1) {
+				axios
+					.delete(`/api/room/${this.getCurrentRoom.name}`)
+					.then(res => {
+						this.$store.dispatch("deleteRoom", res.data);
+						this.getSocket.emit("roomDeleted", {
+							room: res.data,
+							user: this.getUserData,
+							admin: true,
+							content: `${res.data.user.username} deleted room ${res.data.name}`
+						});
+					})
+					.catch(err => console.log(err));
+			}
 		},
 		mounted() {}
 	};
