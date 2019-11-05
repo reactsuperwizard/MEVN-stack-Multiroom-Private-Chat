@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-
 const passport = require('passport');
-
 const User = require('../models/User');
 var uuidv4 = require('uuid/v4');
+const bcrypt = require('bcryptjs')
+const multer = require('multer')
+var path = require('path')
 
 const {
     checkEditProfileFields
@@ -14,16 +15,13 @@ const {
     DELETE_USER
 } = require('../actions/socketio');
 
-const bcrypt = require('bcryptjs')
-const multer = require('multer')
-
 // upload path for avatar image
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, '../chat_storage/avatar');
     },
     filename: function (req, file, cb) {
-        cb(null, uuidv4() + '.jpg');
+        cb(null, uuidv4() + path.extname(file.originalname));
     }
 });
 // upload path for upload image
@@ -33,13 +31,14 @@ const storage_upload = multer.diskStorage({
         cb(null, '../chat_storage/upload');
     },
     filename: function (req, file, cb) {
-        cb(null, uuidv4() + '.jpg');
+        cb(null, uuidv4() + path.extname(file.originalname));
     }
 });
 
 const fileFilter = (req, file, cb) => {
 
-    if (file.mimetype === 'image/jpg' || file.mimetype === 'image/png') {
+    if (file.mimetype !== 'image/png' && file.mimetype !== 'image/jpg' && file.mimetype !== 'image/jpeg') {
+        // if (file.mimetype === 'image/jpg' || file.mimetype === 'image/png') {
         cb(null, false);
     } else {
         cb(null, true);

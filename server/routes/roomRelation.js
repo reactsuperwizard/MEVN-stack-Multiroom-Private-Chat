@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 
 const RoomRelation = require('../models/RoomRelation');
+const Message = require('../models/Message');
 const _ = require('../../node_modules/lodash');
 const Sequelize = require("sequelize")
 
@@ -30,14 +31,23 @@ router.post('/', passport.authenticate('jwt', {
         }
     });
     const instance = arr[0]; // the first element is the instance
-    await RoomRelation.update({
-            status: req.body.status
-        }, {
-            where: {
-                id: instance.id
-            }
-        })
-        .then(result => {
+
+    const pRelation = RoomRelation.update({
+        status: req.body.status
+    }, {
+        where: {
+            id: instance.id
+        }
+    });
+
+    const pMessages = Message.destroy({
+        where: {
+            user: req.body.user,
+            room: req.body.room
+        }
+    })
+    Promise.all([msg_p, pMessages])
+        .then(pRelation => {
             res.status(200).send({
                 status: true
             });

@@ -2,7 +2,13 @@
 	<div class="page profile">
 		<div class="section section--profile profile__content">
 			<div class="section__content">
-				<form @submit.prevent="handleSubmit" class="form" method="post" enctype="multipart/form-data">
+				<form
+					@submit.prevent="handleSubmit"
+					class="form"
+					method="post"
+					enctype="multipart/form-data"
+					accept="image/x-png, image/gif, image/jpeg"
+				>
 					<p class="lead">Edit Profile Details</p>
 					<div class="profile__item">
 						<label for="image">
@@ -20,8 +26,8 @@
 							id="image"
 							ref="image"
 							name="image"
+							accept="image/x-png, image/gif, image/jpeg"
 							@change="handleFileUpload"
-							accept=".jpg, .jpeg"
 							style="display: none;"
 						/>
 					</div>

@@ -150,6 +150,7 @@
 						class="form form--nbs pt-3"
 						method="post"
 						enctype="multipart/form-data"
+						accept="image/x-png, image/gif, image/jpeg"
 					>
 						<div class="form__input-group">
 							<label for="room_avatar" title="Select Room Avatar">
@@ -177,7 +178,7 @@
 								ref="room_avatar"
 								name="room_avatar"
 								@change="handleFileUpload"
-								accept=".jpg, .jpeg"
+								accept="image/x-png, image/gif, image/jpeg"
 								style="display: none"
 							/>
 						</div>
