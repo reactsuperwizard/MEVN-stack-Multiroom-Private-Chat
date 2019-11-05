@@ -90,8 +90,8 @@
 														<i class="fa fa-caret-down"></i>
 													</button>
 													<div class="dropup-content">
-														<a href="#">
-															<img src="@/assets/img/block.png" @click="onStatusChange(user.id, 2)" />
+														<a href="#" @click="onStatusChange(user.id, 2)">
+															<img src="@/assets/img/block.png" />
 															<span>{{getStatus(user.id) == 2 ? 'Active' : 'Block'}} {{user.handle}}</span>
 														</a>
 														<a

@@ -46,7 +46,7 @@ router.post('/', passport.authenticate('jwt', {
             room: req.body.room
         }
     })
-    Promise.all([msg_p, pMessages])
+    Promise.all([pRelation, pMessages])
         .then(pRelation => {
             res.status(200).send({
                 status: true
