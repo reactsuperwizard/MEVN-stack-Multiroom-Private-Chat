@@ -65,14 +65,6 @@ const upload = multer({
     },
     fileFilter: fileFilter
 })
-// upload var for upload image
-const upload_images = multer({
-    storage: storage_upload,
-    limits: {
-        fileSize: 1024 * 1024 * 50
-    },
-    fileFilter: fAudioVideoFilter
-})
 /**
  * @description  GET /api/user/users
  * @param  {Middleware} passport.authenticate
@@ -103,18 +95,36 @@ router.get('/users', passport.authenticate('jwt', {
 /**
  * @description PUT /api/user/image
  */
+// upload var for upload image
+const upload_images = multer({
+    storage: storage_upload,
+    limits: {
+        fileSize: 1024 * 1024 * 50
+    },
+    fileFilter: fAudioVideoFilter
+}).single('image');
+
 router.post(
-    '/image', [upload_images.single('image'), passport.authenticate('jwt', {
+    '/image', [passport.authenticate('jwt', {
         session: false
     })], async (req, res) => {
-        if (req.file) {
+        try {
+            upload_images(req, res, function (err) {
+                if (err) {
+                    res.json({
+                        success: false
+                    })
+                } else {
+                    res.json({
+                        success: true,
+                        image: req.file.filename
+                    })
+                }
+            });
+        } catch (err) {
             res.json({
                 success: true,
                 image: req.file.filename
-            })
-        } else {
-            res.json({
-                success: false
             })
         }
     });

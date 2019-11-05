@@ -97,6 +97,14 @@
 									content: "!!!image!!!" + res.data.image
 								});
 							} else {
+								this.$notify({
+									group: "notification_newMsg",
+									title: "Upload failed",
+									text:
+										"Upload image, audio, video less than 50 MB",
+									type: "error ",
+									duration: 10000
+								});
 							}
 						})
 
