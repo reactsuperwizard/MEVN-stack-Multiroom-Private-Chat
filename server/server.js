@@ -298,7 +298,6 @@ io.on('connection', socket => {
         });
 
         // Emit data back to the client for display
-        console.log('++++++++++++emigitin new message', JSON.stringify(newMessage));
         io.to(data.room).emit('receivedNewMessage', JSON.stringify(newMessage));
         io.to(data.room).emit('roomRelationChanged', JSON.stringify({
             user: data.user,

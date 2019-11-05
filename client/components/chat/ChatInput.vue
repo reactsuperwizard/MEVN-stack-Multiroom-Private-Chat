@@ -8,7 +8,7 @@
 			<input
 				ref="file"
 				type="file"
-				accept=".jpg, .jpeg"
+				accept="audio/*, image/*, video/*"
 				@change="uploadImageFile"
 				style="display: none;"
 			/>

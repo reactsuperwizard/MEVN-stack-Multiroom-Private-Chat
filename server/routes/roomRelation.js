@@ -53,7 +53,7 @@ router.post('/', passport.authenticate('jwt', {
             });
         })
         .catch(err => {
-            console.log('be:RoomRelation post upsert err', err);
+            console.log('err', err);
         });
 });
 module.exports = router;

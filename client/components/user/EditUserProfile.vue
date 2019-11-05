@@ -106,7 +106,7 @@
 	import axios from "axios";
 	import { mapActions, mapGetters } from "vuex";
 	import _ from "lodash";
-	import slugify from "slugify";
+	import slugify from "arslugify";
 	import Error from "../error/Error.vue";
 
 	export default {
@@ -153,7 +153,7 @@
 					handle:
 						this.handle === this.getUserData.handle
 							? null
-							: this.handle,
+							: slugify(this.handle),
 					// email: this.email === this.getUserData.email ? null : this.email,
 					age: this.age === this.getUserData.age ? null : this.age,
 					sex: this.sex === this.getUserData.sex ? null : this.sex,
@@ -170,7 +170,6 @@
 						formData.append(property, updatedUserDetails[property]);
 					}
 				}
-				console.log(updatedUserDetails.handle);
 
 				if (localStorage.getItem("authToken")) {
 					axios

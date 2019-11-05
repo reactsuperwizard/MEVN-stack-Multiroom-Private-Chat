@@ -210,7 +210,6 @@
 				this.selected_url = URL.createObjectURL(file);
 			},
 			roomSortFunc(a, b) {
-				console.log(a, b);
 				let roomA = a.name.toUpperCase();
 				let roomB = b.name.toUpperCase();
 
@@ -224,10 +223,10 @@
 
 				//sort by users count
 				if (a.users < b.users) {
-					return -1;
+					return 1;
 				}
 				if (a.users > b.users) {
-					return 1;
+					return -1;
 				}
 
 				return 0;
@@ -275,7 +274,6 @@
 					}
 				}
 
-				console.log(updatedRoomData, formData);
 				if (localStorage.getItem("authToken")) {
 					axios
 						.post(`/api/room`, formData, {

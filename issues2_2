@@ -1,7 +1,6 @@
 ﻿Issues 2: I will set @@ as a complete mark.
 
 !!!recent issues!!!
--Show notifications even loged out.
 @@-Only room admin can change room name.
 @@-tooltip for icons
 @@-change icons (block,ban,exclam)
@@ -20,7 +19,7 @@
 @@- A room admin should be able to block a user, so that user is kick out of the room and never can join that room again
 @@- When a user is blocked from a room, all of his messages are removed from the room.
 @@- A user X should be able to block another user Y in a room, so that X does not see any more public or private messages posted by Y
-- Users should be able to post audio and video (.mp3 and .mp4) files into rooms
+@@- Users should be able to post audio and video (.mp3 and .mp4) files into rooms
 @@- Login button should be above 'forget password' and 'Register' links
 @@- Copyright year at the footer should be 2018-present year 
 

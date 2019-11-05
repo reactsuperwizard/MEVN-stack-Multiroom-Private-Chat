@@ -34,10 +34,22 @@ const storage_upload = multer.diskStorage({
         cb(null, uuidv4() + path.extname(file.originalname));
     }
 });
-
 const fileFilter = (req, file, cb) => {
 
     if (file.mimetype !== 'image/png' && file.mimetype !== 'image/jpg' && file.mimetype !== 'image/jpeg') {
+        // if (file.mimetype === 'image/jpg' || file.mimetype === 'image/png') {
+        cb(null, false);
+    } else {
+        cb(null, true);
+    }
+}
+
+//file filter for image, audio, video
+const fAudioVideoFilter = (req, file, cb) => {
+
+    const type = file.mimetype;
+    const typeArray = type.split("/");
+    if (typeArray[0] !== 'image' && typeArray[0] !== 'audio' && typeArray[0] !== 'video') {
         // if (file.mimetype === 'image/jpg' || file.mimetype === 'image/png') {
         cb(null, false);
     } else {
@@ -59,7 +71,7 @@ const upload_images = multer({
     limits: {
         fileSize: 1024 * 1024 * 50
     },
-    fileFilter: fileFilter
+    fileFilter: fAudioVideoFilter
 })
 /**
  * @description  GET /api/user/users
@@ -123,9 +135,7 @@ router.put(
     }), checkEditProfileFields],
     async (req, res) => {
         const updateFields = {};
-        // let hash;
 
-        console.log('be______________________', JSON.stringify(req.body));
         for (let key of Object.keys(req.body)) {
             if (req.body[key] !== null) {
                 updateFields[key] = req.body[key];

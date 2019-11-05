@@ -9,7 +9,6 @@ const Sequelize = require("sequelize")
 module.exports = {
     //room, roomAdmin, user
     GET_RELATIONS: async data => {
-        console.log('BE GET_RELATIONS', data.room, data.roomAdmin, data.user);
         const relations = {};
         relations.roomR = 0;
         relations.privateR = 0;
@@ -42,7 +41,6 @@ module.exports = {
         relations.roomR = value[0] ? value[0].status : relations.roomR;
         relations.privateRs = value[1] ? value[1] : relations.privateRs;
         relations.privateR = value[2] ? value[2].status : relations.privateR;
-        console.log('_______in getrelations func', JSON.stringify(relations.privateRs))
         return relations;
     },
     ADD_MESSAGE: async data => {
@@ -60,7 +58,6 @@ module.exports = {
             });
             messageData['user'] = userData;
         }
-        console.log('++++++++++++++++++++BE', JSON.stringify(messageData));
         return messageData;
     },
     ADD_PRIVATE_MESSAGE: async data => {

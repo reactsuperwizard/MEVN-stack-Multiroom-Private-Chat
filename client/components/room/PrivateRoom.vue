@@ -9,7 +9,7 @@
 								<div>
 									<ion-icon name="contacts" class="icon"></ion-icon>
 								</div>
-								<span class="section__title">Online Users</span>
+								<span class="section__title">All Users</span>
 								<div @click="toggleUserList">
 									<ion-icon name="backspace" class="icon"></ion-icon>
 								</div>
@@ -190,7 +190,6 @@
 				const id = this.getCurrentSelect;
 				if (!id || !this.users) return true;
 				const touser = this.users.find(x => x.id == id);
-				console.log("touser", touser);
 				return !touser || (touser.from != 2 && touser.to != 2);
 			},
 			isUnread(id) {
@@ -367,7 +366,6 @@
 						this.users = JSON.parse(data);
 					});
 					this.getSocket.on("statusChanged", data => {
-						console.log("SOn prv statuschanged", JSON.parse(data));
 						const _data = JSON.parse(data);
 						const user = this.users.find(x => x.id == _data.user);
 						user.to = _data.status;

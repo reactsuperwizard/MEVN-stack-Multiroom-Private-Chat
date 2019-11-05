@@ -71,7 +71,7 @@
 
 <script>
 	import axios from "axios";
-	import slugify from "slugify";
+	import slugify from "arslugify";
 	import Error from "../error/Error.vue";
 	// import OAuth from '../social/OAuth.vue';
 	import setAuthToken from "../../utils/authToken";

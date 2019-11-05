@@ -13,23 +13,33 @@ let opts = {
 };
 
 module.exports = function (passport) {
-    passport.serializeUser((user, done) => done(null, { id: user.id, _socket: user._socket }));
+    passport.serializeUser((user, done) => done(null, {
+        id: user.id,
+        _socket: user._socket
+    }));
 
     passport.deserializeUser((user, done) => {
         User.findByPk(user.id, {
-            attributes: { exclude: ['password'] }
-        })
+                attributes: {
+                    exclude: ['password']
+                }
+            })
             // .select('-password -googleId -facebookId')
             .then(user => {
-                done(null, { details: user, _socket: user._socket });
+                done(null, {
+                    details: user,
+                    _socket: user._socket
+                });
             });
     });
 
     passport.use(
         new JwtStrategy(opts, (payload, done) => {
             User.findByPk(payload.id, {
-                attributes: { exclude: ['password'] }
-            })
+                    attributes: {
+                        exclude: ['password']
+                    }
+                })
                 // .select('-password')
                 .then(user => {
                     if (user) {
@@ -41,93 +51,4 @@ module.exports = function (passport) {
         })
     );
 
-    // if (process.env.NODE_ENV !== 'test') {
-    //     passport.use(
-    //         new GoogleStrategy(GOOGLE_CONFIG, function(
-    //             req,
-    //             accessToken,
-    //             refreshToken,
-    //             profile,
-    //             done
-    //         ) {
-    //             User.findOne({ username: profile.displayName })
-    //                 .then(user => {
-    //                     if (user) {
-    //                         user.social.id = profile.id;
-    //                         user.social.email = profile.emails[0].value;
-    //                         user.social.image = profile.photos[0].value.replace('?sz=50', '');
-
-    //                         user.save().then(user => {
-    //                             return done(null, {
-    //                                 details: user,
-    //                                 _socket: JSON.parse(req.query.state)._socket
-    //                             });
-    //                         });
-    //                     } else {
-    //                         new User({
-    //                             social: {
-    //                                 id: profile.id,
-    //                                 email: profile.emails[0].value,
-    //                                 image: profile.photos[0].value.replace('?sz=50', '')
-    //                             },
-    //                             handle: slugify(profile.displayName.toLowerCase()),
-    //                             username: profile.displayName
-    //                         })
-    //                             .save()
-    //                             .then(user => {
-    //                                 return done(null, {
-    //                                     details: user,
-    //                                     _socket: JSON.parse(req.query.state)._socket
-    //                                 });
-    //                             });
-    //                     }
-    //                 })
-    //                 .catch(err => console.log(err));
-    //         })
-    //     );
-
-    //     passport.use(
-    //         new FacebookStrategy(FACEBOOK_CONFIG, function(
-    //             req,
-    //             accessToken,
-    //             refreshToken,
-    //             profile,
-    //             done
-    //         ) {
-    //             User.findOne({ username: profile.displayName })
-    //                 .then(user => {
-    //                     if (user) {
-    //                         user.social.id = profile.id;
-    //                         user.social.image = profile.photos[0].value;
-    //                         user.social.email = profile.emails[0].value;
-
-    //                         user.save().then(user => {
-    //                             return done(null, {
-    //                                 details: user,
-    //                                 _socket: JSON.parse(req.query.state)._socket
-    //                             });
-    //                         });
-    //                     } else {
-    //                         new User({
-    //                             social: {
-    //                                 id: profile.id,
-    //                                 image: profile.photos[0].value,
-    //                                 email: profile.emails[0].value
-    //                             },
-    //                             handle: slugify(profile.displayName.toLowerCase()),
-    //                             username: profile.displayName
-    //                         })
-    //                             .save()
-    //                             .then(user => {
-    //                                 return done(null, {
-    //                                     details: user,
-    //                                     _socket: JSON.parse(req.query.state)._socket
-    //                                 });
-    //                             });
-    //                     }
-    //                 })
-    //                 .catch(err => console.log(err));
-    //         })
-    //     );
-    // }
 };

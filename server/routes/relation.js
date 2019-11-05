@@ -35,13 +35,12 @@ router.post('/', passport.authenticate('jwt', {
             }
         })
         .then(result => {
-            console.log(req.body.status);
             res.status(200).send({
                 status: true
             });
         })
         .catch(err => {
-            console.log('be:relation post upsert err', err);
+            console.log('err', err);
         });
 });
 module.exports = router;

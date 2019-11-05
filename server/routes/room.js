@@ -108,7 +108,6 @@ router.get('/:room_id', passport.authenticate('jwt', {
                 user: req.user.id
             });
 
-            console.log('___________relations', JSON.stringify(relations));
             if (relations.privateR == 2 || relations.roomR == 2) {
                 return res.status(200).json({
                     msg: 'You are blocked'

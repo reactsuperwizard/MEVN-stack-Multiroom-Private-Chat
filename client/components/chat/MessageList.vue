@@ -10,16 +10,17 @@
 					>
 						<div class="chat__message-body">
 							<div class="chat__message-content chat__message-content--right">
-								<!-- <img
-									v-if="message.content.includes('!!!image!!!')"
-									:src="'./../public_images/upload_images/'+ message.content.substring(11)"
-									alt="unknowImage"
-								/>-->
 								<img
-									v-if="message.content.includes('!!!image!!!')"
+									v-if="getFileType(message.content) == 1"
 									:src="'http://localhost:5000/public/upload/'+ message.content.substring(11)"
 									alt="unknowImage"
 								/>
+								<audio controls v-else-if="getFileType(message.content) == 2">
+									<source :src="'http://localhost:5000/public/upload/'+ message.content.substring(11)" />
+								</audio>
+								<video width="320" height="240" controls v-else-if="getFileType(message.content) == 3">
+									<source :src="'http://localhost:5000/public/upload/'+ message.content.substring(11)" />
+								</video>
 								<span v-else>{{ message.content}}</span>
 							</div>
 							<div class="chat__message-details">
@@ -39,10 +40,16 @@
 						<div class="chat__message-body">
 							<div class="chat__message-content">
 								<img
-									v-if="message.content.includes('!!!image!!!')"
+									v-if="getFileType(message.content) == 1"
 									:src="'http://localhost:5000/public/upload/'+ message.content.substring(11)"
 									alt="unknowImage"
 								/>
+								<audio controls v-else-if="getFileType(message.content) == 2">
+									<source :src="'http://localhost:5000/public/upload/'+ message.content.substring(11)" />
+								</audio>
+								<video width="320" height="240" controls v-else-if="getFileType(message.content) == 3">
+									<source :src="'http://localhost:5000/public/upload/'+ message.content.substring(11)" />
+								</video>
 								<span v-else>{{ message.content}}</span>
 							</div>
 							<div class="chat__message-details">
@@ -59,10 +66,16 @@
 						<div class="chat__message-body">
 							<div class="chat__message-content chat__message-content--left">
 								<img
-									v-if="message.content.includes('!!!image!!!')"
+									v-if="getFileType(message.content) == 1"
 									:src="'http://localhost:5000/public/upload/'+ message.content.substring(11)"
 									alt="unknowImage"
 								/>
+								<audio controls v-else-if="getFileType(message.content) == 2">
+									<source :src="'http://localhost:5000/public/upload/'+ message.content.substring(11)" />
+								</audio>
+								<video width="320" height="240" controls v-else-if="getFileType(message.content) == 3">
+									<source :src="'http://localhost:5000/public/upload/'+ message.content.substring(11)" />
+								</video>
 								<span v-else>{{ message.content}}</span>
 							</div>
 							<div class="chat__message-details">
@@ -82,10 +95,16 @@
 						<div class="chat__message-body">
 							<div class="chat__message-content chat__message-content--left">
 								<img
-									v-if="message.content.includes('!!!image!!!')"
+									v-if="getFileType(message.content) == 1"
 									:src="'http://localhost:5000/public/upload/'+ message.content.substring(11)"
 									alt="unknowImage"
 								/>
+								<audio controls v-else-if="getFileType(message.content) == 2">
+									<source :src="'http://localhost:5000/public/upload/'+ message.content.substring(11)" />
+								</audio>
+								<video width="320" height="240" controls v-else-if="getFileType(message.content) == 3">
+									<source :src="'http://localhost:5000/public/upload/'+ message.content.substring(11)" />
+								</video>
 								<span v-else>{{ message.content}}</span>
 							</div>
 							<div class="chat__message-details">
@@ -104,10 +123,16 @@
 						<div class="chat__message-body">
 							<div class="chat__message-content chat__message-content--left">
 								<img
-									v-if="message.content.includes('!!!image!!!')"
+									v-if="getFileType(message.content) == 1"
 									:src="'http://localhost:5000/public/upload/'+ message.content.substring(11)"
 									alt="unknowImage"
 								/>
+								<audio controls v-else-if="getFileType(message.content) == 2">
+									<source :src="'http://localhost:5000/public/upload/'+ message.content.substring(11)" />
+								</audio>
+								<video width="320" height="240" controls v-else-if="getFileType(message.content) == 3">
+									<source :src="'http://localhost:5000/public/upload/'+ message.content.substring(11)" />
+								</video>
 								<span v-else>{{ message.content}}</span>
 							</div>
 							<div class="chat__message-details">
@@ -146,6 +171,39 @@
 				if (container) {
 					container.scrollTop = container.scrollHeight;
 				}
+			},
+			getFileType(fUrl) {
+				const ext = fUrl.split(".").pop();
+
+				if (
+					ext == "jpg" ||
+					ext == "png" ||
+					ext == "bmp" ||
+					ext == "jpeg" ||
+					ext == "gif" ||
+					ext == "tief"
+				)
+					return 1;
+				if (
+					ext == "mp3" ||
+					ext == "wav" ||
+					ext == "PCM" ||
+					ext == "OGG" ||
+					ext == "WMA" ||
+					ext == "wv"
+				)
+					return 2;
+				if (
+					ext == "mp4" ||
+					ext == "mov" ||
+					ext == "3gp" ||
+					ext == "3gpp" ||
+					ext == "wmv" ||
+					ext == "FLV" ||
+					ext == "AVI"
+				)
+					return 3;
+				return 0;
 			}
 		},
 		mounted() {
