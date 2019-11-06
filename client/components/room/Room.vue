@@ -398,6 +398,12 @@
 				}
 			},
 			checkUserTabs(room) {
+				console.log(
+					"checkusertabs",
+					this.getCurrentRoom,
+					room.users,
+					this.getUserData.id
+				);
 				if (
 					this.getCurrentRoom &&
 					room &&
@@ -442,6 +448,9 @@
 							content: `${this.getUserData.handle} left ${this.getCurrentRoom.name}`
 						});
 						this.roomLeft = true;
+						if (!newPage) {
+							this.$router.push({ name: "RoomList" });
+						}
 					});
 			},
 			openEditRoom() {
@@ -655,8 +664,8 @@
 			const block_members = this.privateRs.filter(
 				privateR => privateR.status == 2
 			);
-			const allowedUsers = this.users
-				? await this.users.filter(user => {
+			const allowedUsers = this.room.users
+				? await this.room.users.filter(user => {
 						if (block_members.length == 0) return 1;
 						else if (
 							block_members.find(
