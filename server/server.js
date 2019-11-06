@@ -167,7 +167,7 @@ io.on('connection', socket => {
         JOIN_ROOM(socket, data);
     });
 
-    /** User Exit Room */
+    /** Request User Exit Room */
     socket.on('exitRoom', data => {
         currentRoomId = null;
         socket.leave(data.room.id, async () => {
@@ -186,13 +186,49 @@ io.on('connection', socket => {
                 })
             );
 
-            io.to(data.room.id).emit('receivedUserExit', data.room);
+            io.to(data.room.id).emit('receivedUserExit',
+                JSON.stringify({
+                    room: data.room
+                }));
 
             /** Send Exit Message back to room */
             socket.broadcast
                 .to(data.room.id)
                 .emit('receivedNewMessage', JSON.stringify(await ADD_MESSAGE(data)));
         });
+    });
+
+    /**Room admin requests to exit the user */
+    socket.on('exitUserRoom', async data => {
+        currentRoomId = null;
+        const socketId = await GET_USER_SOCKET(data.exitUser);
+        const Usocket = io.sockets.connected[socketId];
+
+        socket.to(data.room.id).emit(
+            'updateRoomData',
+            JSON.stringify({
+                room: data.room
+            })
+        );
+
+        /** Update room list count */
+        socket.broadcast.emit(
+            'updateRooms',
+            JSON.stringify({
+                room: await GET_ROOMS()
+            })
+        );
+
+        io.to(data.room.id).emit('receivedUserExit',
+            JSON.stringify({
+                room: data.room
+            }));
+
+        /** Send Exit Message back to room */
+        socket.broadcast
+            .to(data.room.id)
+            .emit('receivedNewMessage', JSON.stringify(await ADD_MESSAGE(data)));
+        Usocket.leave(data.room.id);
     });
 
     socket.on('removeUserTyping', data => {
@@ -272,7 +308,7 @@ io.on('connection', socket => {
     });
     /** User Status Change Event */
     socket.on('statusChanged', async data => {
-        const socketid = await GET_USER_SOCKET(data);
+        const socketid = await GET_USER_SOCKET(data.touser);
         if (socketid) {
             io.to(socketid).emit('statusChanged', JSON.stringify({
                 user: data.user,

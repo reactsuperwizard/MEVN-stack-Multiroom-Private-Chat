@@ -229,16 +229,16 @@
 					this.newMessage.splice(index, 1);
 				}
 			},
-			checkUserTabs(room) {
-				if (
-					room &&
-					room.users.findIndex(user => {
-						return user.id === this.getUserData.id;
-					}) === -1
-				) {
-					this.$router.push({ name: "RoomList" });
-				}
-			},
+			// checkUserTabs(room) {
+			// 	if (
+			// 		room &&
+			// 		room.users.findIndex(user => {
+			// 			return user.id === this.getUserData.id;
+			// 		}) === -1
+			// 	) {
+			// 		this.$router.push({ name: "RoomList" });
+			// 	}
+			// },
 			sortAlphabetical(a, b) {
 				let userA = a.username.toUpperCase();
 				let userB = b.username.toUpperCase();
@@ -329,9 +329,9 @@
 					});
 
 					/** Socket IO: User Exit Event - Check other tabs of the same room and redirect */
-					this.getSocket.on("receivedUserExit", room => {
-						this.checkUserTabs(room);
-					});
+					// this.getSocket.on("receivedUserExit", room => {
+					// 	this.checkUserTabs(room);
+					// });
 					/** Socket IO: New Messaage Event - Append the new message to the messages array */
 					const _this = this;
 					this.getSocket.on("receivedNewMessage", message => {

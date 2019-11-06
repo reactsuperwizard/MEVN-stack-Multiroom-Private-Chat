@@ -324,13 +324,10 @@
 				return this.$root.$children[0].text_truncate(str, length, ending);
 			},
 			getStatus(id) {
-				console.log("gettingn Status ", id, this.privateRs);
 				if (!this.privateRs) {
-					console.log("_______________0", id);
 					return 0;
 				}
 				const user = this.privateRs.find(privateR => privateR.touser == id);
-				console.log("_______________", user ? user.status : 0, id);
 				return user ? user.status : 0;
 			},
 
@@ -354,21 +351,32 @@
 										user: id,
 										status: from
 									});
-									console.log("status change", user);
 								}
 							})
 							.catch(err => {
 								console.log("err", err);
 							});
+						if (from == 2) {
+							axios
+								.post("/api/room/remove/users", {
+									room_id: this.getCurrentRoom.id,
+									user: id
+								})
+								.then(res => {
+									this.getSocket.emit("exitUserRoom", {
+										exitUser: id,
+										room: res.data,
+										user: null,
+										admin: true,
+										content: `${user.handle} left ${this.getCurrentRoom.name}`
+									});
+								});
+						}
 					}
 					axios
 						.post("/api/relation", { to: id, status: from })
 						.then(res => {
 							if (res.data.status) {
-								console.log(
-									"status Change Call api relation",
-									this.privateRs
-								);
 								const privateR = this.privateRs.find(
 									privateR =>
 										privateR.user == this.getUserData.id &&
@@ -382,10 +390,6 @@
 										status: from
 									});
 								else privateR.status = from;
-								console.log(
-									"status Change Call api relation",
-									this.privateRs
-								);
 							}
 						})
 						.catch(err => {
@@ -395,12 +399,20 @@
 			},
 			checkUserTabs(room) {
 				if (
+					this.getCurrentRoom &&
 					room &&
+					room.users &&
 					room.users.findIndex(user => {
 						return user.id === this.getUserData.id;
 					}) === -1
 				) {
-					this.$router.push({ name: "RoomList" });
+					this.roomLeft = 1;
+					this.$router.push({
+						name: "RoomList",
+						params: {
+							message: "You are blocked by the room admin"
+						}
+					});
 				}
 			},
 			sortAlphabetical(a, b) {
@@ -423,7 +435,6 @@
 						room_id: this.getCurrentRoom.id
 					})
 					.then(res => {
-						console.log("leave room", res.data);
 						this.getSocket.emit("exitRoom", {
 							room: res.data,
 							user: null,
@@ -431,9 +442,6 @@
 							content: `${this.getUserData.handle} left ${this.getCurrentRoom.name}`
 						});
 						this.roomLeft = true;
-						if (!newPage) {
-							this.$router.push({ name: "RoomList" });
-						}
 					});
 			},
 			openEditRoom() {
@@ -455,7 +463,6 @@
 					}
 				}
 
-				console.log(updatedRoomData, formData);
 				if (localStorage.getItem("authToken")) {
 					axios
 						.post("/api/room/update/name", formData, {
@@ -504,19 +511,18 @@
 			}
 		},
 		created() {
+			this.getSocket.removeListener("receivedUserExit");
 			axios
 				.get(`/api/room/${this.$route.params.id}`)
 				.then(res => {
 					if (res.data.msg) {
 						this.roomLeft = 1;
-						setTimeout(() => {
-							this.$router.push({
-								name: "RoomList",
-								params: {
-									message: "You are blocked by the room admin"
-								}
-							});
-						}, 0);
+						this.$router.push({
+							name: "RoomList",
+							params: {
+								message: "You are blocked by the room admin"
+							}
+						});
 						return;
 					}
 					this.room = res.data;
@@ -524,34 +530,22 @@
 					this.privateRs = res.data.privateRs;
 					this.privateRs = this.privateRs ? this.privateRs : [];
 					this.status = this.room.status;
-					console.log(
-						"created and saveCurrentRoom",
-						this.privateRs,
-						res.data
-					);
 					this.$store.dispatch("saveCurrentRoom", res.data);
 
 					/** Socket IO: User join event, get latest messages from room */
 
 					this.getSocket.on("roomRelationChanged", data => {
 						const _data = JSON.parse(data);
-						console.log(this.getUserData.id, _data.user, _data.status);
 						if (
 							this.getUserData.id == _data.user &&
 							this.getCurrentRoom &&
 							!this.roomLeft
 						) {
-							console.log("roomRelation Changed", _data.status);
 							this.room.status = _data.status;
 							this.status = _data.status;
-							if (_data.status == 2) {
-								this.leaveRoom();
-								return;
-							}
 						}
 					});
 
-					console.log("user Joined Emitting", this.getCurrentRoom);
 					this.getSocket.emit("userJoined", {
 						room: this.getCurrentRoom,
 						user: this.getUserData,
@@ -569,8 +563,7 @@
 						if (data.room) {
 							this.room = data.room;
 							// this.status = this.room.status;
-							this.users = data.room.users;
-							console.log("son updateRoomData", data.room.users);
+							if (data.room.users) this.users = data.room.users;
 							this.$store.dispatch("saveCurrentRoom", data.room);
 						}
 					});
@@ -595,12 +588,11 @@
 					/** Socket IO: User Exit Event - Update User List */
 					this.getSocket.on("updateUserList", data => {
 						this.users = JSON.parse(data);
-						console.log("updateUserList", this.users);
 					});
 
 					/** Socket IO: User Exit Event - Check other tabs of the same room and redirect */
-					this.getSocket.on("receivedUserExit", room => {
-						this.checkUserTabs(room);
+					this.getSocket.on("receivedUserExit", data => {
+						this.checkUserTabs(JSON.parse(data).room);
 					});
 
 					/** Socket IO: New Messaage Event - Append the new message to the messages array */
@@ -616,6 +608,7 @@
 					this.getSocket.on("roomDeleted", () => {
 						this.$store.dispatch("saveCurrentRoom", null);
 						setTimeout(() => {
+							this.roomLeft = true;
 							this.$router.push({
 								name: "RoomList",
 								params: {
@@ -638,6 +631,8 @@
 				.catch(err => {
 					console.log("err", err);
 					if (err.response.status === 404) {
+						this.roomLeft = true;
+						console.log("error occured and go to roomlist");
 						this.$router.push({
 							name: "RoomList",
 							params: {
@@ -648,14 +643,40 @@
 					}
 				});
 		},
-		beforeDestroy() {
+		async beforeDestroy() {
 			if (this.getCurrentRoom && !this.roomLeft) {
 				this.leaveRoom(null, true);
 			}
 			this.getSocket.removeListener("userJoined");
-			if (this.getCurrentRoom && this.getCurrentRoom.users.length == 1) {
+
+			if (this.privateRs == null) {
+				this.privateRs = [];
+			}
+			const block_members = this.privateRs.filter(
+				privateR => privateR.status == 2
+			);
+			const allowedUsers = this.users
+				? await this.users.filter(user => {
+						if (block_members.length == 0) return 1;
+						else if (
+							block_members.find(
+								blockMember => blockMember.touser == user.id
+							)
+						)
+							return 0;
+						return 1;
+				  })
+				: "";
+
+			if (
+				this.getCurrentRoom &&
+				(!this.allowedUsers || this.allowedUsers.length <= 2)
+			) {
 				axios
-					.delete(`/api/room/${this.getCurrentRoom.name}`)
+					.delete(`/api/room/${this.getCurrentRoom.name}`, {
+						//set mark to make server check if there is no user in the room
+						data: { check: 1 }
+					})
 					.then(res => {
 						this.$store.dispatch("deleteRoom", res.data);
 						this.getSocket.emit("roomDeleted", {

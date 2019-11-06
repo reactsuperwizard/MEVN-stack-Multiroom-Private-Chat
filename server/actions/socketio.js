@@ -92,7 +92,7 @@ module.exports = {
         return messageData;
     },
     GET_USER_SOCKET: async data => {
-        const userData = await User.findByPk(data.touser, {
+        const userData = await User.findByPk(data, {
             raw: true
         });
         return userData.socketid;

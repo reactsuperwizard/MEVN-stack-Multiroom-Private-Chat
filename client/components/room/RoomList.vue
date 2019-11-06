@@ -313,13 +313,15 @@
 				axios
 					.delete(`/api/room/${e.target.name}`)
 					.then(res => {
-						this.$store.dispatch("deleteRoom", res.data);
-						this.getSocket.emit("roomDeleted", {
-							room: res.data,
-							user: this.getUserData,
-							admin: true,
-							content: `${res.data.user.username} deleted room ${res.data.name}`
-						});
+						if (!res.errors) {
+							this.$store.dispatch("deleteRoom", res.data);
+							this.getSocket.emit("roomDeleted", {
+								room: res.data,
+								user: this.getUserData,
+								admin: true,
+								content: `${res.data.user.username} deleted room ${res.data.name}`
+							});
+						}
 					})
 					.catch(err => console.log(err));
 			},
@@ -377,6 +379,7 @@
 			}
 		},
 		created() {
+			this.$store.dispatch("saveCurrentRoom", null);
 			this.getSocket.removeListener("msgAlertTriggered");
 			this.getSocket.on("roomAdded", data => {
 				this.rooms.unshift(JSON.parse(data));

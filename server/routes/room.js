@@ -291,33 +291,42 @@ router.delete('/:room_name', passport.authenticate('jwt', {
             }, {
                 raw: true
             });
-            const status = await Room.destroy({
+            const roomUsers = await User.findAndCountAll({
                 where: {
-                    'name': req.params.room_name
+                    'room_id': room.id
                 }
-            });
-            Message.destroy({
-                where: {
-                    'room': room['id']
-                }
-            });
-            roomRelation.destroy({
-                where: {
-                    'room': room['id']
-                }
-            });
+            })
+            if (!req.body.check || roomUsers.count == 0) {
+                const status = await Room.destroy({
+                    where: {
+                        'name': req.params.room_name
+                    }
+                });
+                Message.destroy({
+                    where: {
+                        'room': room['id']
+                    }
+                });
+                roomRelation.destroy({
+                    where: {
+                        'room': room['id']
+                    }
+                });
 
-            if (status) {
-                return res.status(200).json(room);
-            } else {
-                return res.status(404).json({
+                if (status)
+                    return res.status(200).json(room);
+                return res.status(200).json({
                     errors: `No room with name ${
                     req.params.room_name
                 } found, You will now be redirected`
                 });
             }
         } catch (err) {
-            return res.status(404).json(err);
+            return res.status(200).json({
+                errors: `No room with name ${
+                    req.params.room_name
+                } found, You will now be redirected`
+            });
         }
     }
 });
@@ -396,6 +405,7 @@ router.post('/remove/users', passport.authenticate('jwt', {
     let room = await Room.findByPk(req.body.room_id, {
         raw: true
     });
+    const id = req.body.user ? req.body.user : req.user.id;
 
     if (room) {
         const updateFields = ({
@@ -405,7 +415,7 @@ router.post('/remove/users', passport.authenticate('jwt', {
                 returning: true,
                 raw: true,
                 where: {
-                    id: req.user.id
+                    id: id
                 }
             })
             .then(async info => {
