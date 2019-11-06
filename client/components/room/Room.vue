@@ -398,12 +398,6 @@
 				}
 			},
 			checkUserTabs(room) {
-				console.log(
-					"checkusertabs",
-					this.getCurrentRoom,
-					room.users,
-					this.getUserData.id
-				);
 				if (
 					this.getCurrentRoom &&
 					room &&
