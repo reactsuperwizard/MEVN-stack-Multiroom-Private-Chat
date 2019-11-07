@@ -331,7 +331,6 @@ module.exports = {
             msgs = value[0];
             pMsgs = value[1];
             userp = value[2];
-            console.log('get details', msgs, pMsgs, userp);
             const msg_p = Message.destroy({
                 where: {
                     'user': data
@@ -356,10 +355,8 @@ module.exports = {
                     'id': data
                 }
             });
-            console.log('User Deleting request', data);
 
             Promise.all([msg_p, pmsg_p, rel_p, user_p]).then(value => {
-                    console.log('User Deleting request in Promise All', value);
 
                     const msgUrls = msgs.filter(msg => msg.content.includes('!!!image!!!'))
                         .map(function (obj) {
@@ -370,7 +367,6 @@ module.exports = {
                             return uploadUrl + obj.content.substring(11);
                         });
 
-                    console.log('User Deleting ', data, JSON.stringify(pMsgs), JSON.stringify(pmsgUrls));
 
                     const URLs = msgUrls.concat(pmsgUrls);
                     if (!userp.image.includes('www.gravatar.com')) {
