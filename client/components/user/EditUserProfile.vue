@@ -16,7 +16,7 @@
 							<img
 								v-else
 								:src="(!user.image.includes('www.gravatar.com/avatar') ? 'http://localhost:5000/public/avatar/' : '') + user.image"
-								alt
+								alt = "No picture, please select"
 								class="profile__image"
 							/>
 						</label>
