@@ -6,6 +6,14 @@ const Relation = require('../models/Relation');
 const RoomRelation = require('../models/RoomRelation');
 const Sequelize = require("sequelize")
 
+const fs = require('fs')
+
+/**URLs */
+const chatStorageUrl = '../chat_storage/';
+const roomAvatarUrl = chatStorageUrl + 'room_avatar/';
+const uploadUrl = chatStorageUrl + 'upload/';
+const userAvatarUrl = chatStorageUrl + 'avatar/';
+
 module.exports = {
     //room, roomAdmin, user
     GET_RELATIONS: async data => {
@@ -295,37 +303,97 @@ module.exports = {
             })
     },
     DELETE_USER: async data => {
-        const msg_p = Message.destroy({
+        let msgs, pMsgs, userp;
+        const messages = Message.findAll({
             where: {
                 'user': data
             }
+        }, {
+            raw: true
         });
-        const pmsg_p = PrivateMessage.destroy({
+        const pMessages = PrivateMessage.findAll({
             where: Sequelize.or({
                 'user': data
             }, {
                 'touser': data
             })
+        }, {
+            raw: true
         });
-        const rel_p = Relation.destroy({
-            where: Sequelize.or({
-                'user': data
-            }, {
-                'touser': data
-            })
-        });
-        const user_p = User.destroy({
+        const puser = User.findOne({
             where: {
                 'id': data
             }
+        }, {
+            raw: true
         });
+        Promise.all([messages, pMessages, puser]).then(value => {
+            msgs = value[0];
+            pMsgs = value[1];
+            userp = value[2];
+            console.log('get details', msgs, pMsgs, userp);
+            const msg_p = Message.destroy({
+                where: {
+                    'user': data
+                }
+            });
+            const pmsg_p = PrivateMessage.destroy({
+                where: Sequelize.or({
+                    'user': data
+                }, {
+                    'touser': data
+                })
+            });
+            const rel_p = Relation.destroy({
+                where: Sequelize.or({
+                    'user': data
+                }, {
+                    'touser': data
+                })
+            });
+            const user_p = User.destroy({
+                where: {
+                    'id': data
+                }
+            });
+            console.log('User Deleting request', data);
 
-        Promise.all([msg_p, pmsg_p, rel_p, user_p]).then(value => {
-                return true;
-            })
-            .catch(err => {
-                console.log(err, 'err');
-                return false;
-            })
+            Promise.all([msg_p, pmsg_p, rel_p, user_p]).then(value => {
+                    console.log('User Deleting request in Promise All', value);
+
+                    const msgUrls = msgs.filter(msg => msg.content.includes('!!!image!!!'))
+                        .map(function (obj) {
+                            return uploadUrl + obj.content.substring(11);
+                        })
+                    const pmsgUrls = pMsgs.filter(pmsg => pmsg.content.includes('!!!image!!!'))
+                        .map(function (obj) {
+                            return uploadUrl + obj.content.substring(11);
+                        });
+
+                    console.log('User Deleting ', data, JSON.stringify(pMsgs), JSON.stringify(pmsgUrls));
+
+                    const URLs = msgUrls.concat(pmsgUrls);
+                    if (!userp.image.includes('www.gravatar.com')) {
+                        URLs.push(userAvatarUrl + userp.image);
+                    }
+                    URLs.forEach(path => {
+                        fs.access(path, err => {
+                            if (!err) {
+                                fs.unlinkSync(path, err => {
+                                    console.log('file deleting err', err);
+                                })
+                            } else {
+                                console.log('file accessing err', err);
+                            }
+                        })
+                    })
+
+                    return true;
+                })
+                .catch(err => {
+                    console.log(err, 'err');
+                    return false;
+                })
+        })
     }
 };

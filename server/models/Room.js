@@ -1,6 +1,10 @@
 const Sequelize = require("sequelize")
 const db = require("../database/db")
 const bcrypt = require('bcryptjs')
+const fs = require('fs');
+/**URLs */
+const chatStorageUrl = '../chat_storage/';
+const roomAvatarUrl = chatStorageUrl + 'room_avatar/';
 
 module.exports = (function () {
     const Room = db.sequelize.define(
@@ -40,9 +44,7 @@ module.exports = (function () {
                 createdAt: 'created_at',
                 updatedAt: 'updated_at'
             }
-        }, {
-
-        }
+        }, {}
     );
     Room.associate = function (models) {
         Room.hasMany(models.User);

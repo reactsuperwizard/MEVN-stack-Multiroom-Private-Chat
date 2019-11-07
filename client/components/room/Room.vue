@@ -681,13 +681,15 @@
 						data: { check: 1 }
 					})
 					.then(res => {
-						this.$store.dispatch("deleteRoom", res.data);
-						this.getSocket.emit("roomDeleted", {
-							room: res.data,
-							user: this.getUserData,
-							admin: true,
-							content: `${res.data.user.username} deleted room ${res.data.name}`
-						});
+						if (!res.errors) {
+							this.$store.dispatch("deleteRoom", res.data);
+							this.getSocket.emit("roomDeleted", {
+								room: res.data,
+								user: this.getUserData,
+								admin: true,
+								content: `${res.data.user.username} deleted room ${res.data.name}`
+							});
+						}
 					})
 					.catch(err => console.log(err));
 			}

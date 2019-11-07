@@ -51,6 +51,10 @@ const {
     JOIN_ROOM
 } = require('./helpers/socketEvents');
 
+/**URLs */
+const chatStorageUrl = '../chat_storage/';
+const roomAvatarUrl = chatStorageUrl + 'room_avatar/';
+
 /** Routes */
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');

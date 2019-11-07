@@ -4,6 +4,12 @@ const passport = require('passport');
 const multer = require('multer')
 var uuidv4 = require('uuid/v4');
 var path = require('path')
+const fs = require('fs')
+
+/**URLs */
+const chatStorageUrl = '../chat_storage/';
+const roomAvatarUrl = chatStorageUrl + 'room_avatar/';
+const uploadUrl = chatStorageUrl + 'upload/';
 
 
 const Room = require('../models/Room');
@@ -11,6 +17,7 @@ const User = require('../models/User');
 const Relation = require('../models/Relation');
 const roomRelation = require('../models/RoomRelation');
 const Message = require('../models/Message');
+
 
 const {
     createErrorObject,
@@ -296,12 +303,23 @@ router.delete('/:room_name', passport.authenticate('jwt', {
                     'room_id': room.id
                 }
             })
+            console.log('delete room request', req.body.check, roomUsers.count);
             if (!req.body.check || roomUsers.count == 0) {
+                console.log('deleting room');
+
                 const status = await Room.destroy({
                     where: {
                         'name': req.params.room_name
                     }
                 });
+                const messages = await Message.findAll({
+                    where: {
+                        'room': room['id']
+                    }
+                }, {
+                    raw: true
+                });
+
                 Message.destroy({
                     where: {
                         'room': room['id']
@@ -312,9 +330,28 @@ router.delete('/:room_name', passport.authenticate('jwt', {
                         'room': room['id']
                     }
                 });
-
-                if (status)
+                console.log('room Deleting status', status);
+                if (status) {
+                    console.log('deleting file', roomAvatarUrl);
+                    const msgUrls = messages.filter(msg => msg.content.includes('!!!image!!!'))
+                        .map(function (obj) {
+                            return uploadUrl + obj.content.substring(11);
+                        })
+                    msgUrls.push(roomAvatarUrl + room.avatar);
+                    msgUrls.forEach(path => {
+                        fs.access(path, err => {
+                            if (!err) {
+                                fs.unlinkSync(path, err => {
+                                    console.log('file deleting err', err);
+                                })
+                            } else {
+                                console.log('file accessing err', err);
+                            }
+                        })
+                    })
                     return res.status(200).json(room);
+                }
+                console.log('returning false try');
                 return res.status(200).json({
                     errors: `No room with name ${
                     req.params.room_name
@@ -322,6 +359,7 @@ router.delete('/:room_name', passport.authenticate('jwt', {
                 });
             }
         } catch (err) {
+            console.log('returning false catch', err);
             return res.status(200).json({
                 errors: `No room with name ${
                     req.params.room_name
