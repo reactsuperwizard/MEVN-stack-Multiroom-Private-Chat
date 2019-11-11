@@ -173,7 +173,10 @@
 				}
 			},
 			getFileType(fUrl) {
-				const ext = fUrl.split(".").pop();
+				const ext = fUrl
+					.split(".")
+					.pop()
+					.toLowerCase();
 
 				if (
 					ext == "jpg" ||

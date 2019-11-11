@@ -44,7 +44,43 @@
 													<img src="@/assets/img/newMsg.png" style="width:30px; height:30px; margin-left:5px;" />
 												</span>
 											</div>
-											<div class="chat__user-checkboxs">
+											<!-- <div class="chat__user-checkboxs">
+												<label>
+													<span v-if="user.to == 2">
+														<img src="@/assets/img/block.png" :title="user.handle + ' blocked you'" />
+													</span>
+													<span v-else-if="user.to == 1">
+														<img src="@/assets/img/ban.png" :title="user.handle + ' banned you'" />
+													</span>
+													<span v-else>
+														<img src="@/assets/img/active.png" :title="user.handle + ' actived you'" />
+													</span>
+												</label>
+											</div>-->
+											<div class="chat__user-dropupContainer">
+												<div class="dropup">
+													<button class="dropbtn">
+														<i class="fa fa-caret-down"></i>
+													</button>
+													<div class="dropup-content">
+														<a
+															href="#"
+															@click="user.from == 2 ? onStatusChange(user.id, 0) :  onStatusChange(user.id, 2)"
+														>
+															<img src="@/assets/img/block.png" />
+															<span>{{user.from == 2 ? 'Active' : 'Block'}} {{user.handle}}</span>
+														</a>
+														<a
+															href="#"
+															@click="user.from == 1 ? onStatusChange(user.id, 0) :  onStatusChange(user.id, 1)"
+														>
+															<img src="@/assets/img/ban.png" />
+															<span>{{user.from == 1 ? 'Unban' : 'Ban'}} {{user.handle}}</span>
+														</a>
+													</div>
+												</div>
+											</div>
+											<!-- <div class="chat__user-checkboxs">
 												<label>
 													<span v-if="user.to == 2">
 														<img src="@/assets/img/block.png" :title="user.handle + ' blocked you'" />
@@ -70,11 +106,12 @@
 														<img src="@/assets/img/active.png" :title="'You actived ' + user.handle" />
 													</span>
 												</label>
-											</div>
+											</div>-->
 										</div>
 									</li>
 								</transition-group>
 							</ul>
+							<div style="height:100px"></div>
 						</template>
 						<template slot="footer">
 							<button @click="leaveRoom" class="btn btn--clear btn--danger center">Leave Room</button>
@@ -201,9 +238,8 @@
 			text_truncate(str, length, ending) {
 				return this.$root.$children[0].text_truncate(str, length, ending);
 			},
-			onStatusChange(id) {
+			onStatusChange(id, from) {
 				const user = this.users.find(x => x.id == id);
-				const from = (user.from ? user.from + 1 : 1) % 3;
 				axios
 					.post("/api/relation", { to: id, status: from })
 					.then(res => {

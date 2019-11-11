@@ -18,7 +18,7 @@
 						<input
 							type="text"
 							class="rooms__search-input"
-							placeholder="Search | Enter 'my_rooms' for a list of your created rooms"
+							placeholder="Search"
 							v-model.trim="searchInput"
 						/>
 					</div>
@@ -33,13 +33,11 @@
 									>
 										<div class="rooms__item-container">
 											<div class="rooms__item-avatar">
-												<img :src="'http://localhost:5000/public/room_avatar/' + room.avatar" />
+												<img :src="srv_url + room.avatar" />
 											</div>
 											<div class="rooms__item-details">
 												<p>{{ room.name }}</p>
-												<p
-													:class="{ public: room.access, private_name: !room.access}"
-												>{{ room.access === true ? 'Public': 'Private' }}</p>
+												<p :class="{private_name: !room.access}" v-if="!room.access">Private</p>
 												<p>
 													<strong>Users:</strong>
 													{{ room.users }}
@@ -99,7 +97,7 @@
 							>
 								<div class="form__input-group">
 									<label for="room_avatar" title="Select Room Avatar">
-										<img :src="selected_url" class="room_avatar" />
+										<img :src="selected_url ? selected_url : srv_url+'defaultRoom.png'" class="room_avatar" />
 									</label>
 								</div>
 								<div class="form__input-group">
@@ -121,7 +119,7 @@
 										ref="room_avatar"
 										name="room_avatar"
 										@change="handleFileUpload"
-										accept=".jpg, .jpeg"
+										accept="image/*"
 										style="display: none"
 									/>
 								</div>
@@ -164,7 +162,8 @@
 				privateRoomPassword: null,
 				searchInput: "",
 				errorMessage: this.message,
-				errors: []
+				errors: [],
+				srv_url: "http://localhost:5000/public/room_avatar/"
 			};
 		},
 		computed: {
@@ -181,20 +180,14 @@
 				return this.rooms.filter(room => room.access === true);
 			},
 			filteredRooms() {
-				if (this.searchInput.toLowerCase() === "my_rooms") {
-					return this.rooms.filter(
-						room => room.user.id === this.getUserData.id
+				return this.rooms
+					.slice()
+					.sort(this.roomSortFunc)
+					.filter(room =>
+						room.name
+							.toLowerCase()
+							.includes(this.searchInput.toLowerCase())
 					);
-				} else {
-					return this.rooms
-						.slice()
-						.sort(this.roomSortFunc)
-						.filter(room =>
-							room.name
-								.toLowerCase()
-								.includes(this.searchInput.toLowerCase())
-						);
-				}
 			}
 		},
 		methods: {
@@ -208,6 +201,10 @@
 				this.room_avatar = this.$refs.room_avatar.files[0];
 				const file = e.target.files[0];
 				this.selected_url = URL.createObjectURL(file);
+
+				const reset_file = this.$refs.room_avatar;
+				reset_file.type = "text";
+				reset_file.type = "file";
 			},
 			roomSortFunc(a, b) {
 				let roomA = a.name.toUpperCase();
@@ -251,6 +248,8 @@
 					});
 			},
 			openModal() {
+				this.room_name = null;
+				this.selected_url = null;
 				this.$refs.createRoom.open();
 			},
 			enterRoom(room) {
@@ -294,6 +293,7 @@
 							} else {
 								this.$store.dispatch("addRoom", res.data);
 								this.room_name = null;
+								this.selected_url = null;
 								this.password = null;
 								this.$refs.createRoom.close();
 								this.getSocket.emit("roomAdded", res.data);

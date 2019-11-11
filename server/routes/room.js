@@ -38,7 +38,8 @@ const storage = multer.diskStorage({
     }
 });
 const fileFilter = (req, file, cb) => {
-    var ext = path.extname(file.originalname);
+    let ext = path.extname(file.originalname);
+    ext = ext.toLowerCase();
     if (ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
         cb(null, false);
     } else {
@@ -167,16 +168,8 @@ router.post(
     }), checkCreateRoomFields],
     async (req, res) => {
         let errors = [];
+        const fileName = req.file ? req.file.filename : 'defaultRoom.png';
 
-        if (!req.file) {
-            errors.push({
-                param: 'room_taken',
-                msg: 'Room Avatar is Required'
-            });
-            return res.json({
-                errors: createErrorObject(errors)
-            });
-        }
         const totalRoom = await Room.findAll({}, {
             raw: true
         });
@@ -214,7 +207,7 @@ router.post(
         const newRoom = new Room({
             name: req.body.room_name,
             user: req.user.id,
-            avatar: req.file.filename,
+            avatar: fileName,
             access: req.body.password ? false : true,
             password: req.body.password
         });
@@ -337,7 +330,10 @@ router.delete('/:room_name', passport.authenticate('jwt', {
                         .map(function (obj) {
                             return uploadUrl + obj.content.substring(11);
                         })
-                    msgUrls.push(roomAvatarUrl + room.avatar);
+
+                    if (room.avatar != 'defaultRoom.png') {
+                        msgUrls.push(roomAvatarUrl + room.avatar);
+                    }
                     msgUrls.forEach(path => {
                         fs.access(path, err => {
                             if (!err) {
@@ -394,9 +390,7 @@ router.post('/update/name', [upload.single('room_avatar'), passport.authenticate
     if (req.body) {
         updateFields['name'] = req.body.new_room_name
     }
-    if (req.file.filename) {
-        updateFields['avatar'] = req.file.filename
-    }
+    updateFields['avatar'] = req.file ? req.file.filename : 'defaultRoom.png';
     Room.update(updateFields, {
             returning: true,
             plain: true,

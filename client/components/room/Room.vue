@@ -150,11 +150,14 @@
 						class="form form--nbs pt-3"
 						method="post"
 						enctype="multipart/form-data"
-						accept="image/x-png, image/gif, image/jpeg"
+						accept="image/*"
 					>
 						<div class="form__input-group">
 							<label for="room_avatar" title="Select Room Avatar">
-								<img :src="selected_url" class="room_avatar" />
+								<img
+									:src="selected_url ? selected_url : srv_url+this.getCurrentRoom.avatar"
+									class="room_avatar"
+								/>
 							</label>
 						</div>
 						<div class="form__input-group">
@@ -178,7 +181,7 @@
 								ref="room_avatar"
 								name="room_avatar"
 								@change="handleFileUpload"
-								accept="image/x-png, image/gif, image/jpeg"
+								accept="image/*"
 								style="display: none"
 							/>
 						</div>
@@ -248,7 +251,8 @@
 				sidebarVisible: window.innerWidth < 768 ? false : true,
 				searchInput: "",
 				errors: [],
-				roomLeft: false
+				roomLeft: false,
+				srv_url: "http://localhost:5000/public/room_avatar/"
 			};
 		},
 		computed: {

@@ -46,3 +46,22 @@ Rooms
 @@- A 'Home' room should always be present as the default room at the top of the rooms list.
 @@- Apart from 'Home',  rooms should appear  in the rooms list sorted by number of joined members. 
 @@- An empty room should be automatically removed from the rooms list
+
+
+Issues 3:
+
+@@- As all rooms, with the exception of private room are public, remove `Public` description from rooms descriptions. 
+@@- Adding avatar after second login does not work
+@@- Dropdown menu for ban/block not implemented at `Private room`
+- Offline users should not be displayed at `All Users` list. This makes no sense and just clutters the column. 
+- Green notification of new private messages should be hyperlinked to the relevant screen in private room. That is: When Bob PMs Mary, Mary should be able to go directly to chat with Bob, by clicking on the notification toast.
+@@- Users should be able to see all rooms in the rooms list, including their own rooms.  
+@@- Remove 'my_rooms' option from rooms search field. 
+@@- Default room avatar is not visible when user is creating their first rooms 
+@@- When users going to create the second room, the avatar of their previous room is displayed, while the avatar should be the default one
+@@- When user tries to add a photo of any format, should not get `Upload Failed` error
+- New rooms disapear as soon as the creator leaves them. This makes them unusable. Set a condition to remove a room only if it's more than 1 hour old and still empty
+
+
+ 
+

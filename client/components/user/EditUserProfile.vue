@@ -7,7 +7,7 @@
 					class="form"
 					method="post"
 					enctype="multipart/form-data"
-					accept="image/x-png, image/gif, image/jpeg"
+					accept="image/*"
 				>
 					<p class="lead">Edit Profile Details</p>
 					<div class="profile__item">
@@ -16,7 +16,7 @@
 							<img
 								v-else
 								:src="(!user.image.includes('www.gravatar.com/avatar') ? 'http://localhost:5000/public/avatar/' : '') + user.image"
-								alt = "No picture, please select"
+								alt="No picture, please select"
 								class="profile__image"
 							/>
 						</label>
@@ -26,7 +26,7 @@
 							id="image"
 							ref="image"
 							name="image"
-							accept="image/x-png, image/gif, image/jpeg"
+							accept="image/*"
 							@change="handleFileUpload"
 							style="display: none;"
 						/>
