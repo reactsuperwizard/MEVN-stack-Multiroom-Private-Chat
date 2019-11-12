@@ -3,7 +3,7 @@ server/node_modules/
 node_modules/
 .env
 server/.env
-*.log
+server/logs/*
 chat_storage/avatar/*
 chat_storage/room_avatar/*
 chat_storage/upload/*
