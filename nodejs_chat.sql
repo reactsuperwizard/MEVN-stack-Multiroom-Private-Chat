@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 05, 2019 at 06:06 AM
+-- Generation Time: Nov 12, 2019 at 03:28 PM
 -- Server version: 10.1.37-MariaDB
 -- PHP Version: 7.2.12
 
@@ -40,16 +40,6 @@ CREATE TABLE `messages` (
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
-
---
--- Dumping data for table `messages`
---
-
-INSERT INTO `messages` (`id`, `content`, `room`, `user`, `admin`, `createdAt`, `updatedAt`) VALUES
-(3544, 'dog joined HOME', 44, NULL, 1, '2019-11-05 05:02:06', '2019-11-05 05:02:06'),
-(3545, 'catf joined HOME', 44, NULL, 1, '2019-11-05 05:02:08', '2019-11-05 05:02:08'),
-(3546, 'dog left HOME', 44, NULL, 1, '2019-11-05 05:02:13', '2019-11-05 05:02:13'),
-(3547, 'catf left HOME', 44, NULL, 1, '2019-11-05 05:02:14', '2019-11-05 05:02:14');
 
 -- --------------------------------------------------------
 
@@ -96,7 +86,7 @@ CREATE TABLE `rooms` (
   `user` varchar(11) DEFAULT NULL,
   `password` varchar(50) DEFAULT '',
   `access` tinyint(1) NOT NULL DEFAULT '1',
-  `accessIds` varchar(250) DEFAULT NULL,
+  `lastAcTime` timestamp NULL DEFAULT NULL,
   `users` varchar(250) DEFAULT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
@@ -106,11 +96,9 @@ CREATE TABLE `rooms` (
 -- Dumping data for table `rooms`
 --
 
-INSERT INTO `rooms` (`id`, `name`, `avatar`, `user`, `password`, `access`, `accessIds`, `users`, `createdAt`, `updatedAt`) VALUES
-(40, 'Private Room', 'pHome.png', NULL, NULL, 0, NULL, NULL, '2019-11-04 16:28:55', '2019-10-09 14:40:18'),
-(44, 'HOME', 'home.png', 'NULL', NULL, 1, NULL, NULL, '2019-11-04 15:25:58', '2019-10-29 03:42:07'),
-(61, 'DOG', '4e49177b-3622-425b-9804-490f63abfec1.jpg', '96', '', 1, NULL, NULL, '2019-11-05 05:02:29', '2019-11-05 05:02:29'),
-(62, 'CAT', '4ffc1f14-005b-4ef4-bb14-34583272d1b2.png', '95', '', 1, NULL, NULL, '2019-11-05 05:02:40', '2019-11-05 05:02:40');
+INSERT INTO `rooms` (`id`, `name`, `avatar`, `user`, `password`, `access`, `lastAcTime`, `users`, `createdAt`, `updatedAt`) VALUES
+(1, 'Private Room', 'pHome.png', NULL, NULL, 0, NULL, NULL, '2019-11-11 14:17:18', '2019-10-09 14:40:18'),
+(44, 'HOME', 'home.png', 'NULL', NULL, 1, NULL, NULL, '2019-11-12 14:03:50', '2019-11-12 14:03:50');
 
 -- --------------------------------------------------------
 
@@ -159,8 +147,9 @@ CREATE TABLE `user_infos` (
 --
 
 INSERT INTO `user_infos` (`id`, `socketid`, `username`, `handle`, `email`, `password`, `create_time`, `delete_time`, `image`, `age`, `sex`, `location`, `bio`, `status_active`, `status_participate`, `room_id`, `createdAt`, `updatedAt`) VALUES
-(95, 'Knm6iO9EvYqYFIeSAAAE', 'catF', 'catf', 'cat@email.com', '$2a$10$sMxk0M/Z9zWvsAC.nwGSjuHghSygnbkECZCQfBZcDWE3t3J6gSRZK', '2019-11-05 04:39:04', NULL, '642eedeb-7d89-4df9-8e98-c82061935f74.png', 19, 'female', 'CCCCCC', 'CCCCCCAAAAAA', 0, 0, NULL, '2019-11-05 05:04:31', '2019-11-05 05:04:31'),
-(96, 'MszIOE2IkvJtc65JAAAB', 'dog', 'dog', 'dog@email.com', '$2a$10$XMNLdH.PMYQVreoXtja63eB/240Vma.UK/61wveaEk5l3JZvWl1Uq', '2019-11-05 04:39:20', NULL, '2c07bbd2-466d-487d-85d7-5a66faa56ac5.jpg', 22, 'male', 'DDD', 'DDDOOOGGG', 0, 0, NULL, '2019-11-05 05:04:30', '2019-11-05 05:04:30');
+(98, 'f7eRFwXv6bxY2de4AAAC', 'cat', 'cat', 'cat1@email.com', '$2a$10$EKi4uDtMTn5ksYOSTQqIW.GKXipP/FM/omXuLvtqEXdkQahFx6XOC', '2019-11-05 11:56:06', NULL, '//www.gravatar.com/avatar/4fc3103a0027f9ad4e3f6f37debe8e52?s=220&r=pg&d=identicon', NULL, NULL, '', '', 0, 0, NULL, '2019-11-12 14:03:43', '2019-11-12 14:03:43'),
+(108, '9_IgK2u-udLBaBpIAAAD', 'dog', 'dog', 'demo@gmail.com', '$2a$10$5O9FDUwrpyJ7BNA.pNPhTOQIPDhJXybBwXsQBxW03HPXjM.HA2kea', '2019-11-08 16:40:32', NULL, '036223cc-79e4-4113-8f93-b3c9b941a269.png', NULL, NULL, '', '', 0, 0, NULL, '2019-11-12 14:03:53', '2019-11-12 14:03:53'),
+(109, 'X9D3hTPn6D00zXfkAAAM', 'cat1', 'cat1', 'cat@email.com', '$2a$10$GSn1eUQAz7Z43mEDoUW/ZunRSpFEWSDHzDTXhbKD894gsnO.bqG7W', '2019-11-10 13:17:18', NULL, '//www.gravatar.com/avatar/402f31cf2e464fd81734c7f147c99071?s=220&r=pg&d=identicon', NULL, NULL, '', '', 0, 0, NULL, '2019-11-11 01:47:04', '2019-11-11 01:47:04');
 
 --
 -- Indexes for dumped tables
@@ -210,37 +199,37 @@ ALTER TABLE `user_infos`
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3548;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5010;
 
 --
 -- AUTO_INCREMENT for table `privatemessages`
 --
 ALTER TABLE `privatemessages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=851;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=348;
 
 --
 -- AUTO_INCREMENT for table `relations`
 --
 ALTER TABLE `relations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `rooms`
 --
 ALTER TABLE `rooms`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT for table `room_relations`
 --
 ALTER TABLE `room_relations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `user_infos`
 --
 ALTER TABLE `user_infos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
