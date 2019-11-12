@@ -40,7 +40,6 @@ const {
     ADD_PRIVATE_MESSAGE,
     GET_USER_SOCKET,
     GET_ROOMS,
-    GET_USERS,
     GET_ROOM_USERS,
     FILTER_ROOM_USERS,
     CREATE_MESSAGE_CONTENT
@@ -305,7 +304,7 @@ io.on('connection', socket => {
     });
     /** User Register Event */
     socket.on('UserRegistered', async data => {
-        io.emit('UserRegistered', JSON.stringify(data));
+        io.emit('UserRegistered', '');
         socket.broadcast.emit(
             'updateRooms',
             JSON.stringify({
@@ -315,10 +314,8 @@ io.on('connection', socket => {
     });
     /** User Edited Event */
     socket.on('userEdited', async data => {
-        io.emit('userListUpdated',
-            JSON.stringify(
-                await GET_USERS({})
-            ));
+        console.log('socket on userEdited');
+        io.emit('userListUpdated', '');
     });
     /** User Status Change Event */
     socket.on('statusChanged', async data => {

@@ -319,6 +319,11 @@
 						this.messages = res.data.message;
 					});
 				}
+			},
+			fetchUsers() {
+				axios.get(`/api/user/users`).then(res => {
+					this.users = res.data.users;
+				});
 			}
 		},
 		created() {
@@ -399,10 +404,10 @@
 					});
 
 					this.getSocket.on("UserRegistered", data => {
-						this.users.push(JSON.parse(data));
+						this.fetchUsers();
 					});
 					this.getSocket.on("userListUpdated", data => {
-						this.users = JSON.parse(data);
+						this.fetchUsers();
 					});
 					this.getSocket.on("statusChanged", data => {
 						const _data = JSON.parse(data);

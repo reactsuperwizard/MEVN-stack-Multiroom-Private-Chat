@@ -250,32 +250,6 @@ module.exports = {
             raw: true
         });
     },
-    GET_USERS: async () => {
-        //Get All Users
-        const relations = await Relation.findAll({
-            raw: true
-        });
-        let users = [];
-        await User.findAll({}, {
-                raw: true
-            })
-            .then(result => {
-                users = result;
-                // for (const user of users) {
-                //     const from_st = relations.filter((relation) => (relation['user'] == req.user.id) && (relation['touser'] == user.id));
-                //     const to_st = relations.filter((relation) => (relation['touser'] == req.user.id) && (relation['user'] == user.id));
-                //     user['dataValues']['from'] = from_st[0] ? from_st[0].status : false;
-                //     user['dataValues']['to'] = to_st[0] ? to_st[0].status : false;
-                // }
-                // return res.status(200).json(users);
-                return users;
-            })
-            .catch(err => {
-                console.log('err', err);
-                // return res.status(200).json(null);
-                return null;
-            })
-    },
     UPDATE_ROOM_USERS: async data => {
         let room;
         const updateFields = ({

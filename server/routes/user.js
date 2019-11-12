@@ -6,6 +6,7 @@ var uuidv4 = require('uuid/v4');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
 var path = require('path');
+const Relation = require('../models/Relation');
 
 const {
 	checkEditProfileFields
@@ -82,20 +83,23 @@ router.get(
 		session: false,
 	}),
 	async (req, res) => {
-		const users = await User.findAll({}, {
-			raw: true,
+		//Get All Users
+		const relations = await Relation.findAll({
+			raw: true
 		});
-
-		if (users) {
-			return res
-				.status(200)
-				.json(users)
-				.end();
-		} else {
-			return res.status(404).json({
-				error: 'No Users Found',
-			});
+		const users = await User.findAll({}, {
+			raw: true
+		});
+		for (const user of users) {
+			const from_st = relations.filter((relation) => (relation['user'] == req.user.id) && (relation['touser'] == user.id));
+			const to_st = relations.filter((relation) => (relation['touser'] == req.user.id) && (relation['user'] == user.id));
+			user['dataValues']['from'] = from_st[0] ? from_st[0].status : false;
+			user['dataValues']['to'] = to_st[0] ? to_st[0].status : false;
 		}
+		console.log('socketio GET_USERS', JSON.stringify(users));
+		return res.status(200).json({
+			users: users
+		});
 	}
 );
 /**

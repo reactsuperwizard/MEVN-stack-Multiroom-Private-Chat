@@ -195,6 +195,7 @@
 								);
 								this.user = res.data.user;
 								this.getSocket.emit("userEdited", res.data.user);
+								console.log(res.data.user);
 								this.$router.push({
 									name: "UserProfile",
 									params: {
