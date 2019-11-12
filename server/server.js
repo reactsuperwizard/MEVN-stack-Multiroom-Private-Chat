@@ -354,10 +354,7 @@ io.on('connection', socket => {
 
     /** User Deleted Event */
     socket.on('UserDeleted', async data => {
-        io.emit('userListUpdated',
-            JSON.stringify(
-                await GET_USERS({})
-            ));
+        io.emit('userListUpdated', '');
         socket.broadcast.emit(
             'updateRooms',
             JSON.stringify({

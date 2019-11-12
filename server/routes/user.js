@@ -96,7 +96,6 @@ router.get(
 			user['dataValues']['from'] = from_st[0] ? from_st[0].status : false;
 			user['dataValues']['to'] = to_st[0] ? to_st[0].status : false;
 		}
-		console.log('socketio GET_USERS', JSON.stringify(users));
 		return res.status(200).json({
 			users: users
 		});
