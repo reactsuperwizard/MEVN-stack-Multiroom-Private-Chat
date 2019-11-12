@@ -11,6 +11,7 @@ const {
 module.exports = {
     JOIN_ROOM: (socket, data) => {
         if (data.room.access) {
+            //public room join
             socket.join(data.room.id, async () => {
                 /** Get list of messages to send back to client */
                 socket.emit(

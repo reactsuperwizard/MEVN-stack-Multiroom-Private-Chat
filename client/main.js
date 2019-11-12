@@ -61,6 +61,8 @@ axios.interceptors.response.use(
 
 Vue.use(Notifications)
 
+export const eventBus = new Vue();
+
 new Vue({
     router,
     store,

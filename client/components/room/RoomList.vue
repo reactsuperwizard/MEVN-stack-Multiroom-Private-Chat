@@ -167,12 +167,7 @@
 			};
 		},
 		computed: {
-			...mapGetters([
-				"getUserData",
-				"getRoomData",
-				"getSocket",
-				"getCurrentSelect"
-			]),
+			...mapGetters(["getUserData", "getRoomData", "getSocket"]),
 			getPrivateRooms() {
 				return this.rooms.filter(room => room.access === false);
 			},
@@ -195,8 +190,10 @@
 				"updateRoomData",
 				"addRoom",
 				"deleteRoom",
-				"saveCurrentRoom"
+				"saveCurrentRoom",
+				"saveCurrentSelect"
 			]),
+			...mapGetters(["getCurrentSelect"]),
 			handleFileUpload(e) {
 				this.room_avatar = this.$refs.room_avatar.files[0];
 				const file = e.target.files[0];
@@ -237,6 +234,9 @@
 						});
 						this.$store.dispatch("updateRoomData", res.data);
 						this.rooms = res.data;
+						await axios.put(`/api/user/current`, {
+							socketid: this.getSocket.id
+						});
 					})
 					.then(res => {
 						if (res && res.data) {
@@ -408,18 +408,20 @@
 				const message_parsed = JSON.parse(message);
 				if (!message_parsed["user"]["status"]) {
 					if (
-						!this.getCurrentSelect ||
-						this.getCurrentSelect != message_parsed["user"]["id"]
-					)
+						!this.getCurrentSelect() ||
+						this.getCurrentSelect() != message_parsed["user"]["id"]
+					) {
 						this.$notify({
 							group: "notification_newMsg",
-							title:
+							title: [
 								"New Message Arrived from " +
-								message_parsed["user"]["handle"],
+									message_parsed["user"]["handle"],
+								message_parsed["user"]["id"]
+							],
 							text: this.text_truncate(
 								message_parsed.content.replace(
 									"!!!image!!!",
-									"Image name - "
+									"File name - "
 								),
 								30,
 								"..."
@@ -427,6 +429,7 @@
 							type: "success ",
 							duration: 10000
 						});
+					}
 				}
 			});
 		},

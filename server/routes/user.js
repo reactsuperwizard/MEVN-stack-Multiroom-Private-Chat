@@ -125,7 +125,7 @@ router.post(
 	async (req, res) => {
 		try {
 			upload_images(req, res, function (err) {
-				if (err) {
+				if (err || !req.file) {
 					res.json({
 						success: false,
 					});

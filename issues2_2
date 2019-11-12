@@ -54,7 +54,7 @@ Issues 3:
 @@- Adding avatar after second login does not work
 @@- Dropdown menu for ban/block not implemented at `Private room`
 - Offline users should not be displayed at `All Users` list. This makes no sense and just clutters the column. 
-- Green notification of new private messages should be hyperlinked to the relevant screen in private room. That is: When Bob PMs Mary, Mary should be able to go directly to chat with Bob, by clicking on the notification toast.
+@@- Green notification of new private messages should be hyperlinked to the relevant screen in private room. That is: When Bob PMs Mary, Mary should be able to go directly to chat with Bob, by clicking on the notification toast.
 @@- Users should be able to see all rooms in the rooms list, including their own rooms.  
 @@- Remove 'my_rooms' option from rooms search field. 
 @@- Default room avatar is not visible when user is creating their first rooms 

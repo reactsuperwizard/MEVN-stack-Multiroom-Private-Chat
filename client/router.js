@@ -120,6 +120,7 @@ const router = new Router({
             path: '/privateroom/:id',
             name: 'PrivateRoom',
             component: () => import('@/components/room/PrivateRoom.vue'),
+            props: true,
             meta: {
                 requiresAuth: true,
                 transitionName: 'router-anim',

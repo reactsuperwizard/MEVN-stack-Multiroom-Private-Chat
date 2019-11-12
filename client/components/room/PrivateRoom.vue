@@ -173,9 +173,11 @@
 	import Modal from "@/components/layout/Modal.vue";
 	import Error from "@/components/error/Error.vue";
 	import { mapActions, mapGetters } from "vuex";
+	import { eventBus } from "../../main.js";
 
 	export default {
 		name: "Room",
+		props: ["pselectedUser"],
 		components: {
 			MessageList,
 			ChatInput,
@@ -194,7 +196,8 @@
 				sidebarVisible: window.innerWidth < 768 ? false : true,
 				searchInput: "",
 				errors: [],
-				roomLeft: false
+				roomLeft: false,
+				selectedUser: this.pselectedUser
 			};
 		},
 		computed: {
@@ -406,8 +409,13 @@
 						const user = this.users.find(x => x.id == _data.user);
 						user.to = _data.status;
 					});
+
+					if (this.selectedUser) {
+						this.selectUser(this.selectedUser);
+					}
 				})
 				.catch(err => {
+					console.log("err", err);
 					if (err.response.status === 404) {
 						this.$router.push({
 							name: "RoomList",
@@ -425,7 +433,12 @@
 			}
 			this.getSocket.removeListener("userJoined");
 		},
-		mounted() {}
+		mounted() {
+			eventBus.$on("set-user", id => {
+				this.selectedUser = id;
+				this.selectUser(this.selectedUser);
+			});
+		}
 	};
 </script>
 

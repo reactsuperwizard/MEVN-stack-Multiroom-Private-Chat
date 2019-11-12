@@ -10,7 +10,34 @@
 		>
 			<router-view />
 		</transition>
-		<notifications group="notification_newMsg" position="top right" type="success " />
+		<!-- <div data-id="5" class="notification-wrapper" style="transition: all 300ms ease 0s;">
+			<div class="vue-notification-template vue-notification success">
+				<div class="notification-title">New Message Arrived from dog</div>
+				<div class="notification-content">sd</div>
+			</div>
+		</div>-->
+		<notifications group="notification_alert" position="top right" type="success " />
+
+		<notifications
+			group="notification_newMsg"
+			position="top right"
+			class="notification-wrapper"
+			style="transition: all 300ms ease 0s;"
+		>
+			<template slot="body" slot-scope="props">
+				<div
+					class="vue-notification-template vue-notification success"
+					@click="onNotificationClick(props.item.title[1])"
+				>
+					<a class="notification-title">{{props.item.title[0]}}</a>
+					<a class="close" @click.stop="props.close">
+						<ion-icon name="close" class="danger_close"></ion-icon>
+					</a>
+					<div v-html="props.item.text" class="notification-content"></div>
+				</div>
+			</template>
+		</notifications>
+
 		<Footer v-if="['Home', 'Login', 'Register', 'About'].includes($route.name)" />
 	</div>
 </template>
@@ -21,6 +48,8 @@
 	import Navbar from "@/components/layout/Navbar.vue";
 	import Footer from "@/components/layout/Footer.vue";
 	import Particle from "@/components/layout/Particle.vue";
+	import { eventBus } from "./main.js";
+	import { mapActions, mapGetters } from "vuex";
 
 	const DEFAULT_TRANSITION = "fade";
 	const DEFAULT_ENTER_ACTIVE_CLASS = "animated fadeIn";
@@ -40,7 +69,23 @@
 				enterActive: DEFAULT_ENTER_ACTIVE_CLASS
 			};
 		},
+		computed: {
+			...mapGetters(["getRoomData"])
+		},
 		methods: {
+			onNotificationClick(id) {
+				const privateRoom = this.getRoomData.find(
+					room => (room.name = "Private Room")
+				);
+				this.$router
+					.push({
+						name: "PrivateRoom",
+						params: { id: privateRoom.id, pselectedUser: id }
+					})
+					.catch(err => {
+						eventBus.$emit("set-user", id);
+					});
+			},
 			resetTransition() {
 				this.transitionName = DEFAULT_TRANSITION;
 				this.enterActive = DEFAULT_ENTER_ACTIVE_CLASS;

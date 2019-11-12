@@ -98,7 +98,7 @@
 								});
 							} else {
 								this.$notify({
-									group: "notification_newMsg",
+									group: "notification_alert",
 									title: "Upload failed",
 									text:
 										"Upload image, audio, video less than 50 MB",
