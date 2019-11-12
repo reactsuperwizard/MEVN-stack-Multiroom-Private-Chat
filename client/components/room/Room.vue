@@ -679,23 +679,22 @@
 				this.getCurrentRoom &&
 				(!this.allowedUsers || this.allowedUsers.length <= 2)
 			) {
-				axios
-					.delete(`/api/room/${this.getCurrentRoom.name}`, {
-						//set mark to make server check if there is no user in the room
-						data: { check: 1 }
-					})
-					.then(res => {
-						if (!res.errors) {
-							this.$store.dispatch("deleteRoom", res.data);
-							this.getSocket.emit("roomDeleted", {
-								room: res.data,
-								user: this.getUserData,
-								admin: true,
-								content: `${res.data.user.username} deleted room ${res.data.name}`
-							});
-						}
-					})
-					.catch(err => console.log(err));
+				axios.delete(`/api/room/${this.getCurrentRoom.name}`, {
+					//set mark to make server check if there is no user in the room
+					data: { check: 1 }
+				});
+				// .then(res => {
+				// 	if (!res.errors) {
+				// 		this.$store.dispatch("deleteRoom", res.data);
+				// 		this.getSocket.emit("roomDeleted", {
+				// 			room: res.data,
+				// 			user: this.getUserData,
+				// 			admin: true,
+				// 			content: `${res.data.user.username} deleted room ${res.data.name}`
+				// 		});
+				// 	}
+				// })
+				// .catch(err => console.log(err));
 			}
 		},
 		mounted() {}

@@ -197,10 +197,14 @@ router.put(
 								exclude: ['password'],
 							},
 						}).then(doc => {
-							res.json({
+							return res.json({
 								success: true,
 								user: doc,
 							});
+						});
+					} else {
+						return res.json({
+							success: true
 						});
 					}
 				})

@@ -60,7 +60,7 @@ Issues 3:
 @@- Default room avatar is not visible when user is creating their first rooms 
 @@- When users going to create the second room, the avatar of their previous room is displayed, while the avatar should be the default one
 @@- When user tries to add a photo of any format, should not get `Upload Failed` error
-- New rooms disapear as soon as the creator leaves them. This makes them unusable. Set a condition to remove a room only if it's more than 1 hour old and still empty
+@@- New rooms disapear as soon as the creator leaves them. This makes them unusable. Set a condition to remove a room only if it's more than 1 hour old and still empty
 
 
  

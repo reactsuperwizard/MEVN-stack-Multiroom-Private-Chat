@@ -32,13 +32,12 @@ module.exports = (function () {
                 type: Sequelize.BOOLEAN,
                 default: true
             },
-            accessIds: {
-                type: Sequelize.STRING,
-                default: []
-            },
             users: {
                 type: Sequelize.INTEGER
-            }
+            },
+            lastAcTime: {
+                type: Sequelize.TIME
+            },
         }, {
             timestamps: {
                 createdAt: 'created_at',

@@ -15,6 +15,65 @@ const uploadUrl = chatStorageUrl + 'upload/';
 const userAvatarUrl = chatStorageUrl + 'avatar/';
 
 module.exports = {
+    DELETE_ROOM_BY_PARAM: async room => {
+        console.log('deleting room');
+
+        const status = await Room.destroy({
+            where: {
+                'id': room.id
+            }
+        });
+        const messages = await Message.findAll({
+            where: {
+                'room': room.id
+            }
+        }, {
+            raw: true
+        });
+
+        Message.destroy({
+            where: {
+                'room': room.id
+            }
+        });
+        RoomRelation.destroy({
+            where: {
+                'room': room.id
+            }
+        });
+        console.log('room Deleting status', status);
+        if (status) {
+            console.log('deleting file', roomAvatarUrl);
+            const msgUrls = messages.filter(msg => msg.content.includes('!!!image!!!'))
+                .map(function (obj) {
+                    return uploadUrl + obj.content.substring(11);
+                })
+
+            if (room.avatar != 'defaultRoom.png') {
+                msgUrls.push(roomAvatarUrl + room.avatar);
+            }
+            msgUrls.forEach(path => {
+                fs.access(path, err => {
+                    if (!err) {
+                        fs.unlinkSync(path, err => {
+                            console.log('file deleting err', err);
+                        })
+                    } else {
+                        console.log('file accessing err', err);
+                    }
+                })
+            })
+            return {
+                status: true,
+                room: room
+            };
+        }
+        console.log('returning false try');
+        return {
+            status: false,
+            errors: `No room found, You will now be redirected`
+        };
+    },
     //room, roomAdmin, user
     GET_RELATIONS: async data => {
         const relations = {};
@@ -236,6 +295,15 @@ module.exports = {
             })
             .then(async info => {
                 if (info[1]) {
+                    Room.update({
+                        lastAcTime: null
+                    }, {
+                        returning: true,
+                        raw: true,
+                        where: {
+                            'id': data.room.id
+                        }
+                    })
                     room = await Room.findByPk(data.room.id, {
                         raw: true
                     })

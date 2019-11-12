@@ -30,7 +30,7 @@ const cors = require('cors');
 // const helmet = require('helmet');
 // const enforce = require('express-sslify');
 // const compression = require('compression');
-
+const schedule = require('node-schedule');
 /** Socket IO */
 const app = express();
 const server = require('http').Server(app);
@@ -38,7 +38,6 @@ const io = require('socket.io')(server);
 const {
     ADD_MESSAGE,
     ADD_PRIVATE_MESSAGE,
-    UPDATE_ROOM_USERS,
     GET_USER_SOCKET,
     GET_ROOMS,
     GET_USERS,
@@ -48,9 +47,19 @@ const {
 } = require('./actions/socketio');
 
 const {
+    DELETE_STICKY_ROOM
+} = require('./actions/cronjob');
+
+const {
     JOIN_ROOM
 } = require('./helpers/socketEvents');
 
+var j = schedule.scheduleJob({
+    rule: '*/600 * * * * *'
+}, function () {
+    DELETE_STICKY_ROOM();
+
+});
 /**URLs */
 const chatStorageUrl = '../chat_storage/';
 const roomAvatarUrl = chatStorageUrl + 'room_avatar/';
@@ -74,6 +83,7 @@ app.use(
     })
 );
 app.use(morgan('dev'));
+
 
 // if (process.env.NODE_ENV === 'production') {
 //     /** Trust Proto Header for heroku */
@@ -366,6 +376,7 @@ io.on('connection', socket => {
 //         res.sendFile(path.resolve(__dirname, '../client', 'dist', 'index.html'));
 //     });
 // }
+io.emit('news_by_server', 'can you hear me out?');
 
 if (process.env.NODE_ENV !== 'test') {
     server.listen(process.env.PORT || 5000, () => {

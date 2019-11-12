@@ -4,19 +4,15 @@ const passport = require('passport');
 const multer = require('multer')
 var uuidv4 = require('uuid/v4');
 var path = require('path')
-const fs = require('fs')
+const Sequelize = require("sequelize")
+
 
 /**URLs */
-const chatStorageUrl = '../chat_storage/';
-const roomAvatarUrl = chatStorageUrl + 'room_avatar/';
-const uploadUrl = chatStorageUrl + 'upload/';
 
 
 const Room = require('../models/Room');
 const User = require('../models/User');
 const Relation = require('../models/Relation');
-const roomRelation = require('../models/RoomRelation');
-const Message = require('../models/Message');
 
 
 const {
@@ -25,7 +21,8 @@ const {
 } = require('../middleware/authenticate');
 
 const {
-    GET_RELATIONS
+    GET_RELATIONS,
+    DELETE_ROOM_BY_PARAM
 } = require('../actions/socketio');
 
 // upload path for avatar image
@@ -276,6 +273,7 @@ router.post(
 //     }
 // });
 
+
 /**
  * @description DELETE /api/room/:room_name
  */
@@ -291,68 +289,35 @@ router.delete('/:room_name', passport.authenticate('jwt', {
             }, {
                 raw: true
             });
+            if (!room) {
+                return res.status(200).json({});
+            }
             const roomUsers = await User.findAndCountAll({
                 where: {
                     'room_id': room.id
                 }
             })
             console.log('delete room request', req.body.check, roomUsers.count);
-            if (!req.body.check || roomUsers.count == 0) {
-                console.log('deleting room');
-
-                const status = await Room.destroy({
+            if (!req.body.check) {
+                setTimeout(async () => {
+                    const delStatus = await DELETE_ROOM_BY_PARAM(room);
+                    return res.status(200).json(delStatus.status ? room : {
+                        errors: `No room with name ${
+                    req.params.room_name
+                } found, You will now be redirected`
+                    });
+                }, 0);
+            } else if (roomUsers.count == 0) {
+                const currentDate = Sequelize.literal('CURRENT_TIMESTAMP');
+                Room.update({
+                    lastAcTime: currentDate
+                }, {
+                    returning: true,
+                    raw: true,
                     where: {
                         'name': req.params.room_name
                     }
-                });
-                const messages = await Message.findAll({
-                    where: {
-                        'room': room['id']
-                    }
-                }, {
-                    raw: true
-                });
-
-                Message.destroy({
-                    where: {
-                        'room': room['id']
-                    }
-                });
-                roomRelation.destroy({
-                    where: {
-                        'room': room['id']
-                    }
-                });
-                console.log('room Deleting status', status);
-                if (status) {
-                    console.log('deleting file', roomAvatarUrl);
-                    const msgUrls = messages.filter(msg => msg.content.includes('!!!image!!!'))
-                        .map(function (obj) {
-                            return uploadUrl + obj.content.substring(11);
-                        })
-
-                    if (room.avatar != 'defaultRoom.png') {
-                        msgUrls.push(roomAvatarUrl + room.avatar);
-                    }
-                    msgUrls.forEach(path => {
-                        fs.access(path, err => {
-                            if (!err) {
-                                fs.unlinkSync(path, err => {
-                                    console.log('file deleting err', err);
-                                })
-                            } else {
-                                console.log('file accessing err', err);
-                            }
-                        })
-                    })
-                    return res.status(200).json(room);
-                }
-                console.log('returning false try');
-                return res.status(200).json({
-                    errors: `No room with name ${
-                    req.params.room_name
-                } found, You will now be redirected`
-                });
+                })
             }
         } catch (err) {
             console.log('returning false catch', err);
@@ -362,6 +327,8 @@ router.delete('/:room_name', passport.authenticate('jwt', {
                 } found, You will now be redirected`
             });
         }
+    } else {
+        return res.status(200).json({});
     }
 });
 
