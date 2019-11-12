@@ -55,7 +55,7 @@ const {
 } = require('./helpers/socketEvents');
 
 var j = schedule.scheduleJob({
-    rule: '*/600 * * * * *'
+    rule: '*/6000 * * * * *'
 }, function () {
     DELETE_STICKY_ROOM();
 

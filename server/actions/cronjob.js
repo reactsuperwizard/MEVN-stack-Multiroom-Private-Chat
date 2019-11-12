@@ -7,7 +7,6 @@ const Room = require('../models/Room');
 
 module.exports = {
     DELETE_STICKY_ROOM: async () => {
-        console.log('DELETE STICKY ROOM');
         const curr = new Date();
         const rooms = await Room.findAll({
             where: {

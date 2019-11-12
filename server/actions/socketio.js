@@ -16,7 +16,6 @@ const userAvatarUrl = chatStorageUrl + 'avatar/';
 
 module.exports = {
     DELETE_ROOM_BY_PARAM: async room => {
-        console.log('deleting room');
 
         const status = await Room.destroy({
             where: {
@@ -41,9 +40,7 @@ module.exports = {
                 'room': room.id
             }
         });
-        console.log('room Deleting status', status);
         if (status) {
-            console.log('deleting file', roomAvatarUrl);
             const msgUrls = messages.filter(msg => msg.content.includes('!!!image!!!'))
                 .map(function (obj) {
                     return uploadUrl + obj.content.substring(11);
@@ -68,7 +65,6 @@ module.exports = {
                 room: room
             };
         }
-        console.log('returning false try');
         return {
             status: false,
             errors: `No room found, You will now be redirected`

@@ -17,19 +17,14 @@ const {
 
 // upload path for avatar image
 const storage = multer.diskStorage({
-	destination: function (req, file, cb) {
-		cb(null, '../chat_storage/avatar');
-	},
+	destination: '../chat_storage/avatar',
 	filename: function (req, file, cb) {
 		cb(null, uuidv4() + path.extname(file.originalname));
 	},
 });
 // upload path for upload image
 const storage_upload = multer.diskStorage({
-	destination: function (req, file, cb) {
-		// cb(null, '../client/public_images/upload_images');
-		cb(null, '../chat_storage/upload');
-	},
+	destination: '../chat_storage/upload',
 	filename: function (req, file, cb) {
 		cb(null, uuidv4() + path.extname(file.originalname));
 	},

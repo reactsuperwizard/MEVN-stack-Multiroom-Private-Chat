@@ -27,9 +27,7 @@ const {
 
 // upload path for avatar image
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, '../chat_storage/room_avatar');
-    },
+    destination: '../chat_storage/room_avatar',
     filename: function (req, file, cb) {
         cb(null, uuidv4() + path.extname(file.originalname));
     }
@@ -297,7 +295,6 @@ router.delete('/:room_name', passport.authenticate('jwt', {
                     'room_id': room.id
                 }
             })
-            console.log('delete room request', req.body.check, roomUsers.count);
             if (!req.body.check) {
                 setTimeout(async () => {
                     const delStatus = await DELETE_ROOM_BY_PARAM(room);
@@ -320,7 +317,6 @@ router.delete('/:room_name', passport.authenticate('jwt', {
                 })
             }
         } catch (err) {
-            console.log('returning false catch', err);
             return res.status(200).json({
                 errors: `No room with name ${
                     req.params.room_name
