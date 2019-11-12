@@ -4,6 +4,3 @@ node_modules/
 .env
 server/.env
 *.log
-chat_storage/avatar/*
-chat_storage/room_avatar/*
-chat_storage/upload/*
