@@ -8,27 +8,23 @@ const multer = require('multer');
 var path = require('path');
 const Relation = require('../models/Relation');
 
-const {
-	checkEditProfileFields
-} = require('../middleware/authenticate');
+const { checkEditProfileFields } = require('../middleware/authenticate');
 
-const {
-	DELETE_USER
-} = require('../actions/socketio');
+const { DELETE_USER } = require('../actions/socketio');
 
 // upload path for avatar image
 const storage = multer.diskStorage({
 	destination: '../chat_storage/avatar',
-	filename: function (req, file, cb) {
+	filename: function(req, file, cb) {
 		cb(null, uuidv4() + path.extname(file.originalname));
-	},
+	}
 });
 // upload path for upload image
 const storage_upload = multer.diskStorage({
 	destination: '../chat_storage/upload',
-	filename: function (req, file, cb) {
+	filename: function(req, file, cb) {
 		cb(null, uuidv4() + path.extname(file.originalname));
-	},
+	}
 });
 const fileFilter = (req, file, cb) => {
 	const fileType = file.mimetype.toLowerCase();
@@ -64,9 +60,9 @@ const fAudioVideoFilter = (req, file, cb) => {
 const upload = multer({
 	storage: storage,
 	limits: {
-		fileSize: 1024 * 1024 * 50,
+		fileSize: 1024 * 1024 * 50
 	},
-	fileFilter: fileFilter,
+	fileFilter: fileFilter
 });
 /**
  * @description  GET /api/user/users
@@ -80,19 +76,28 @@ const upload = multer({
 router.get(
 	'/users',
 	passport.authenticate('jwt', {
-		session: false,
+		session: false
 	}),
 	async (req, res) => {
 		//Get All Users
 		const relations = await Relation.findAll({
 			raw: true
 		});
-		const users = await User.findAll({}, {
-			raw: true
-		});
+		const users = await User.findAll(
+			{},
+			{
+				raw: true
+			}
+		);
 		for (const user of users) {
-			const from_st = relations.filter((relation) => (relation['user'] == req.user.id) && (relation['touser'] == user.id));
-			const to_st = relations.filter((relation) => (relation['touser'] == req.user.id) && (relation['user'] == user.id));
+			const from_st = relations.filter(
+				relation =>
+					relation['user'] == req.user.id && relation['touser'] == user.id
+			);
+			const to_st = relations.filter(
+				relation =>
+					relation['touser'] == req.user.id && relation['user'] == user.id
+			);
 			user['dataValues']['from'] = from_st[0] ? from_st[0].status : false;
 			user['dataValues']['to'] = to_st[0] ? to_st[0].status : false;
 		}
@@ -108,36 +113,36 @@ router.get(
 const upload_images = multer({
 	storage: storage_upload,
 	limits: {
-		fileSize: 1024 * 1024 * 50,
+		fileSize: 1024 * 1024 * 50
 	},
-	fileFilter: fAudioVideoFilter,
+	fileFilter: fAudioVideoFilter
 }).single('image');
 
 router.post(
 	'/image',
 	[
 		passport.authenticate('jwt', {
-			session: false,
-		}),
+			session: false
+		})
 	],
 	async (req, res) => {
 		try {
-			upload_images(req, res, function (err) {
+			upload_images(req, res, function(err) {
 				if (err || !req.file) {
 					res.json({
-						success: false,
+						success: false
 					});
 				} else {
 					res.json({
 						success: true,
-						image: req.file.filename,
+						image: req.file.filename
 					});
 				}
 			});
 		} catch (err) {
 			res.json({
 				success: true,
-				image: req.file.filename,
+				image: req.file.filename
 			});
 		}
 	}
@@ -156,9 +161,9 @@ router.put(
 	[
 		upload.single('image'),
 		passport.authenticate('jwt', {
-			session: false,
+			session: false
 		}),
-		checkEditProfileFields,
+		checkEditProfileFields
 	],
 	async (req, res) => {
 		const updateFields = {};
@@ -182,22 +187,22 @@ router.put(
 			const avatarUrl = user.image;
 
 			User.update(updateFields, {
-					returning: true,
-					plain: true,
-					where: {
-						id: req.user.id,
-					},
-				})
-				.then(function (doc) {
+				returning: true,
+				plain: true,
+				where: {
+					id: req.user.id
+				}
+			})
+				.then(function(doc) {
 					if (doc[1]) {
 						User.findByPk(req.user.id, {
 							attributes: {
-								exclude: ['password'],
-							},
+								exclude: ['password']
+							}
 						}).then(doc => {
 							return res.json({
 								success: true,
-								user: doc,
+								user: doc
 							});
 						});
 					} else {
@@ -210,7 +215,7 @@ router.put(
 				.catch(err => {
 					console.log('err', err);
 					res.json({
-						error: err,
+						error: err
 					});
 				});
 		});
@@ -228,7 +233,7 @@ router.put(
 router.get(
 	'/current',
 	passport.authenticate('jwt', {
-		session: false,
+		session: false
 	}),
 	(req, res) => {
 		res.json(req.user);
@@ -246,13 +251,13 @@ router.get(
 router.delete(
 	'/current',
 	passport.authenticate('jwt', {
-		session: false,
+		session: false
 	}),
 	async (req, res) => {
 		/** Delete the user */
 		const status = await DELETE_USER(req.user.id);
 		res.json({
-			success: status,
+			success: status
 		});
 	}
 );

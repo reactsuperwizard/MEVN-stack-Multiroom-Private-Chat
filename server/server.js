@@ -1,6 +1,6 @@
 /** Dotenv Environment Variables */
 if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
+	require('dotenv').config();
 }
 
 /** Connect to MongoDB */
@@ -14,9 +14,7 @@ const fs = require('fs');
 /** Logging Dependencies */
 const morgan = require('morgan');
 // const winston = require('winston');
-const {
-    logger
-} = require('./config/logModule');
+const { logger } = require('./config/logModule');
 
 /** Passport Configuration */
 const passport = require('passport');
@@ -36,29 +34,27 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const {
-    ADD_MESSAGE,
-    ADD_PRIVATE_MESSAGE,
-    GET_USER_SOCKET,
-    GET_ROOMS,
-    GET_ROOM_USERS,
-    FILTER_ROOM_USERS,
-    CREATE_MESSAGE_CONTENT
+	ADD_MESSAGE,
+	ADD_PRIVATE_MESSAGE,
+	GET_USER_SOCKET,
+	GET_ROOMS,
+	GET_ROOM_USERS,
+	FILTER_ROOM_USERS,
+	CREATE_MESSAGE_CONTENT
 } = require('./actions/socketio');
 
-const {
-    DELETE_STICKY_ROOM
-} = require('./actions/cronjob');
+const { DELETE_STICKY_ROOM } = require('./actions/cronjob');
 
-const {
-    JOIN_ROOM
-} = require('./helpers/socketEvents');
+const { JOIN_ROOM } = require('./helpers/socketEvents');
 
-var j = schedule.scheduleJob({
-    rule: '*/6000 * * * * *'
-}, function () {
-    DELETE_STICKY_ROOM();
-
-});
+var j = schedule.scheduleJob(
+	{
+		rule: '*/6000 * * * * *'
+	},
+	function() {
+		DELETE_STICKY_ROOM();
+	}
+);
 /**URLs */
 const chatStorageUrl = '../chat_storage/';
 const roomAvatarUrl = chatStorageUrl + 'room_avatar/';
@@ -75,14 +71,13 @@ const privateMsgRoutes = require('./routes/privateMsg');
 
 /** Middleware */
 app.use(
-    morgan('combined', {
-        stream: fs.createWriteStream('logs/access.log', {
-            flags: 'a'
-        })
-    })
+	morgan('combined', {
+		stream: fs.createWriteStream('logs/access.log', {
+			flags: 'a'
+		})
+	})
 );
 app.use(morgan('dev'));
-
 
 // if (process.env.NODE_ENV === 'production') {
 //     /** Trust Proto Header for heroku */
@@ -93,9 +88,11 @@ app.use(morgan('dev'));
 
 // app.use(compression());
 
-app.use(bodyParser.urlencoded({
-    extended: false
-}));
+app.use(
+	bodyParser.urlencoded({
+		extended: false
+	})
+);
 app.use(bodyParser.json());
 
 // file url
@@ -116,7 +113,6 @@ app.use('/api/roomRelation', roomRelationRoutes);
 app.use('/api/privateMsg', privateMsgRoutes);
 // app.use('/api/messages', messageRoutes);
 
-
 // if (process.env.NODE_ENV !== 'production') {
 //     logger.add(
 //         new winston.transports.Console({
@@ -128,240 +124,279 @@ app.use('/api/privateMsg', privateMsgRoutes);
 let userTypings = {};
 /** Socket IO Connections */
 io.on('connection', socket => {
-    let currentRoomId = null;
-    /** Socket Events */
-    socket.on('disconnect', async () => {
+	let currentRoomId = null;
+	/** Socket Events */
+	socket.on('disconnect', async () => {
+		if (currentRoomId) {
+			/** Filter through users and remove user from user list in that room */
+			const roomState = await FILTER_ROOM_USERS({
+				roomId: currentRoomId,
+				socketId: socket.id
+			});
 
-        if (currentRoomId) {
-            /** Filter through users and remove user from user list in that room */
-            const roomState = await FILTER_ROOM_USERS({
-                roomId: currentRoomId,
-                socketId: socket.id
-            });
+			socket.broadcast.to(currentRoomId).emit(
+				'updateUserList',
+				JSON.stringify(
+					await GET_ROOM_USERS({
+						room: {
+							id: currentRoomId
+						}
+					})
+				)
+			);
 
+			socket.broadcast.emit(
+				'updateRooms',
+				JSON.stringify({
+					room: await GET_ROOMS()
+				})
+			);
 
-            socket.broadcast.to(currentRoomId).emit(
-                'updateUserList',
-                JSON.stringify(
-                    await GET_ROOM_USERS({
-                        room: {
-                            id: currentRoomId
-                        }
-                    })
-                )
-            );
+			socket.broadcast.to(currentRoomId).emit(
+				'receivedNewMessage',
+				JSON.stringify(
+					await ADD_MESSAGE({
+						room: {
+							id: roomState.previous.id
+						},
+						user: null,
+						content: CREATE_MESSAGE_CONTENT(roomState, socket.id),
+						admin: true
+					})
+				)
+			);
+		}
+	});
+	/** Join User in Room */
+	socket.on('userJoined', data => {
+		currentRoomId = data.room.id;
+		data.socketId = socket.id;
+		JOIN_ROOM(socket, data);
+	});
+	// socket.on('getUserList_Relation', data => {
+	// 	// const clientIds = io.sockets.clients();
+	// 	// console.log('socketIds', clientIds);
+	// 	Object.keys(io.sockets.sockets).forEach(function(id) {
+	// 		console.log('ID:', id); // socketId
+	// 	});
+	// 	// socket.broadcast.emit('getUserList_Relation', clientIds);
+	// 	// GET_USER()
+	// 	// 	.then(users => {
+	// 	// 		users.filter(function(user) {
+	// 	// 			this.indexOf(e.socketid) > 0;
+	// 	// 		}, clientIds);
+	// 	// 	})
+	// 	// 	.catch(err => console.log('err', err));
+	// });
 
-            socket.broadcast.emit(
-                'updateRooms',
-                JSON.stringify({
-                    room: await GET_ROOMS()
-                })
-            );
+	/** Request User Exit Room */
+	socket.on('exitRoom', data => {
+		currentRoomId = null;
+		socket.leave(data.room.id, async () => {
+			socket.to(data.room.id).emit(
+				'updateRoomData',
+				JSON.stringify({
+					room: data.room
+				})
+			);
 
-            socket.broadcast.to(currentRoomId).emit(
-                'receivedNewMessage',
-                JSON.stringify(
-                    await ADD_MESSAGE({
-                        room: {
-                            id: roomState.previous.id
-                        },
-                        user: null,
-                        content: CREATE_MESSAGE_CONTENT(roomState, socket.id),
-                        admin: true
-                    })
-                )
-            );
-        }
-    });
-    /** Join User in Room */
-    socket.on('userJoined', data => {
-        currentRoomId = data.room.id;
-        data.socketId = socket.id;
-        JOIN_ROOM(socket, data);
-    });
+			/** Update room list count */
+			socket.broadcast.emit(
+				'updateRooms',
+				JSON.stringify({
+					room: await GET_ROOMS()
+				})
+			);
 
-    /** Request User Exit Room */
-    socket.on('exitRoom', data => {
-        currentRoomId = null;
-        socket.leave(data.room.id, async () => {
-            socket.to(data.room.id).emit(
-                'updateRoomData',
-                JSON.stringify({
-                    room: data.room
-                })
-            );
+			io.to(data.room.id).emit(
+				'receivedUserExit',
+				JSON.stringify({
+					room: data.room
+				})
+			);
 
-            /** Update room list count */
-            socket.broadcast.emit(
-                'updateRooms',
-                JSON.stringify({
-                    room: await GET_ROOMS()
-                })
-            );
+			/** Send Exit Message back to room */
+			socket.broadcast
+				.to(data.room.id)
+				.emit('receivedNewMessage', JSON.stringify(await ADD_MESSAGE(data)));
+		});
+	});
 
-            io.to(data.room.id).emit('receivedUserExit',
-                JSON.stringify({
-                    room: data.room
-                }));
+	/**Room admin requests to exit the user */
+	socket.on('exitUserRoom', async data => {
+		currentRoomId = null;
+		const socketId = await GET_USER_SOCKET(data.exitUser);
+		const Usocket = io.sockets.connected[socketId];
 
-            /** Send Exit Message back to room */
-            socket.broadcast
-                .to(data.room.id)
-                .emit('receivedNewMessage', JSON.stringify(await ADD_MESSAGE(data)));
-        });
-    });
+		socket.to(data.room.id).emit(
+			'updateRoomData',
+			JSON.stringify({
+				room: data.room
+			})
+		);
 
-    /**Room admin requests to exit the user */
-    socket.on('exitUserRoom', async data => {
-        currentRoomId = null;
-        const socketId = await GET_USER_SOCKET(data.exitUser);
-        const Usocket = io.sockets.connected[socketId];
+		/** Update room list count */
+		socket.broadcast.emit(
+			'updateRooms',
+			JSON.stringify({
+				room: await GET_ROOMS()
+			})
+		);
 
-        socket.to(data.room.id).emit(
-            'updateRoomData',
-            JSON.stringify({
-                room: data.room
-            })
-        );
+		io.to(data.room.id).emit(
+			'receivedUserExit',
+			JSON.stringify({
+				room: data.room
+			})
+		);
 
-        /** Update room list count */
-        socket.broadcast.emit(
-            'updateRooms',
-            JSON.stringify({
-                room: await GET_ROOMS()
-            })
-        );
+		/** Send Exit Message back to room */
+		socket.broadcast
+			.to(data.room.id)
+			.emit('receivedNewMessage', JSON.stringify(await ADD_MESSAGE(data)));
+		Usocket.leave(data.room.id);
+	});
 
-        io.to(data.room.id).emit('receivedUserExit',
-            JSON.stringify({
-                room: data.room
-            }));
+	socket.on('removeUserTyping', data => {
+		if (userTypings[data.room.id]) {
+			if (userTypings[data.room.id].includes(data.user.handle)) {
+				userTypings[data.room.id] = userTypings[data.room.id].filter(
+					handle => handle !== data.user.handle
+				);
+			}
+		}
 
-        /** Send Exit Message back to room */
-        socket.broadcast
-            .to(data.room.id)
-            .emit('receivedNewMessage', JSON.stringify(await ADD_MESSAGE(data)));
-        Usocket.leave(data.room.id);
-    });
+		socket.broadcast
+			.to(data.room.id)
+			.emit('receivedUserTyping', JSON.stringify(userTypings[data.room.id]));
+	});
 
-    socket.on('removeUserTyping', data => {
-        if (userTypings[data.room.id]) {
-            if (userTypings[data.room.id].includes(data.user.handle)) {
-                userTypings[data.room.id] = userTypings[data.room.id].filter(
-                    handle => handle !== data.user.handle
-                );
-            }
-        }
+	/** New Message Event */
+	socket.on('newMessage', async data => {
+		if (data.room.access) {
+			//public message arrived
+			const newMessage = await ADD_MESSAGE(data);
 
-        socket.broadcast
-            .to(data.room.id)
-            .emit('receivedUserTyping', JSON.stringify(userTypings[data.room.id]));
-    });
+			// Emit data back to the client for display
+			io.to(data.room.id).emit(
+				'receivedNewMessage',
+				JSON.stringify(newMessage)
+			);
+		} else {
+			//private message arrived
+			const newMessage = await ADD_PRIVATE_MESSAGE(data);
 
-    /** New Message Event */
-    socket.on('newMessage', async data => {
-        if (data.room.access) {
-            //public message arrived
-            const newMessage = await ADD_MESSAGE(data);
+			// Emit data to the select client for display
+			if (newMessage) {
+				io.to(newMessage['touser']['socketid']).emit(
+					'receivedNewMessage',
+					JSON.stringify(newMessage)
+				);
+				io.to(newMessage['user']['socketid']).emit(
+					'receivedNewMessage',
+					JSON.stringify(newMessage)
+				);
+				io.to(newMessage['touser']['socketid']).emit(
+					'msgAlertTriggered',
+					JSON.stringify(newMessage)
+				);
+			}
+		}
+	});
+	/** New Image Message Event */
+	socket.on('newMessage_image', async data => {
+		const newMessage = await ADD_MESSAGE(data);
 
-            // Emit data back to the client for display
-            io.to(data.room.id).emit('receivedNewMessage', JSON.stringify(newMessage));
-        } else {
-            //private message arrived
-            const newMessage = await ADD_PRIVATE_MESSAGE(data);
+		// Emit data back to the client for display
+		io.to(data.room.id).emit('receivedNewMessage', JSON.stringify(newMessage));
+	});
 
-            // Emit data to the select client for display
-            if (newMessage) {
-                io.to(newMessage['touser']['socketid']).emit('receivedNewMessage', JSON.stringify(newMessage));
-                io.to(newMessage['user']['socketid']).emit('receivedNewMessage', JSON.stringify(newMessage));
-                io.to(newMessage['touser']['socketid']).emit('msgAlertTriggered', JSON.stringify(newMessage));
-            }
-        }
-    });
-    /** New Image Message Event */
-    socket.on('newMessage_image', async data => {
-        const newMessage = await ADD_MESSAGE(data);
+	/** Room Deleted Event */
+	socket.on('roomDeleted', async data => {
+		io.to(data.room.id).emit('receivedNewMessage', JSON.stringify(data));
+		io.to(data.room.id).emit('roomDeleted', JSON.stringify(data));
+		io.emit('roomListUpdated', JSON.stringify(data));
+	});
 
-        // Emit data back to the client for display
-        io.to(data.room.id).emit('receivedNewMessage', JSON.stringify(newMessage));
-    });
+	/** Room Added Event */
+	socket.on('roomAdded', async data => {
+		io.emit('roomAdded', JSON.stringify(data));
+	});
+	/** Room Updated Event */
+	socket.on('roomUpdateEvent', async data => {
+		io.in(data.room.id).emit('roomUpdated', JSON.stringify(data));
+		io.emit('roomNameUpdated', JSON.stringify(data));
+	});
+	/** User Register Event */
+	socket.on('UserRegistered', async data => {
+		io.emit('UserRegistered', '');
+		socket.broadcast.emit(
+			'updateRooms',
+			JSON.stringify({
+				room: await GET_ROOMS()
+			})
+		);
+	});
+	/** User Edited Event */
+	socket.on('userEdited', async data => {
+		console.log('socket on userEdited');
+		io.emit('userListUpdated', '');
+	});
+	/** User Status Change Event */
+	socket.on('statusChanged', async data => {
+		const socketid = await GET_USER_SOCKET(data.touser);
+		if (socketid) {
+			io.to(socketid).emit(
+				'statusChanged',
+				JSON.stringify({
+					user: data.user,
+					status: data.status
+				})
+			);
+		}
+	});
 
-    /** Room Deleted Event */
-    socket.on('roomDeleted', async data => {
-        io.to(data.room.id).emit('receivedNewMessage', JSON.stringify(data));
-        io.to(data.room.id).emit('roomDeleted', JSON.stringify(data));
-        io.emit('roomListUpdated', JSON.stringify(data));
-    });
+	socket.on('roomRelationChanged', async data => {
+		//public message arrived
+		const content = await CREATE_MESSAGE_CONTENT(
+			data.room,
+			{
+				user: data.user,
+				status: data.status
+			},
+			1
+		);
 
-    /** Room Added Event */
-    socket.on('roomAdded', async data => {
-        io.emit('roomAdded', JSON.stringify(data));
-    });
-    /** Room Updated Event */
-    socket.on('roomUpdateEvent', async data => {
-        io.in(data.room.id).emit('roomUpdated', JSON.stringify(data));
-        io.emit('roomNameUpdated', JSON.stringify(data));
-    });
-    /** User Register Event */
-    socket.on('UserRegistered', async data => {
-        io.emit('UserRegistered', '');
-        socket.broadcast.emit(
-            'updateRooms',
-            JSON.stringify({
-                room: await GET_ROOMS()
-            })
-        );
-    });
-    /** User Edited Event */
-    socket.on('userEdited', async data => {
-        console.log('socket on userEdited');
-        io.emit('userListUpdated', '');
-    });
-    /** User Status Change Event */
-    socket.on('statusChanged', async data => {
-        const socketid = await GET_USER_SOCKET(data.touser);
-        if (socketid) {
-            io.to(socketid).emit('statusChanged', JSON.stringify({
-                user: data.user,
-                status: data.status
-            }));
-        }
-    });
+		const newMessage = await ADD_MESSAGE({
+			room: {
+				id: data.room
+			},
+			user: null,
+			content: content,
+			admin: true
+		});
 
-    socket.on('roomRelationChanged', async data => {
-        //public message arrived
-        const content = await CREATE_MESSAGE_CONTENT(data.room, {
-            user: data.user,
-            status: data.status
-        }, 1);
+		// Emit data back to the client for display
+		io.to(data.room).emit('receivedNewMessage', JSON.stringify(newMessage));
+		io.to(data.room).emit(
+			'roomRelationChanged',
+			JSON.stringify({
+				user: data.user,
+				status: data.status
+			})
+		);
+	});
 
-        const newMessage = await ADD_MESSAGE({
-            room: {
-                id: data.room
-            },
-            user: null,
-            content: content,
-            admin: true
-        });
-
-        // Emit data back to the client for display
-        io.to(data.room).emit('receivedNewMessage', JSON.stringify(newMessage));
-        io.to(data.room).emit('roomRelationChanged', JSON.stringify({
-            user: data.user,
-            status: data.status
-        }));
-    });
-
-    /** User Deleted Event */
-    socket.on('UserDeleted', async data => {
-        io.emit('userListUpdated', '');
-        socket.broadcast.emit(
-            'updateRooms',
-            JSON.stringify({
-                room: await GET_ROOMS()
-            })
-        );
-    });
+	/** User Deleted Event */
+	socket.on('UserDeleted', async data => {
+		io.emit('userListUpdated', '');
+		socket.broadcast.emit(
+			'updateRooms',
+			JSON.stringify({
+				room: await GET_ROOMS()
+			})
+		);
+	});
 });
 /** Serve static assets if production */
 // if (process.env.NODE_ENV === 'production') {
@@ -370,14 +405,13 @@ io.on('connection', socket => {
 //         res.sendFile(path.resolve(__dirname, '../client', 'dist', 'index.html'));
 //     });
 // }
-io.emit('news_by_server', 'can you hear me out?');
 
 if (process.env.NODE_ENV !== 'test') {
-    server.listen(process.env.PORT || 5000, () => {
-        logger.info(`[LOG=SERVER] Server started on port ${process.env.PORT}`);
-    });
+	server.listen(process.env.PORT || 5000, () => {
+		logger.info(`[LOG=SERVER] Server started on port ${process.env.PORT}`);
+	});
 }
 
 module.exports = {
-    app
+	app
 };

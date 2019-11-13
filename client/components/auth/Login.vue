@@ -17,7 +17,8 @@
 				</div>
 				<form @submit.prevent="handleSubmit" class="form">
 					<span class="form__lead">
-						<ion-icon name="rocket" class="icon"></ion-icon>We are excited to see you again!
+						<ion-icon name="rocket" class="icon"></ion-icon>We are excited to
+						see you again!
 					</span>
 					<br />
 					<div class="form__input-group">
@@ -49,11 +50,17 @@
 					<button type="submit" class="form__submit">Login</button>
 					<div class="form__info-group mt-3">
 						<span>Forgotten password?</span>
-						<router-link to="/forgotpassword" class="form__link btn btn--rounded">Forgot password</router-link>
+						<router-link
+							to="/forgotpassword"
+							class="form__link btn btn--rounded"
+							>Forgot password</router-link
+						>
 					</div>
 					<div class="form__info-group mt-3">
 						<span>Don't have an account?</span>
-						<router-link to="/register" class="form__link btn btn--rounded">Register</router-link>
+						<router-link to="/register" class="form__link btn btn--rounded"
+							>Register</router-link
+						>
 					</div>
 				</form>
 			</div>
@@ -62,80 +69,83 @@
 </template>
 
 <script>
-	import axios from "axios";
-	import Error from "../error/Error.vue";
-	// import OAuth from '../social/OAuth.vue';
-	import { mapActions } from "vuex";
-	import setAuthToken from "../../utils/authToken";
-	import { mdbIcon } from "mdbvue";
+import axios from 'axios';
+import Error from '../error/Error.vue';
+// import OAuth from '../social/OAuth.vue';
+import { mapActions, mapGetters } from 'vuex';
+import setAuthToken from '../../utils/authToken';
+import { mdbIcon } from 'mdbvue';
 
-	export default {
-		name: "Login",
-		props: ["message", "pEmail", "pPassword"],
-		components: {
-			Error
-			// OAuth
-		},
-		data: function() {
-			return {
-				email: this.pEmail,
-				password: this.pPassword,
-				errorMessage: this.message,
-				errors: []
-			};
-		},
-		methods: {
-			...mapActions(["saveUserData", "toggleAuthState"]),
+export default {
+	name: 'Login',
+	props: ['message', 'pEmail', 'pPassword'],
+	components: {
+		Error
+		// OAuth
+	},
+	data: function() {
+		return {
+			email: this.pEmail,
+			password: this.pPassword,
+			errorMessage: this.message,
+			errors: []
+		};
+	},
+	computed: {
+		...mapGetters(['getSocket'])
+	},
+	methods: {
+		...mapActions(['saveUserData', 'toggleAuthState']),
 
-			handleSubmit() {
-				this.errors = [];
-				if (this.email && this.password) {
-					axios
-						.post("/api/auth/login", {
-							email: this.email,
-							password: this.password
-						})
-						.then(res => {
-							if (res.data.errors) {
-								for (const error of res.data.errors) {
-									const [key] = Object.keys(error);
-									const [value] = Object.values(error);
-									this.errors.push({
-										key,
-										value
-									});
-								}
-							} else {
-								localStorage.setItem("authToken", res.data.token);
-								this.$store.dispatch("toggleAuthState", true);
-								this.$store.dispatch("saveUserData", res.data.user);
-
-								setAuthToken(res.data.token);
-
-								this.$router.push({
-									name: "UserProfile",
-									params: { handle: res.data.user.handle }
+		handleSubmit() {
+			this.errors = [];
+			if (this.email && this.password) {
+				axios
+					.post('/api/auth/login', {
+						email: this.email,
+						password: this.password
+					})
+					.then(res => {
+						if (res.data.errors) {
+							for (const error of res.data.errors) {
+								const [key] = Object.keys(error);
+								const [value] = Object.values(error);
+								this.errors.push({
+									key,
+									value
 								});
 							}
-						});
-				}
+						} else {
+							localStorage.setItem('authToken', res.data.token);
+							this.$store.dispatch('toggleAuthState', true);
+							this.$store.dispatch('saveUserData', res.data.user);
 
-				setTimeout(() => {
-					this.errors = [];
-				}, 1500);
+							setAuthToken(res.data.token);
+							this.getSocket.emit('UserRegistered', '');
+
+							this.$router.push({
+								name: 'UserProfile',
+								params: { handle: res.data.user.handle }
+							});
+						}
+					});
 			}
-		},
-		mounted() {
-			if (this.errorMessage) {
-				setTimeout(() => {
-					this.errorMessage = "";
-				}, 1500);
-			}
+
+			setTimeout(() => {
+				this.errors = [];
+			}, 1500);
 		}
-	};
+	},
+	mounted() {
+		if (this.errorMessage) {
+			setTimeout(() => {
+				this.errorMessage = '';
+			}, 1500);
+		}
+	}
+};
 </script>
 
-
 <style lang="scss">
-	@import "@/assets/scss/components/form.scss";
+@import '@/assets/scss/components/form.scss';
 </style>
