@@ -33,7 +33,7 @@ Login/Profile area
 
 
 Rooms
-- `Online Users` column should not display offline users
+@@- `Online Users` column should not display offline users
 @@- `Online Users` column should not display my name as a user. That serves no purpose.
 @@- Remove `Rooms3`, which seems to be a glitch
 @@- Remove the option `You activated ...`. It is superflous and confusing. 
