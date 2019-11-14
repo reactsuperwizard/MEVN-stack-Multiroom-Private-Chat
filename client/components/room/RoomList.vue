@@ -37,14 +37,26 @@
 											</div>
 											<div class="rooms__item-details">
 												<p>{{ room.name }}</p>
-												<p :class="{private_name: !room.access}" v-if="!room.access">Private</p>
+												<p :class="{ private_name: !room.access }" v-if="!room.access">Private</p>
 												<p>
 													<strong>Users:</strong>
-													{{ room.users }}
+													{{ room.users > 0 ? room.users : 0}}
 												</p>
 												<p>
-													<strong>{{room.access === true ? 'Room Admin:' : ''}}</strong>
-													{{ room.access === false ? 'Your private chat room' : room.user ? room.user.username : room.name=='HOME' ? 'ADMIN' : 'Unknown User' }}
+													<strong>
+														{{
+														room.access === true ? 'Room Admin:' : ''
+														}}
+													</strong>
+													{{
+													room.access === false
+													? 'Your private chat room'
+													: room.user
+													? room.user.username
+													: room.name == 'HOME'
+													? 'ADMIN'
+													: 'Unknown User'
+													}}
 												</p>
 											</div>
 											<div class="rooms__item-actions">
@@ -97,7 +109,14 @@
 							>
 								<div class="form__input-group">
 									<label for="room_avatar" title="Select Room Avatar">
-										<img :src="selected_url ? selected_url : srv_url+'defaultRoom.png'" class="room_avatar" />
+										<img
+											:src="
+												selected_url
+													? selected_url
+													: srv_url + 'defaultRoom.png'
+											"
+											class="room_avatar"
+										/>
 									</label>
 								</div>
 								<div class="form__input-group">
@@ -139,14 +158,14 @@
 </template>
 
 <script>
-	import axios from "axios";
-	import Modal from "@/components/layout/Modal";
-	import { mapActions, mapGetters } from "vuex";
-	import Error from "@/components/error/Error.vue";
+	import axios from 'axios';
+	import Modal from '@/components/layout/Modal';
+	import { mapActions, mapGetters } from 'vuex';
+	import Error from '@/components/error/Error.vue';
 
 	export default {
-		name: "RoomList",
-		props: ["message"],
+		name: 'RoomList',
+		props: ['message'],
 		components: {
 			Modal: Modal,
 			Error
@@ -156,18 +175,18 @@
 				selected_url: null,
 				rooms: [],
 				room_name: null,
-				room_avatar: "",
+				room_avatar: '',
 				privateRoomName: null,
 				password: null,
 				privateRoomPassword: null,
-				searchInput: "",
+				searchInput: '',
 				errorMessage: this.message,
 				errors: [],
-				srv_url: "http://localhost:5000/public/room_avatar/"
+				srv_url: 'http://localhost:5000/public/room_avatar/'
 			};
 		},
 		computed: {
-			...mapGetters(["getUserData", "getRoomData", "getSocket"]),
+			...mapGetters(['getUserData', 'getRoomData', 'getSocket']),
 			getPrivateRooms() {
 				return this.rooms.filter(room => room.access === false);
 			},
@@ -179,37 +198,35 @@
 					.slice()
 					.sort(this.roomSortFunc)
 					.filter(room =>
-						room.name
-							.toLowerCase()
-							.includes(this.searchInput.toLowerCase())
+						room.name.toLowerCase().includes(this.searchInput.toLowerCase())
 					);
 			}
 		},
 		methods: {
 			...mapActions([
-				"updateRoomData",
-				"addRoom",
-				"deleteRoom",
-				"saveCurrentRoom",
-				"saveCurrentSelect"
+				'updateRoomData',
+				'addRoom',
+				'deleteRoom',
+				'saveCurrentRoom',
+				'saveCurrentSelect'
 			]),
-			...mapGetters(["getCurrentSelect"]),
+			...mapGetters(['getCurrentSelect', 'getCurrentRoom']),
 			handleFileUpload(e) {
 				this.room_avatar = this.$refs.room_avatar.files[0];
 				const file = e.target.files[0];
 				this.selected_url = URL.createObjectURL(file);
 
 				const reset_file = this.$refs.room_avatar;
-				reset_file.type = "text";
-				reset_file.type = "file";
+				reset_file.type = 'text';
+				reset_file.type = 'file';
 			},
 			roomSortFunc(a, b) {
 				let roomA = a.name.toUpperCase();
 				let roomB = b.name.toUpperCase();
 
 				//ROOM - HOME should be first
-				if (roomA == "HOME") return -1;
-				if (roomB == "HOME") return 1;
+				if (roomA == 'HOME') return -1;
+				if (roomB == 'HOME') return 1;
 
 				//private chat room should be first
 				if (!a.access) return -1;
@@ -227,12 +244,12 @@
 			},
 			fetchRoomData() {
 				axios
-					.get("/api/room")
+					.get('/api/room')
 					.then(async res => {
 						await axios.put(`/api/room/remove/users/all`, {
 							userid: this.getUserData.id
 						});
-						this.$store.dispatch("updateRoomData", res.data);
+						this.$store.dispatch('updateRoomData', res.data);
 						this.rooms = res.data;
 						await axios.put(`/api/user/current`, {
 							socketid: this.getSocket.id
@@ -244,7 +261,7 @@
 						}
 					})
 					.catch(err => {
-						console.log("err", err);
+						console.log('err', err);
 					});
 			},
 			openModal() {
@@ -253,10 +270,10 @@
 				this.$refs.createRoom.open();
 			},
 			enterRoom(room) {
-				this.$router.push({ name: "Room", params: { id: room.id } });
+				this.$router.push({ name: 'Room', params: { id: room.id } });
 			},
 			enterPrivateRoom(room) {
-				this.$router.push({ name: "PrivateRoom", params: { id: room.id } });
+				this.$router.push({ name: 'PrivateRoom', params: { id: room.id } });
 			},
 			handleCreateRoom(e) {
 				e.preventDefault();
@@ -273,11 +290,11 @@
 					}
 				}
 
-				if (localStorage.getItem("authToken")) {
+				if (localStorage.getItem('authToken')) {
 					axios
 						.post(`/api/room`, formData, {
 							headers: {
-								"Content-Type": "multipart/form-data"
+								'Content-Type': 'multipart/form-data'
 							}
 						})
 						.then(res => {
@@ -291,12 +308,12 @@
 									});
 								}
 							} else {
-								this.$store.dispatch("addRoom", res.data);
+								this.$store.dispatch('addRoom', res.data);
 								this.room_name = null;
 								this.selected_url = null;
 								this.password = null;
 								this.$refs.createRoom.close();
-								this.getSocket.emit("roomAdded", res.data);
+								this.getSocket.emit('roomAdded', res.data);
 							}
 						})
 						.catch(err => {
@@ -314,8 +331,8 @@
 					.delete(`/api/room/${e.target.name}`)
 					.then(res => {
 						if (!res.errors) {
-							this.$store.dispatch("deleteRoom", res.data);
-							this.getSocket.emit("roomDeleted", {
+							this.$store.dispatch('deleteRoom', res.data);
+							this.getSocket.emit('roomDeleted', {
 								room: res.data,
 								user: this.getUserData,
 								admin: true,
@@ -335,7 +352,7 @@
 			handlePrivateRoomCheck(e) {
 				e.preventDefault();
 				axios
-					.post("/api/room/verify", {
+					.post('/api/room/verify', {
 						room_name: this.$refs.privateRoom.modalData.room.name,
 						password: this.privateRoomPassword
 					})
@@ -352,9 +369,7 @@
 							this.privateRoomPassword = null;
 						} else {
 							if (res.data.success) {
-								this.enterRoom(
-									this.$refs.privateRoom.modalData.room
-								);
+								this.enterRoom(this.$refs.privateRoom.modalData.room);
 							}
 						}
 
@@ -369,7 +384,7 @@
 					length = 100;
 				}
 				if (ending == null) {
-					ending = "...";
+					ending = '...';
 				}
 				if (str.length > length) {
 					return str.substring(0, length - ending.length) + ending;
@@ -379,23 +394,24 @@
 			}
 		},
 		created() {
-			this.$store.dispatch("saveCurrentRoom", null);
-			this.getSocket.removeListener("msgAlertTriggered");
-			this.getSocket.on("roomAdded", data => {
+			this.$store.dispatch('saveCurrentRoom', null);
+			this.$store.dispatch('saveCurrentSelect', null);
+			this.getSocket.removeListener('msgAlertTriggered');
+			this.getSocket.on('roomAdded', data => {
 				this.rooms.unshift(JSON.parse(data));
 			});
 
-			this.getSocket.on("roomListUpdated", data => {
+			this.getSocket.on('roomListUpdated', data => {
 				this.rooms = this.rooms.filter(
 					room => room.id !== JSON.parse(data).room.id
 				);
 			});
 
-			this.getSocket.on("updateRooms", data => {
+			this.getSocket.on('updateRooms', data => {
 				this.rooms = JSON.parse(data).room;
 			});
 
-			this.getSocket.on("roomNameUpdated", data => {
+			this.getSocket.on('roomNameUpdated', data => {
 				let updateIndex = 0;
 				this.rooms.forEach((room, index) => {
 					if (room.id === JSON.parse(data).room.id) {
@@ -404,29 +420,27 @@
 				});
 				this.rooms.splice(updateIndex, 1, JSON.parse(data).room);
 			});
-			this.getSocket.on("msgAlertTriggered", message => {
+			this.getSocket.on('msgAlertTriggered', message => {
 				const message_parsed = JSON.parse(message);
-				if (!message_parsed["user"]["status"]) {
+				console.log(message_parsed, this.getCurrentRoom());
+				if (!message_parsed['user']['status']) {
 					if (
+						this.getCurrentRoom().access ||
 						!this.getCurrentSelect() ||
-						this.getCurrentSelect() != message_parsed["user"]["id"]
+						this.getCurrentSelect() != message_parsed['user']['id']
 					) {
 						this.$notify({
-							group: "notification_newMsg",
+							group: 'notification_newMsg',
 							title: [
-								"New Message Arrived from " +
-									message_parsed["user"]["handle"],
-								message_parsed["user"]["id"]
+								'New Message Arrived from ' + message_parsed['user']['handle'],
+								message_parsed['user']['id']
 							],
 							text: this.text_truncate(
-								message_parsed.content.replace(
-									"!!!image!!!",
-									"File name - "
-								),
+								message_parsed.content.replace('!!!image!!!', 'File name - '),
 								30,
-								"..."
+								'...'
 							),
-							type: "success ",
+							type: 'success ',
 							duration: 10000
 						});
 					}
@@ -437,7 +451,7 @@
 			this.fetchRoomData();
 			if (this.errorMessage) {
 				setTimeout(() => {
-					this.errorMessage = "";
+					this.errorMessage = '';
 				}, 1500);
 			}
 		}
@@ -445,6 +459,6 @@
 </script>
 
 <style lang="scss">
-	@import "@/assets/scss/views/rooms.scss";
-	@import "@/assets/scss/components/form.scss";
+	@import '@/assets/scss/views/rooms.scss';
+	@import '@/assets/scss/components/form.scss';
 </style>

@@ -273,7 +273,7 @@ io.on('connection', socket => {
 
 	/** New Message Event */
 	socket.on('newMessage', async data => {
-		if (data.room.access) {
+		if (data.room.access && !data.select) {
 			//public message arrived
 			const newMessage = await ADD_MESSAGE(data);
 

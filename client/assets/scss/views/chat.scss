@@ -1,359 +1,380 @@
 .selected {
-    background-color: grey;
-    border-style: solid;
-    border-radius: 10px;
+	background-color: grey;
+	border-radius: 10px;
 }
 
 .blocked {
-    border-color: red !important;
+	border-style: solid;
+
+	border-color: red !important;
 }
 
 .banned {
-    border-color: yellowgreen !important;
+	border-style: solid;
+
+	border-color: yellowgreen !important;
 }
 
 .chat {
-    height: 100%;
-    position: relative;
-    display: flex;
+	height: 100%;
+	position: relative;
+	display: flex;
 
-    @include respond(phone) {
-        height: calc(100vh - 70px);
-    }
+	@include respond(phone) {
+		height: calc(100vh - 70px);
+	}
 
-    &__content {
-        height: 100%;
-        width: 100%;
-        display: flex;
-        flex-flow: column;
-        background: rgba(24, 25, 28, 0.6);
-        margin-left: 300px;
-        overflow: hidden;
-        transition: all 0.5s ease;
+	&__content {
+		height: 100%;
+		width: 100%;
+		display: flex;
+		flex-flow: column;
+		background: rgba(24, 25, 28, 0.6);
+		margin-left: 300px;
+		overflow: hidden;
+		transition: all 0.5s ease;
 
-        @include respond(phone) {
-            margin-left: 0px;
-        }
-    }
+		@include respond(phone) {
+			margin-left: 0px;
+		}
+	}
 
-    &__header {
-        text-align: left;
-        padding: 1rem 0;
-        margin: 0 1rem;
-        display: flex;
-        align-items: center;
-        background: rgba($color: #18191c, $alpha: 0.8);
-        border-bottom: 1px solid #ccc;
-    }
+	&__header {
+		text-align: left;
+		padding: 1rem 0;
+		margin: 0 1rem;
+		display: flex;
+		align-items: center;
+		background: rgba($color: #18191c, $alpha: 0.8);
+		border-bottom: 1px solid #ccc;
+	}
 
-    &__actions {
-        flex-grow: 1;
-        text-align: right;
+	&__actions {
+		flex-grow: 1;
+		text-align: right;
 
-        &>* {
-            cursor: pointer;
-        }
-    }
+		& > * {
+			cursor: pointer;
+		}
+	}
 
-    /** User List */
+	/** User List */
 
-    /** User List Container */
-    &__c-userlist {
-        position: relative;
-    }
+	/** User List Container */
+	&__c-userlist {
+		position: relative;
+	}
 
-    /** User List [UL]*/
-    &__userlist {
-        display: flex;
-        flex-flow: column;
-        margin: 0;
-        padding: 1rem;
-        list-style-type: none;
-    }
+	/** User List [UL]*/
+	&__userlist {
+		display: flex;
+		flex-flow: column;
+		margin: 0;
+		padding: 1rem;
+		list-style-type: none;
+	}
 
-    &__user {
-        display: flex;
-        width: 100%;
-        margin: 1rem 0;
-        transition: all 0.5s ease;
-        border-style: solid;
-        border-radius: 10px;
-        border-color: transparent;
+	&__user {
+		display: flex;
+		width: 100%;
+		margin: 1rem 0;
+		transition: all 0.5s ease;
+		border-style: solid;
+		border-radius: 10px;
+		border-color: transparent;
 
-        &-item {
-            display: flex;
-            align-items: center;
-            padding: 0 0.5rem;
-            width: 100%;
-        }
+		&-item {
+			display: flex;
+			align-items: center;
+			padding: 0 0.5rem;
+			width: 100%;
+		}
 
-        &-image {
-            height: 60px;
-            width: 60px;
-        }
+		&-image {
+			height: 60px;
+			width: 60px;
+		}
 
-        &-avatar {
-            height: 60px;
-            width: 60px;
-            position: relative;
-            border-radius: 100%;
-            border: 2px solid green;
-        }
+		&-avatar {
+			height: 60px;
+			width: 60px;
+			position: relative;
+			border-radius: 100%;
+			border: 2px solid green;
+		}
 
-        &-adminBadge1 {
-            // position: absolute;
-            display: block;
-            border-radius: 100%;
-            border: 2px solid green;
-            margin-top: -70px;
-            margin-left: 60px;
-            height: 20px;
-            width: 20px;
-        }
+		&-adminBadge1 {
+			// position: absolute;
+			display: block;
+			border-radius: 100%;
+			border: 2px solid green;
+			margin-top: -70px;
+			margin-left: 60px;
+			height: 20px;
+			width: 20px;
+		}
 
-        &-adminBadge {
-            // position: absolute;
-            height: 17px;
-            width: 17px;
-            border-radius: 100%;
-            border: 2px solid green;
-            top: 0px;
-            right: 0px;
-            float: left;
-        }
+		&-adminBadge {
+			// position: absolute;
+			height: 17px;
+			width: 17px;
+			border-radius: 100%;
+			border: 2px solid green;
+			top: 0px;
+			right: 0px;
+			float: left;
+		}
 
-        &-adminBadgeTxt {
-            margin-left: 5px;
-            font-size: 12px;
-            float: left;
-        }
+		&-adminBadgeTxt {
+			margin-left: 5px;
+			font-size: 12px;
+			float: left;
+		}
 
-        &-details {
-            display: flex;
-            align-items: center;
-            margin: 0 2rem;
-            width: 80%;
-        }
+		&-details {
+			display: flex;
+			align-items: center;
+			margin: 0 2rem;
+			width: 80%;
+		}
 
-        &-dropupContainer {
-            .dropbtn {
-                background-color: transparent;
-                color: white;
-                padding: 16px;
-                font-size: 16px;
-                border: none;
-            }
+		&-dropupContainer {
+			.dropbtn {
+				background-color: transparent;
+				color: white;
+				padding: 16px;
+				font-size: 16px;
+				border: none;
+			}
 
-            .dropbtn_noPadding {
-                background-color: transparent;
-                color: white;
-                font-size: 16px;
-                border: none;
-            }
+			.dropbtn_noPadding {
+				background-color: transparent;
+				color: white;
+				font-size: 16px;
+				border: none;
+			}
 
-            .dropup {
-                position: relative;
-                display: inline-block;
-            }
+			.dropup {
+				position: relative;
+				display: inline-block;
+			}
 
-            .adjustForAvatar {
-                top: -50px !important;
-                left: 80px;
+			.adjustForAvatar {
+				top: -50px !important;
+				left: 80px;
 
-                border-radius: 5px;
+				border-radius: 5px;
 
-                a {
-                    padding: 3px !important;
-                    text-align: left;
-                }
-            }
+				a {
+					padding: 3px !important;
+					text-align: left;
+				}
+			}
 
-            .dropup-content {
-                display: none;
-                position: absolute;
-                background-color: #f1f1f1;
-                min-width: 160px;
-                top: 50px;
-                right: 0px;
-                z-index: 1;
-                overflow: hidden;
-            }
+			.dropup-content {
+				display: none;
+				position: absolute;
+				background-color: #f1f1f1;
+				min-width: 160px;
+				top: 50px;
+				right: 0px;
+				z-index: 1;
+				overflow: hidden;
+			}
 
-            .dropup-content a {
-                color: black;
-                padding: 12px 16px;
-                text-decoration: none;
-                display: block;
+			.dropup-content a {
+				color: black;
+				padding: 5px 16px;
+				text-decoration: none;
+				display: block;
 
-                img {
-                    position: relative;
-                    user-select: none;
-                    font-size: 1.3rem;
-                    width: 20px;
-                    height: 20px;
-                    float: left;
-                }
+				img {
+					position: relative;
+					user-select: none;
+					font-size: 1.3rem;
+					width: 20px;
+					height: 20px;
+					float: left;
+				}
 
-                span {
-                    text-align: left;
-                    font-size: 12px;
-                }
-            }
+				span {
+					text-align: left;
+					font-size: 12px;
+				}
+			}
 
-            .dropup-content a:hover {
-                background-color: #ccc;
-            }
+			.dropup-content a:hover {
+				background-color: #ccc;
+			}
 
-            .dropup:hover .dropup-content {
-                display: block;
-            }
+			.dropup:hover .dropup-content {
+				display: block;
+			}
 
-            .dropup:hover .dropbtn {
-                background-color: #2980B9;
-            }
+			.dropup:hover .dropbtn {
+				background-color: #2980b9;
+			}
+		}
 
-        }
+		&-checkboxs {
+			img {
+				font-size: 1.3rem;
+				width: 20px;
+				height: 20px;
+				float: left;
+			}
+		}
+	}
 
-        &-checkboxs {
-            img {
-                font-size: 1.3rem;
-                width: 20px;
-                height: 20px;
-                float: left;
-            }
-        }
-    }
+	/** Message List */
+	&__c-messagelist {
+		height: 100%;
+		padding: 0;
+		background: rgba($color: #18191c, $alpha: 0.8);
+		overflow: hidden;
 
+		@include respond(phone) {
+			height: 100%;
+			padding: 0;
+		}
+	}
 
-    /** Message List */
-    &__c-messagelist {
-        height: 100%;
-        padding: 0;
-        background: rgba($color: #18191c, $alpha: 0.8);
-        overflow: hidden;
+	&__messages {
+		margin: 0;
+		list-style: none;
+		padding: 0 1rem;
+		overflow: auto;
+		height: 100%;
 
-        @include respond(phone) {
-            height: 100%;
-            padding: 0;
-        }
-    }
+		@include respond(phone) {
+			height: 100%;
+		}
+	}
 
-    &__messages {
-        margin: 0;
-        list-style: none;
-        padding: 0 1rem;
-        overflow: auto;
-        height: 100%;
+	&__message {
+		margin: 2rem 0;
+		transition: opacity 0.5s ease, transform 0.5s ease;
 
-        @include respond(phone) {
-            height: 100%;
-        }
-    }
+		&-item {
+			display: flex;
+		}
 
-    &__message {
-        margin: 2rem 0;
-        transition: opacity 0.5s ease, transform 0.5s ease;
+		&-details {
+			margin: 0 1rem;
+			display: flex;
+			color: rgb(158, 158, 158);
 
-        &-item {
-            display: flex;
-        }
+			& span {
+				margin: 0 5px;
+			}
+		}
 
-        &-details {
-            margin: 0 1rem;
-            display: flex;
-            color: rgb(158, 158, 158);
+		&-content {
+			position: relative;
+			background: #3c9adf;
+			padding: 0.5rem;
+			border-radius: 8px;
+			text-align: right;
+			margin: 0 1rem;
+			align-self: center;
+			font-family: 'Work Sans';
+			white-space: pre-line;
 
-            & span {
-                margin: 0 5px;
-            }
-        }
+			&--left::before {
+				content: '';
+				position: absolute;
+				top: 50%;
+				left: -6px;
+				border-radius: 10px;
+				border-color: transparent #3c9adf transparent transparent;
+				border-width: 10px;
+				border-style: solid;
+				transform: translate(-50%, -50%);
+			}
 
-        &-content {
-            position: relative;
-            background: #3c9adf;
-            padding: 0.5rem;
-            border-radius: 8px;
-            text-align: left;
-            margin: 0 1rem;
-            align-self: center;
-            font-family: 'Work Sans';
-            white-space: pre-line;
+			&--right::before {
+				content: '';
+				position: absolute;
+				top: 50%;
+				bottom: 0px;
+				right: -26px;
+				border-radius: 10px;
+				border-color: transparent transparent transparent #3c9adf;
+				border-width: 10px;
+				border-style: solid;
+				transform: translate(-50%, -50%);
+			}
 
-            &--left::before {
-                content: '';
-                position: absolute;
-                top: 50%;
-                left: -6px;
-                border-radius: 10px;
-                border-color: transparent #3c9adf transparent transparent;
-                border-width: 10px;
-                border-style: solid;
-                transform: translate(-50%, -50%);
-            }
+			img {
+				width: 50vh;
+				height: auto;
+			}
+		}
+	}
 
-            &--right::before {
-                content: '';
-                position: absolute;
-                top: 50%;
-                bottom: 0px;
-                right: -26px;
-                border-radius: 10px;
-                border-color: transparent transparent transparent #3c9adf;
-                border-width: 10px;
-                border-style: solid;
-                transform: translate(-50%, -50%);
-            }
-        }
-    }
+	&__utyping {
+		border-radius: 5px;
+		padding: 0.5rem 0 0.5rem 1rem;
+		margin: 10px 1rem;
+		text-align: left;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+		transition: all 0.5s ease;
+		background: #101114;
 
-    &__utyping {
-        border-radius: 5px;
-        padding: 0.5rem 0 0.5rem 1rem;
-        margin: 10px 1rem;
-        text-align: left;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-        transition: all 0.5s ease;
-        background: #101114;
+		& > span {
+			font-family: 'Work Sans';
+			transition: all 0.5s ease;
+		}
+	}
 
-        &>span {
-            font-family: 'Work Sans';
-            transition: all 0.5s ease;
-        }
-    }
+	/** Input List */
+	&__input {
+		overflow: hidden;
+		display: flex;
+		padding: 1rem 0;
+		margin: 0 1rem;
+		border-top: 1px solid #fff;
+		position: relative;
 
-    /** Input List */
-    &__input {
-        overflow: hidden;
-        display: flex;
-        padding: 1rem 0;
-        margin: 0 1rem;
-        border-top: 1px solid #fff;
-
-        &-control {
-            position: relative;
-            padding: 1rem 0 1rem 0.5rem;
-            font-family: 'Russo One';
-            font-size: 0.9rem !important;
-            width: 100%;
-            resize: none;
-            box-sizing: border-box;
-        }
-    }
+		&-control {
+			direction: rtl;
+			position: relative;
+			padding: 1rem 0 1rem 0.5rem;
+			font-family: 'Russo One';
+			font-size: 0.9rem !important;
+			width: 100%;
+			resize: none;
+			box-sizing: border-box;
+			border-top: 1px solid #fff;
+		}
+		.privateSelect {
+			background-color: white;
+			border-top: 1px solid #fff;
+			display: grid;
+			span {
+				color: black;
+			}
+			img {
+				width: 30px;
+			}
+		}
+	}
 }
 
 .userlist {
-    &__actions {
-        width: 100%;
-        display: flex;
-        align-items: center;
+	&__actions {
+		width: 100%;
+		display: flex;
+		align-items: center;
 
-        & div:last-child {
-            flex-grow: 1;
-            text-align: right;
-        }
+		& div:last-child {
+			flex-grow: 1;
+			text-align: right;
+		}
 
-        @include respond(phone) {}
-    }
+		@include respond(phone) {
+		}
+	}
 }

@@ -62,6 +62,15 @@ Issues 3:
 @@- When user tries to add a photo of any format, should not get `Upload Failed` error
 @@- New rooms disapear as soon as the creator leaves them. This makes them unusable. Set a condition to remove a room only if it's more than 1 hour old and still empty
 
+Step 5: Improve look and feel:
+
+@@- Make text align of input field RTL (Text starts from right and flows from right to left, like in Arabic language)
+
+@@- Remove the name of user near 'Block' and 'Ban'.
+
+@@- Add a 'Private Message' item to dropdown menu above block/ban.  When it is clicked, Bob can directly PM Mary from inside any room. The pm message is written at the same input field of the room, with a sign before the message indicating it is a PM directed at Mary.
+
+
 
  
 
