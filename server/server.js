@@ -34,14 +34,6 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
-const FloodProtection = require('flood-protection');
-// import FloodProtection from 'flood-protection';
-
-// const floodProtection = new FloodProtection({
-// 	rate: 5,
-// 	per: 8
-// });
-
 const {
 	GET_USER_DATA_BY_ID,
 	ADD_MESSAGE,
@@ -55,6 +47,7 @@ const {
 
 const { DELETE_STICKY_ROOM } = require('./actions/cronjob');
 
+const FloodProtection = require('./helpers/flood-protection');
 const { JOIN_ROOM, BAN_USER } = require('./helpers/socketEvents');
 
 var j = schedule.scheduleJob(
