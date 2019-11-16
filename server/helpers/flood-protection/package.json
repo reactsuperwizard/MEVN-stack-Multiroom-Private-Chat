@@ -1,0 +1,123 @@
+{
+  "_from": "flood-protection@^1.0.1",
+  "_id": "flood-protection@1.0.1",
+  "_inBundle": false,
+  "_integrity": "sha512-Gcuhj4lpTJyAuFTK6N5XeNT7ZerF+NcbqFYynBn+a4HehIUyJl/ukjtVw5jIdy41fySB16uFUoSTMnHQtCIvbw==",
+  "_location": "/flood-protection",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "flood-protection@^1.0.1",
+    "name": "flood-protection",
+    "escapedName": "flood-protection",
+    "rawSpec": "^1.0.1",
+    "saveSpec": null,
+    "fetchSpec": "^1.0.1"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/flood-protection/-/flood-protection-1.0.1.tgz",
+  "_shasum": "61698106f9100abb20e1207d2561a44c704b08b8",
+  "_spec": "flood-protection@^1.0.1",
+  "_where": "G:\\MEVN\\MEVN-stack-Multiroom-Private-Chat\\server",
+  "author": {
+    "name": "Mehmet Yatkı"
+  },
+  "ava": {
+    "files": [
+      "test/**/*.spec.js"
+    ],
+    "require": [
+      "babel-register",
+      "babel-polyfill"
+    ],
+    "babel": "inherit"
+  },
+  "betterScripts": {
+    "build": {
+      "command": "babel --presets env -d dist/ src/",
+      "env": {
+        "NODE_ENV": "production",
+        "BABEL_ENV": "production"
+      }
+    },
+    "compile": {
+      "command": "babel --presets env -d dist/ src/",
+      "env": {
+        "NODE_ENV": "development",
+        "BABEL_ENV": "development"
+      }
+    },
+    "test": {
+      "command": "babel --presets env -d dist/ src/",
+      "env": {
+        "NODE_ENV": "development",
+        "BABEL_ENV": "development"
+      }
+    }
+  },
+  "bugs": {
+    "url": "https://github.com/yatki/flood-protection/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Flood protection for realtime applications",
+  "devDependencies": {
+    "ava": "^0.22.0",
+    "babel-cli": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-register": "^6.26.0",
+    "better-npm-run": "^0.1.0",
+    "coveralls": "^3.0.0",
+    "eslint": "^4.8.0",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-ava": "^4.2.2",
+    "eslint-plugin-import": "^2.7.0",
+    "nyc": "^11.2.1",
+    "pre-push": "^0.1.1"
+  },
+  "files": [
+    "dist/index.js"
+  ],
+  "homepage": "https://github.com/yatki/flood-protection",
+  "keywords": [
+    "flood protection",
+    "chat",
+    "socket-io",
+    "realtime",
+    "realtime-chat",
+    "message rate limiting",
+    "anti-spam",
+    "spam-protection",
+    "token-bucket"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "name": "flood-protection",
+  "pre-push": {
+    "silent": false,
+    "run": [
+      "eslint:check"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/yatki/flood-protection.git"
+  },
+  "scripts": {
+    "build": "better-npm-run build",
+    "compile": "better-npm-run compile",
+    "coveralls": "nyc npm run test:coverage && nyc report --reporter=text-lcov | coveralls",
+    "eslint:check": "eslint . --color",
+    "eslint:fix": "eslint . --fix --color",
+    "prepublish": "npm run build && npm test",
+    "preversion": "npm test",
+    "test": "nyc ava --verbose",
+    "test:coverage": "npm run compile && npm test"
+  },
+  "version": "1.0.1"
+}
