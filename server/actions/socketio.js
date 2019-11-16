@@ -241,25 +241,20 @@ module.exports = {
 				raw: true
 			}
 		);
-		const users = await User.findAll(
+		let users = await User.findAll(
 			{},
 			{
 				raw: true
 			}
 		);
-
+		users = users.filter(user => user.status_active == 1);
 		for (var i = 0; i < rooms.length; i++) {
 			rooms[i]['user'] = users.find(user => user.id == rooms[i]['user']);
-			if (rooms[i]['access']) {
-				rooms[i]['users'] = users.filter(
-					user => user['room_id'] == rooms[i]['id']
-				).length;
-			} else {
-				rooms[i]['users'] =
-					users.filter(user => user.status_active == 1).length - 1;
-			}
+			rooms[i]['users'] = users.filter(
+				user => user['room_id'] == rooms[i]['id']
+			).length;
 		}
-		return rooms;
+		return { rooms: rooms, online: users.length };
 		// return await Room.find({})
 		//     .populate('user users.lookup', ['username', 'social', 'handle', 'image'])
 		//     .select('-password');
@@ -480,5 +475,19 @@ module.exports = {
 					return false;
 				});
 		});
+	},
+	BAN_USER_BY_ID: async (id, status) => {
+		await User.update(
+			{ status_participate: status },
+			{
+				where: {
+					id: id
+				}
+			}
+		);
+	},
+	GET_USER_DATA_BY_ID: async id => {
+		const user = await User.findOne({ where: { id: id } }, { raw: true });
+		return user.status_participate;
 	}
 };

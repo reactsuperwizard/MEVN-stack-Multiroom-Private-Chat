@@ -33,7 +33,17 @@ const schedule = require('node-schedule');
 const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
+
+const FloodProtection = require('flood-protection');
+// import FloodProtection from 'flood-protection';
+
+// const floodProtection = new FloodProtection({
+// 	rate: 5,
+// 	per: 8
+// });
+
 const {
+	GET_USER_DATA_BY_ID,
 	ADD_MESSAGE,
 	ADD_PRIVATE_MESSAGE,
 	GET_USER_SOCKET,
@@ -45,7 +55,7 @@ const {
 
 const { DELETE_STICKY_ROOM } = require('./actions/cronjob');
 
-const { JOIN_ROOM } = require('./helpers/socketEvents');
+const { JOIN_ROOM, BAN_USER } = require('./helpers/socketEvents');
 
 var j = schedule.scheduleJob(
 	{
@@ -122,9 +132,15 @@ app.use('/api/privateMsg', privateMsgRoutes);
 // }
 
 let userTypings = {};
+let clients = [];
 /** Socket IO Connections */
 io.on('connection', socket => {
 	let currentRoomId = null;
+	const floodProtection = new FloodProtection({
+		rate: process.env.maxMsgCount,
+		per: process.env.floodUnit
+	});
+	clients.push({ id: socket.id, func: floodProtection });
 	/** Socket Events */
 	socket.on('disconnect', async () => {
 		if (currentRoomId) {
@@ -273,34 +289,50 @@ io.on('connection', socket => {
 
 	/** New Message Event */
 	socket.on('newMessage', async data => {
-		if (data.room.access && !data.select) {
-			//public message arrived
-			const newMessage = await ADD_MESSAGE(data);
+		const client = clients.find(client => client.id == socket.id);
+		if (await GET_USER_DATA_BY_ID(data.user.id)) {
+			return;
+		}
+		if (client.func.check()) {
+			if (data.room.access && !data.select) {
+				//public message arrived
+				const newMessage = await ADD_MESSAGE(data);
 
-			// Emit data back to the client for display
-			io.to(data.room.id).emit(
-				'receivedNewMessage',
-				JSON.stringify(newMessage)
-			);
-		} else {
-			//private message arrived
-			const newMessage = await ADD_PRIVATE_MESSAGE(data);
-
-			// Emit data to the select client for display
-			if (newMessage) {
-				io.to(newMessage['touser']['socketid']).emit(
+				// Emit data back to the client for display
+				io.to(data.room.id).emit(
 					'receivedNewMessage',
 					JSON.stringify(newMessage)
 				);
-				io.to(newMessage['user']['socketid']).emit(
-					'receivedNewMessage',
-					JSON.stringify(newMessage)
-				);
-				io.to(newMessage['touser']['socketid']).emit(
-					'msgAlertTriggered',
-					JSON.stringify(newMessage)
-				);
+			} else {
+				//private message arrived
+				const newMessage = await ADD_PRIVATE_MESSAGE(data);
+
+				// Emit data to the select client for display
+				if (newMessage) {
+					io.to(newMessage['touser']['socketid']).emit(
+						'receivedNewMessage',
+						JSON.stringify(newMessage)
+					);
+					io.to(newMessage['user']['socketid']).emit(
+						'receivedNewMessage',
+						JSON.stringify(newMessage)
+					);
+					io.to(newMessage['touser']['socketid']).emit(
+						'msgAlertTriggered',
+						JSON.stringify(newMessage)
+					);
+				}
 			}
+		} else {
+			io.to(await GET_USER_SOCKET(data.user.id)).emit(
+				'msgAlertTriggered',
+				JSON.stringify({
+					trig: true,
+					content:
+						'You are sending too much messagse per minute, maximum is 10 per minute'
+				})
+			);
+			BAN_USER(data.user.id);
 		}
 	});
 	/** New Image Message Event */

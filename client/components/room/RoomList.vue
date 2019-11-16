@@ -14,6 +14,10 @@
 								Total Rooms:
 								<span class="badge badge--info">{{ rooms.length }}</span>
 							</div>
+							<div class="rooms__details-item">
+								Online Users:
+								<span class="badge badge--info">{{ online }}</span>
+							</div>
 						</div>
 						<input
 							type="text"
@@ -37,10 +41,10 @@
 											</div>
 											<div class="rooms__item-details">
 												<p>{{ room.name }}</p>
-												<p :class="{ private_name: !room.access }" v-if="!room.access">Private</p>
-												<p>
+												<p v-if="!room.access" class="private_name">Private</p>
+												<p v-else>
 													<strong>Users:</strong>
-													{{ room.users > 0 ? room.users : 0}}
+													{{ room.users }}
 												</p>
 												<p>
 													<strong>
@@ -51,10 +55,10 @@
 													{{
 													room.access === false
 													? 'Your private chat room'
-													: room.user
-													? room.user.username
 													: room.name == 'HOME'
 													? 'ADMIN'
+													: room.user
+													? room.user.username
 													: 'Unknown User'
 													}}
 												</p>
@@ -174,6 +178,7 @@
 			return {
 				selected_url: null,
 				rooms: [],
+				online: 0,
 				room_name: null,
 				room_avatar: '',
 				privateRoomName: null,
@@ -246,11 +251,13 @@
 				axios
 					.get('/api/room')
 					.then(async res => {
+						console.log(res);
 						await axios.put(`/api/room/remove/users/all`, {
 							userid: this.getUserData.id
 						});
-						this.$store.dispatch('updateRoomData', res.data);
-						this.rooms = res.data;
+						this.$store.dispatch('updateRoomData', res.data.rooms);
+						this.rooms = res.data.rooms;
+						this.online = res.data.online;
 						await axios.put(`/api/user/current`, {
 							socketid: this.getSocket.id
 						});
@@ -408,7 +415,8 @@
 			});
 
 			this.getSocket.on('updateRooms', data => {
-				this.rooms = JSON.parse(data).room;
+				this.rooms = JSON.parse(data).room.rooms;
+				this.online = JSON.parse(data).room.online;
 			});
 
 			this.getSocket.on('roomNameUpdated', data => {
@@ -420,9 +428,20 @@
 				});
 				this.rooms.splice(updateIndex, 1, JSON.parse(data).room);
 			});
+
 			this.getSocket.on('msgAlertTriggered', message => {
 				const message_parsed = JSON.parse(message);
-				console.log(message_parsed, this.getCurrentRoom());
+				console.log(message_parsed);
+				if (message_parsed.trig) {
+					this.$notify({
+						group: 'notification_alert',
+						title: 'New Alert',
+						text: message_parsed.content,
+						type: 'error ',
+						duration: 10000
+					});
+					return;
+				}
 				if (!message_parsed['user']['status']) {
 					if (
 						this.getCurrentRoom().access ||

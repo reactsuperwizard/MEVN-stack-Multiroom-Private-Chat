@@ -68,27 +68,22 @@ router.get(
 		Promise.all([rooms_p, users_p])
 			.then(value => {
 				const rooms = value[0];
-				const users = value[1];
+				const users = value[1].filter(user => user.status_active == 1);
+				console.log(JSON.stringify(users));
 				for (let i = 0; i < rooms.length; i++) {
 					const room = rooms[i];
-					room['user'] = users.filter(user => user['id'] == room['user']);
+					room['user'] = users.find(user => user['id'] == room['user']);
 					if (room['user']) {
 						room['user'] = room['user'][0];
 					}
-					if (room['access'] == 1) {
-						//public room - set the number of users as room users
-						room['users'] = users.filter(
-							user => user['room_id'] === room['id']
-						).length;
-					} else {
-						//private room - set the number of users as all (-1 : you)
-						const onlineUsers = users.filter(user => user.status_active == 1)
-							.length;
-						room['users'] = onlineUsers - 1;
-					}
+					//public room - set the number of users as room users
+					room['users'] = users.filter(
+						user => user['room_id'] === room['id']
+					).length;
 				}
+
 				if (rooms) {
-					return res.status(200).json(rooms);
+					return res.status(200).json({ rooms: rooms, online: users.length });
 				} else {
 					return res.status(404).json({
 						error: 'No Rooms Found'
@@ -258,45 +253,6 @@ router.post(
 			});
 	}
 );
-
-// /**
-//  * @description POST /api/room/verify
-//  */
-// router.post('/verify', passport.authenticate('jwt', { session: false }), async (req, res) => {
-//     if (!req.body.password === true) {
-//         return res.json({
-//             errors: createErrorObject([
-//                 {
-//                     param: 'password_required',
-//                     msg: 'Password is required'
-//                 }
-//             ])
-//         });
-//     }
-
-//     const room = await Room.findOne({ name: req.body.room_name }).exec();
-
-//     if (room) {
-//         const verified = await room.isValidPassword(req.body.password);
-
-//         if (verified === true) {
-//             room.accessIds.push(req.user.id);
-//             await room.save();
-//             return res.status(200).json({ success: true });
-//         } else {
-//             return res.json({
-//                 errors: createErrorObject([
-//                     {
-//                         param: 'invalid_password',
-//                         msg: 'Invalid Password'
-//                     }
-//                 ])
-//             });
-//         }
-//     } else {
-//         return res.status(404).json({ errors: `No room with name ${req.params.room_name} found` });
-//     }
-// });
 
 /**
  * @description DELETE /api/room/:room_name
@@ -552,19 +508,18 @@ router.put(
 				Promise.all([rooms_p, users_p])
 					.then(value => {
 						const rooms = value[0];
-						const users = value[1];
+						const users = value[1].filter(user => user.status_active == 1);
 						for (var i = 0; i < rooms.length; i++) {
 							const room = rooms[i];
-							room['user'] = users.filter(user => user['id'] == room['user']);
-							if (room['user']) {
-								room['user'] = room['user'][0];
-							}
+							room['user'] = users.find(user => user['id'] == room['user']);
 							room['users'] = users.filter(
 								user => user['room_id'] === room['id']
 							).length;
 						}
 						if (rooms) {
-							return res.status(200).json(rooms);
+							return res
+								.status(200)
+								.json({ rooms: rooms, online: users.length });
 						} else {
 							return res.status(404).json({
 								error: 'No Rooms Found'
