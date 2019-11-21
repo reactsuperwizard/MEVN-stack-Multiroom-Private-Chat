@@ -15,3 +15,7 @@ mailServerhost = "smtp.mailtrap.io"
 mailServerport = 2525
 mailServeruser = YOUR_SMTP_USER_NAME
 mailServerpass = YOUR_SMTP_USER_PASSWORD
+
+BAN_TIME = 6000
+maxMsgCount = 10
+floodUnit = 60

@@ -6,7 +6,7 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import setAuthToken from './utils/authToken';
 import moment from 'moment';
-import Notifications from 'vue-notification'
+import Notifications from 'vue-notification';
 
 Vue.config.productionTip = false;
 Vue.config.ignoredElements = ['ion-icons', /^ion-/];
@@ -31,20 +31,20 @@ if (localStorage.authToken) {
 }
 /** Axios Request Intercept */
 axios.interceptors.request.use(
-    function (config) {
+    function(config) {
         return config;
     },
-    function (err) {
+    function(err) {
         return Promise.reject(err);
     }
 );
 
 /** Axios Response Intercept */
 axios.interceptors.response.use(
-    function (response) {
+    function(response) {
         return response;
     },
-    function (err) {
+    function(err) {
         if (err.response.status === 401) {
             localStorage.removeItem('authToken');
             store.dispatch('toggleAuthState', false);
@@ -59,7 +59,7 @@ axios.interceptors.response.use(
     }
 );
 
-Vue.use(Notifications)
+Vue.use(Notifications);
 
 export const eventBus = new Vue();
 
