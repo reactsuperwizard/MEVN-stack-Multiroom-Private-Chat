@@ -16,6 +16,8 @@ mailServerport = 2525
 mailServeruser = YOUR_SMTP_USER_NAME
 mailServerpass = YOUR_SMTP_USER_PASSWORD
 
-BAN_TIME = 6000
-maxMsgCount = 10
-floodUnit = 60
+BAN_TIME = 6000 // unit : milliseconds
+maxMsgCount = 10 // unit : message
+floodUnit = 60 // unit: seconds
+
+/* if A sends more than 10 messages in 60 seconds it will be banned 6 seconds.*/
