@@ -642,6 +642,7 @@ export default {
 
 				/** Socket IO: Received New User Event */
 				this.getSocket.on('updateRoomData', data => {
+					console.log('updateRoomdata', data);
 					data = JSON.parse(data);
 					if (data.messages) {
 						this.messages = data.messages;

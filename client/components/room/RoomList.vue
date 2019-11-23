@@ -431,7 +431,6 @@
 
 			this.getSocket.on('msgAlertTriggered', message => {
 				const message_parsed = JSON.parse(message);
-				console.log(message_parsed);
 				if (message_parsed.trig) {
 					this.$notify({
 						group: 'notification_alert',

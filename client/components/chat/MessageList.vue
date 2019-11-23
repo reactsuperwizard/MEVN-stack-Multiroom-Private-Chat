@@ -6,7 +6,7 @@
 					<!-- Message belongs to the user -->
 					<div
 						class="chat__message-item u-flex-right"
-						v-if="!message.admin && message.user && message.user.id === user.id"
+						v-if="message.user && message.user.id === user.id"
 					>
 						<div class="chat__message-body">
 							<div class="chat__message-content chat__message-content--right">
@@ -35,7 +35,7 @@
 						/>
 					</div>
 					<!-- Message belongs to the admin -->
-					<div class="chat__message-item u-flex-center" v-else-if="message.admin">
+					<div class="chat__message-item u-flex-center" v-else-if="!message.user">
 						<img src="@/assets/img/icons8-businessman.svg" class="chat__user-avatar" alt />
 						<div class="chat__message-body">
 							<div class="chat__message-content">
@@ -60,7 +60,7 @@
 					</div>
 
 					<!-- Message has been deleted -->
-					<div class="chat__message-item" v-else-if="!message.user">
+					<!-- <div class="chat__message-item" v-else-if="!message.user">
 						<img src="@/assets/img/icons8-account-64.png" class="chat__user-avatar" alt />
 
 						<div class="chat__message-body">
@@ -83,7 +83,7 @@
 								<span>{{ moment(message.createdAt).fromNow() }}</span>
 							</div>
 						</div>
-					</div>
+					</div> -->
 
 					<!-- Message belongs to private sender user -->
 					<div class="chat__message-item" v-else-if="message.touser">
