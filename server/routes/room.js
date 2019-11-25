@@ -70,7 +70,7 @@ router.get(
                 raw: true,
             },
         );
-        Promise.all([rooms_p, users_p])
+        return Promise.all([rooms_p, users_p])
             .then(value => {
                 const rooms = value[0];
                 const users = value[1];
@@ -530,59 +530,14 @@ router.put(
         const updateFields = {
             room_id: null,
         };
-        await User.update(updateFields, {
+        return User.update(updateFields, {
             returning: true,
             raw: true,
             where: {
                 id: req.body.userid,
             },
         }).then(async info => {
-            if (info[1]) {
-                const rooms_p = Room.findAll(
-                    {},
-                    {
-                        raw: true,
-                    },
-                );
-                const users_p = User.findAll(
-                    {},
-                    {
-                        raw: true,
-                    },
-                );
-
-                Promise.all([rooms_p, users_p])
-                    .then(value => {
-                        const rooms = value[0];
-                        const users = value[1].filter(
-                            user => user.status_active == 1,
-                        );
-                        for (var i = 0; i < rooms.length; i++) {
-                            const room = rooms[i];
-                            room['user'] = users.find(
-                                user => user['id'] == room['user'],
-                            );
-                            room['users'] = users.filter(
-                                user => user['room_id'] === room['id'],
-                            ).length;
-                        }
-                        if (rooms) {
-                            return res
-                                .status(200)
-                                .json({ rooms: rooms, online: users.length });
-                        } else {
-                            return res.status(404).json({
-                                error: 'No Rooms Found',
-                            });
-                        }
-                    })
-                    .catch(err => {
-                        console.log('err', err);
-                        return res.status(404).json({
-                            error: 'No Rooms Found',
-                        });
-                    });
-            }
+            return res.status(200);
         });
     },
 );

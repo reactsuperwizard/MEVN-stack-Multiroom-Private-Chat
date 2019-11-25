@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 12, 2019 at 03:28 PM
+-- Generation Time: Nov 25, 2019 at 06:52 PM
 -- Server version: 10.1.37-MariaDB
 -- PHP Version: 7.2.12
 
@@ -72,6 +72,17 @@ CREATE TABLE `relations` (
   `status` int(11) NOT NULL DEFAULT '2'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
+--
+-- Dumping data for table `relations`
+--
+
+INSERT INTO `relations` (`id`, `user`, `touser`, `status`) VALUES
+(1, 4002, 1, 0),
+(5, 4002, 4001, 0),
+(6, 4001, 4002, 0),
+(7, 8002, 8001, 0),
+(8, 8001, 8002, 0);
+
 -- --------------------------------------------------------
 
 --
@@ -97,8 +108,8 @@ CREATE TABLE `rooms` (
 --
 
 INSERT INTO `rooms` (`id`, `name`, `avatar`, `user`, `password`, `access`, `lastAcTime`, `users`, `createdAt`, `updatedAt`) VALUES
-(1, 'Private Room', 'pHome.png', NULL, NULL, 0, NULL, NULL, '2019-11-11 14:17:18', '2019-10-09 14:40:18'),
-(44, 'HOME', 'home.png', 'NULL', NULL, 1, NULL, NULL, '2019-11-12 14:03:50', '2019-11-12 14:03:50');
+(1, 'Private Room', 'pHome.png', NULL, NULL, 0, NULL, NULL, '2019-11-11 06:17:18', '2019-10-09 06:40:18'),
+(2, 'HOME', 'home.png', 'NULL', NULL, 1, NULL, NULL, '2019-11-25 13:09:01', '2019-11-25 13:09:00');
 
 -- --------------------------------------------------------
 
@@ -143,15 +154,6 @@ CREATE TABLE `user_infos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `user_infos`
---
-
-INSERT INTO `user_infos` (`id`, `socketid`, `username`, `handle`, `email`, `password`, `create_time`, `delete_time`, `image`, `age`, `sex`, `location`, `bio`, `status_active`, `status_participate`, `room_id`, `createdAt`, `updatedAt`) VALUES
-(98, 'f7eRFwXv6bxY2de4AAAC', 'cat', 'cat', 'cat1@email.com', '$2a$10$EKi4uDtMTn5ksYOSTQqIW.GKXipP/FM/omXuLvtqEXdkQahFx6XOC', '2019-11-05 11:56:06', NULL, '//www.gravatar.com/avatar/4fc3103a0027f9ad4e3f6f37debe8e52?s=220&r=pg&d=identicon', NULL, NULL, '', '', 0, 0, NULL, '2019-11-12 14:03:43', '2019-11-12 14:03:43'),
-(108, '9_IgK2u-udLBaBpIAAAD', 'dog', 'dog', 'demo@gmail.com', '$2a$10$5O9FDUwrpyJ7BNA.pNPhTOQIPDhJXybBwXsQBxW03HPXjM.HA2kea', '2019-11-08 16:40:32', NULL, '036223cc-79e4-4113-8f93-b3c9b941a269.png', NULL, NULL, '', '', 0, 0, NULL, '2019-11-12 14:03:53', '2019-11-12 14:03:53'),
-(109, 'X9D3hTPn6D00zXfkAAAM', 'cat1', 'cat1', 'cat@email.com', '$2a$10$GSn1eUQAz7Z43mEDoUW/ZunRSpFEWSDHzDTXhbKD894gsnO.bqG7W', '2019-11-10 13:17:18', NULL, '//www.gravatar.com/avatar/402f31cf2e464fd81734c7f147c99071?s=220&r=pg&d=identicon', NULL, NULL, '', '', 0, 0, NULL, '2019-11-11 01:47:04', '2019-11-11 01:47:04');
-
---
 -- Indexes for dumped tables
 --
 
@@ -177,7 +179,8 @@ ALTER TABLE `relations`
 -- Indexes for table `rooms`
 --
 ALTER TABLE `rooms`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `name` (`name`);
 
 --
 -- Indexes for table `room_relations`
@@ -189,7 +192,10 @@ ALTER TABLE `room_relations`
 -- Indexes for table `user_infos`
 --
 ALTER TABLE `user_infos`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `socketid` (`socketid`),
+  ADD KEY `handle` (`handle`),
+  ADD KEY `email` (`email`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -199,37 +205,37 @@ ALTER TABLE `user_infos`
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5010;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `privatemessages`
 --
 ALTER TABLE `privatemessages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=348;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `relations`
 --
 ALTER TABLE `relations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `rooms`
 --
 ALTER TABLE `rooms`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10055;
 
 --
 -- AUTO_INCREMENT for table `room_relations`
 --
 ALTER TABLE `room_relations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `user_infos`
 --
 ALTER TABLE `user_infos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

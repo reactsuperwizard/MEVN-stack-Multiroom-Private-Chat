@@ -21,7 +21,6 @@ module.exports = {
                     .then(value => {
                         const messages = value[0];
                         const room = value[1];
-                        console.log('5');
 
                         socket.emit(
                             'updateRoomData',

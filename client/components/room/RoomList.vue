@@ -251,21 +251,15 @@
 				axios
 					.get('/api/room')
 					.then(async res => {
-						console.log(res);
-						await axios.put(`/api/room/remove/users/all`, {
+						axios.put(`/api/room/remove/users/all`, {
 							userid: this.getUserData.id
 						});
 						this.$store.dispatch('updateRoomData', res.data.rooms);
 						this.rooms = res.data.rooms;
 						this.online = res.data.online;
-						await axios.put(`/api/user/current`, {
-							socketid: this.getSocket.id
-						});
-					})
-					.then(res => {
-						if (res && res.data) {
-							this.rooms = res.data;
-						}
+							axios.put(`/api/user/current`, {
+								socketid: this.getSocket.id
+							});
 					})
 					.catch(err => {
 						console.log('err', err);

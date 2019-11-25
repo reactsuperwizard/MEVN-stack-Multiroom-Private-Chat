@@ -197,7 +197,6 @@ module.exports = {
         return messages_p
             .then(msgs => msgs.reverse())
             .then(msgs => {
-                console.log('1', msgs.length);
                 messages = msgs;
                 const userIds = messages
                     .map(message => message.user)
@@ -215,7 +214,6 @@ module.exports = {
                 );
             })
             .then(users => {
-                console.log('2', messages.length);
                 for (var i = 0; i < messages.length; i++) {
                     const message = messages[i];
 
@@ -223,7 +221,6 @@ module.exports = {
                         user => user.id == message.user,
                     );
                 }
-                console.log('3', messages.length);
                 return messages;
             });
     },
@@ -311,7 +308,6 @@ module.exports = {
         );
     },
     UPDATE_ROOM_USERS: async data => {
-        console.log('11');
         let room;
         const updateFields = {
             room_id: data.room.id,
@@ -355,7 +351,6 @@ module.exports = {
                         raw: true,
                     },
                 );
-                console.log('12');
 
                 return Promise.all([room_p, users_p]);
             })
