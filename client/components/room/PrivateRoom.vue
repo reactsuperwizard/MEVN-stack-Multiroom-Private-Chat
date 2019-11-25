@@ -436,9 +436,6 @@
 					this.getSocket.on('userListUpdated', data => {
 						this.fetchUsers();
 					});
-					// this.getSocket.on('getUserList_Relation', data => {
-					// 	console.log(data);
-					// });
 					this.getSocket.on('statusChanged', data => {
 						const _data = JSON.parse(data);
 						const user = this.users.find(x => x.id == _data.user);

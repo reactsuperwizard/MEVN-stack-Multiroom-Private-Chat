@@ -29,10 +29,6 @@ module.exports = {
                                 room: room,
                             }),
                         );
-                        console.log(
-                            'GETMESSAGE messages pending',
-                            Date.now() - dateNow,
-                        );
                         return ADD_MESSAGE({
                             room: data.room,
                             user: null,
@@ -48,24 +44,15 @@ module.exports = {
                                 'receivedNewMessage',
                                 JSON.stringify(addMessage),
                             );
-                        console.log(
-                            'ADDMESSAGE messages pending',
-                            Date.now() - dateNow,
-                        );
                     });
                 GET_ROOM_USERS(data).then(getRoomUsers => {
                     /** Get Room to update user list for all other clients */
                     socket.broadcast
                         .to(data.room.id)
                         .emit('updateUserList', JSON.stringify(getRoomUsers));
-                    console.log('messages pending', Date.now() - dateNow);
                 });
                 GET_ROOMS().then(getRooms => {
                     /** Emit event to all clients in the roomlist view except the sender */
-                    console.log(
-                        'GETROOMS messages pending',
-                        Date.now() - dateNow,
-                    );
                     socket.broadcast.emit(
                         'updateRooms',
                         JSON.stringify({
