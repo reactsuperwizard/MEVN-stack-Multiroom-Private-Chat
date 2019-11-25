@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 25, 2019 at 06:52 PM
+-- Generation Time: Nov 25, 2019 at 07:34 PM
 -- Server version: 10.1.37-MariaDB
 -- PHP Version: 7.2.12
 
@@ -71,17 +71,6 @@ CREATE TABLE `relations` (
   `touser` int(11) NOT NULL,
   `status` int(11) NOT NULL DEFAULT '2'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
-
---
--- Dumping data for table `relations`
---
-
-INSERT INTO `relations` (`id`, `user`, `touser`, `status`) VALUES
-(1, 4002, 1, 0),
-(5, 4002, 4001, 0),
-(6, 4001, 4002, 0),
-(7, 8002, 8001, 0),
-(8, 8001, 8002, 0);
 
 -- --------------------------------------------------------
 
