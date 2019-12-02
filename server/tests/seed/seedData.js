@@ -22,7 +22,7 @@ while (userSeedLoop++ < userSeedUnit) {
             '//www.gravatar.com/avatar/4c5fc469cbf9ada2' +
             userSeedLoop +
             '6ea219a61ca6ff4a?s=220&r=pg&d=identicon',
-        status_active: 1,
+        status_active: 0,
     };
 }
 
@@ -39,7 +39,7 @@ while (userSeedLoop++ < userSeedUnit) {
             '//www.gravatar.com/avatar/4c5fc469cbf9ada2' +
             userSeedLoop +
             '6ea219a61ca6ff4a?s=220&r=pg&d=identicon',
-        status_active: 1,
+        status_active: 0,
     };
 }
 

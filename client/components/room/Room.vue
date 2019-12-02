@@ -223,7 +223,7 @@
 							</label>
 						</div>
 						<div class="form__input-group">
-							<ion-icon name="pricetags" class="form__icon"></ion-icon>
+							<!-- <ion-icon name="pricetags" class="form__icon"></ion-icon> -->
 							<input
 								type="text"
 								name="roomName"
@@ -308,7 +308,7 @@ export default {
 		ChatInput,
 		Sidebar,
 		Error,
-		Modal
+		Modal,
 	},
 	data: function() {
 		return {
@@ -326,7 +326,7 @@ export default {
 			errors: [],
 			roomLeft: false,
 			srv_url: 'http://localhost:5000/public/room_avatar/',
-			curUser: null
+			curUser: null,
 		};
 	},
 	computed: {
@@ -334,14 +334,14 @@ export default {
 			'getUserData',
 			'getCurrentRoom',
 			'getSocket',
-			'getCurrentSelect'
+			'getCurrentSelect',
 		]),
 		filteredUsers: function() {
 			if (this.privateRs == null) {
 				this.privateRs = [];
 			}
 			const block_members = this.privateRs.filter(
-				privateR => privateR.status == 2
+				privateR => privateR.status == 2,
 			);
 			return this.users
 				? this.users
@@ -378,20 +378,20 @@ export default {
 					//blocked / banned user's message won't be displayed
 					(privateR.status == 2 || privateR.status == 1) &&
 					//
-					privateR.user == this.getUserData.id
+					privateR.user == this.getUserData.id,
 			);
 			return this.messages.filter(message => {
 				if (block_members.length == 0 || message.user == null) return true;
 
 				const block = block_members.find(
-					blockMember => blockMember.touser == message.user.id
+					blockMember => blockMember.touser == message.user.id,
 				);
 				if (block) {
 					return false;
 				}
 				return true;
 			});
-		}
+		},
 	},
 	methods: {
 		...mapActions(['saveCurrentRoom', 'deleteRoom', 'saveCurrentSelect']),
@@ -422,14 +422,14 @@ export default {
 						.post('/api/roomRelation', {
 							room: this.getCurrentRoom.id,
 							user: id,
-							status: from
+							status: from,
 						})
 						.then(res => {
 							if (res.data.status) {
 								this.getSocket.emit('roomRelationChanged', {
 									room: this.getCurrentRoom.id,
 									user: id,
-									status: from
+									status: from,
 								});
 							}
 						})
@@ -440,7 +440,7 @@ export default {
 						axios
 							.post('/api/room/remove/users', {
 								room_id: this.getCurrentRoom.id,
-								user: id
+								user: id,
 							})
 							.then(res => {
 								this.getSocket.emit('exitUserRoom', {
@@ -448,7 +448,7 @@ export default {
 									room: res.data,
 									user: null,
 									admin: true,
-									content: `${user.handle} left ${this.getCurrentRoom.name}`
+									content: `${user.handle} left ${this.getCurrentRoom.name}`,
 								});
 							});
 					}
@@ -459,14 +459,14 @@ export default {
 						if (res.data.status) {
 							const privateR = this.privateRs.find(
 								privateR =>
-									privateR.user == this.getUserData.id && privateR.touser == id
+									privateR.user == this.getUserData.id && privateR.touser == id,
 							);
 
 							if (!privateR)
 								this.privateRs.push({
 									user: this.getUserData.id,
 									touser: id,
-									status: from
+									status: from,
 								});
 							else privateR.status = from;
 						}
@@ -494,8 +494,8 @@ export default {
 				this.$router.push({
 					name: 'RoomList',
 					params: {
-						message: 'You are blocked by the room admin'
-					}
+						message: 'You are blocked by the room admin',
+					},
 				});
 			}
 		},
@@ -516,14 +516,14 @@ export default {
 			}
 			axios
 				.post('/api/room/remove/users', {
-					room_id: this.getCurrentRoom.id
+					room_id: this.getCurrentRoom.id,
 				})
 				.then(res => {
 					this.getSocket.emit('exitRoom', {
 						room: res.data,
 						user: null,
 						admin: true,
-						content: `${this.getUserData.handle} left ${this.getCurrentRoom.name}`
+						content: `${this.getUserData.handle} left ${this.getCurrentRoom.name}`,
 					});
 					this.roomLeft = true;
 					if (!newPage) {
@@ -541,7 +541,7 @@ export default {
 			const updatedRoomData = {
 				room_name: this.getCurrentRoom.name,
 				new_room_name: this.newRoomName,
-				room_avatar: this.room_avatar
+				room_avatar: this.room_avatar,
 			};
 
 			for (const property in updatedRoomData) {
@@ -554,8 +554,8 @@ export default {
 				axios
 					.post('/api/room/update/name', formData, {
 						headers: {
-							'Content-Type': 'multipart/form-data'
-						}
+							'Content-Type': 'multipart/form-data',
+						},
 					})
 					.then(res => {
 						if (res.data.errors) {
@@ -564,20 +564,20 @@ export default {
 								const [value] = Object.values(error);
 								this.errors.push({
 									key,
-									value
+									value,
 								});
 							}
 						} else {
 							this.$refs.editRoom.close();
 							this.getSocket.emit('roomUpdateEvent', {
 								oldRoomName: this.getCurrentRoom.name,
-								room: res.data
+								room: res.data,
 							});
 							this.getSocket.emit('newMessage', {
 								room: this.getCurrentRoom,
 								user: this.getUserData,
 								admin: true,
-								content: `${this.getUserData.username} updated room ${this.getCurrentRoom.name} to ${this.newRoomName}`
+								content: `${this.getUserData.username} updated room ${this.getCurrentRoom.name} to ${this.newRoomName}`,
 							});
 							this.newRoomName = '';
 						}
@@ -595,7 +595,7 @@ export default {
 		toggleUserList() {
 			this.$refs.userList.toggle();
 			this.sidebarVisible = !this.sidebarVisible;
-		}
+		},
 	},
 	created() {
 		this.getSocket.removeListener('receivedUserExit');
@@ -607,8 +607,8 @@ export default {
 					this.$router.push({
 						name: 'RoomList',
 						params: {
-							message: 'You are blocked by the room admin'
-						}
+							message: 'You are blocked by the room admin',
+						},
 					});
 					return;
 				}
@@ -637,7 +637,7 @@ export default {
 					room: this.getCurrentRoom,
 					user: this.getUserData,
 					content: `${this.getUserData.handle} joined ${this.getCurrentRoom.name}`,
-					admin: true
+					admin: true,
 				});
 
 				/** Socket IO: Received New User Event */
@@ -660,7 +660,7 @@ export default {
 					this.usersTyping = [];
 					this.getSocket.emit('reconnectUser', {
 						room: this.getCurrentRoom,
-						user: this.getUserData
+						user: this.getUserData,
 					});
 				});
 
@@ -674,6 +674,7 @@ export default {
 
 				/** Socket IO: User Exit Event - Update User List */
 				this.getSocket.on('updateUserList', data => {
+					console.log('updateUserList', data);
 					this.users = JSON.parse(data);
 				});
 
@@ -699,8 +700,8 @@ export default {
 						this.$router.push({
 							name: 'RoomList',
 							params: {
-								message: 'This room has been deleted'
-							}
+								message: 'This room has been deleted',
+							},
 						});
 					}, 2000);
 				});
@@ -720,8 +721,8 @@ export default {
 					this.$router.push({
 						name: 'RoomList',
 						params: {
-							message: 'This room does not exist or has been deleted'
-						}
+							message: 'This room does not exist or has been deleted',
+						},
 					});
 				}
 			});
@@ -736,7 +737,7 @@ export default {
 			this.privateRs = [];
 		}
 		const block_members = this.privateRs.filter(
-			privateR => privateR.status == 2
+			privateR => privateR.status == 2,
 		);
 		const allowedUsers = this.room.users
 			? await this.room.users.filter(user => {
@@ -755,7 +756,7 @@ export default {
 		) {
 			axios.delete(`/api/room/${this.getCurrentRoom.name}`, {
 				//set mark to make server check if there is no user in the room
-				data: { check: 1 }
+				data: { check: 1 },
 			});
 			// .then(res => {
 			// 	if (!res.errors) {
@@ -771,7 +772,7 @@ export default {
 			// .catch(err => console.log(err));
 		}
 	},
-	mounted() {}
+	mounted() {},
 };
 </script>
 

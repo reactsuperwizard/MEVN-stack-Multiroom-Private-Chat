@@ -22,7 +22,7 @@
 					</span>
 					<br />
 					<div class="form__input-group">
-						<ion-icon name="person" class="form__icon"></ion-icon>
+						<!-- <ion-icon name="person" class="form__icon"></ion-icon> -->
 						<input
 							name="email"
 							class="form__control"
@@ -33,7 +33,7 @@
 						<label for="email" class="form__label">Email / User Name</label>
 					</div>
 					<div class="form__input-group">
-						<ion-icon name="lock" class="form__icon"></ion-icon>
+						<!-- <ion-icon name="lock" class="form__icon"></ion-icon> -->
 						<input
 							type="password"
 							name="password"
@@ -80,7 +80,7 @@ export default {
 	name: 'Login',
 	props: ['message', 'pEmail', 'pPassword'],
 	components: {
-		Error
+		Error,
 		// OAuth
 	},
 	data: function() {
@@ -88,11 +88,11 @@ export default {
 			email: this.pEmail,
 			password: this.pPassword,
 			errorMessage: this.message,
-			errors: []
+			errors: [],
 		};
 	},
 	computed: {
-		...mapGetters(['getSocket'])
+		...mapGetters(['getSocket']),
 	},
 	methods: {
 		...mapActions(['saveUserData', 'toggleAuthState']),
@@ -103,7 +103,7 @@ export default {
 				axios
 					.post('/api/auth/login', {
 						email: this.email,
-						password: this.password
+						password: this.password,
 					})
 					.then(res => {
 						if (res.data.errors) {
@@ -112,7 +112,7 @@ export default {
 								const [value] = Object.values(error);
 								this.errors.push({
 									key,
-									value
+									value,
 								});
 							}
 						} else {
@@ -125,7 +125,7 @@ export default {
 
 							this.$router.push({
 								name: 'UserProfile',
-								params: { handle: res.data.user.handle }
+								params: { handle: res.data.user.handle },
 							});
 						}
 					});
@@ -134,7 +134,7 @@ export default {
 			setTimeout(() => {
 				this.errors = [];
 			}, 1500);
-		}
+		},
 	},
 	mounted() {
 		if (this.errorMessage) {
@@ -142,7 +142,7 @@ export default {
 				this.errorMessage = '';
 			}, 1500);
 		}
-	}
+	},
 };
 </script>
 

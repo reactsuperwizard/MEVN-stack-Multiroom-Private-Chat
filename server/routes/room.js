@@ -530,15 +530,14 @@ router.put(
         const updateFields = {
             room_id: null,
         };
-        return User.update(updateFields, {
+        await User.update(updateFields, {
             returning: true,
             raw: true,
             where: {
                 id: req.body.userid,
             },
-        }).then(async info => {
-            return res.status(200);
         });
+        return res.status(200);
     },
 );
 module.exports = router;

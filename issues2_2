@@ -71,6 +71,33 @@ Step 5: Improve look and feel:
 @@- Add a 'Private Message' item to dropdown menu above block/ban.  When it is clicked, Bob can directly PM Mary from inside any room. The pm message is written at the same input field of the room, with a sign before the message indicating it is a PM directed at Mary.
 
 
+Step 6
+
+Functionalites
+@@- Correct stats of `Users online`  at the `rooms` page. Currently it shows total number of users.
+@@- When a user joins a room it should immediately appear in `Online Users` list of other users in the room. 
+
+@@- Flood control is ineffective. When user reaches the maximum message quota, he should be banned for BAN_TIME. Currently just gets a warning message
+@@- The time that user is banned should be indicated to the user, like this: You are posting a lot. Wait for $BAN_TIME (unit in minuts) before you can post again.
+@@-When the Bio or Location texts are too long and they are not saved, show a notificaiton indicating why the profile has not been saved. 
+@@- When a profile is successfully update, show a success notifcation message: 'Your profile is updated'
+@@- Remove the red and green borders around the user in `User's list` with whom user is not chatting. They are just cofusing
+@@- What's the difference between 'ban' and 'block` for user A and B in room C where neither user A or B is C's admin? If there is no difference, then use a single `ignore` option instead of 'ban' and 'block'. 
+    In public room, if the room admin blocks one user, all of his messages are deleted and he is kicked out of the room.
+                    if the room admin bans one user, he can enter the room and can read the messages but he can't post any message.
+    In private room, if 'userA' blocks 'userB', they cannot send a message to each other.
+                     if 'userA' bans 'userB', they can have a private chat but if 'userA' is in another room, he won't be notified when 'userB' sends a private message.
+                     He will be notified by only unbanned users's private messages.
+
+
+Appearance
+@@- Make  `Bio`'s input field RTL
+@@- Change cursor to pointer when user hovers over a PM notificaiton
+@@- Add some 5px padding to the right of the first character in message input field
+ 
+
+
+
 
  
 

@@ -296,7 +296,7 @@ module.exports = {
         //     .select('-password');
     },
     GET_ROOM_USERS: async data => {
-        return await User.findAll(
+        return User.findAll(
             {
                 where: {
                     room_id: data.room.id,

@@ -3,17 +3,17 @@
 	border-radius: 10px;
 }
 
-.blocked {
-	border-style: solid;
+// .blocked {
+// 	border-style: solid;
 
-	border-color: red !important;
-}
+// 	border-color: red !important;
+// }
 
-.banned {
-	border-style: solid;
+// .banned {
+// 	border-style: solid;
 
-	border-color: yellowgreen !important;
-}
+// 	border-color: yellowgreen !important;
+// }
 
 .chat {
 	height: 100%;
@@ -341,7 +341,7 @@
 		&-control {
 			direction: rtl;
 			position: relative;
-			padding: 1rem 0 1rem 0.5rem;
+			padding: 1rem 5px 1rem 0.5rem;
 			font-family: 'Russo One';
 			font-size: 0.9rem !important;
 			width: 100%;
