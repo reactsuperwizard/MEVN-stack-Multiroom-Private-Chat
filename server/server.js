@@ -52,7 +52,7 @@ const { JOIN_ROOM, BAN_USER } = require('./helpers/socketEvents');
 
 var j = schedule.scheduleJob(
 	{
-		rule: '*/60000 * * * * *',
+		rule: '*/600000 * * * * *',
 	},
 	function() {
 		DELETE_STICKY_ROOM();
