@@ -679,7 +679,6 @@ export default {
 
 				/** Socket IO: User Exit Event - Update User List */
 				this.getSocket.on('updateUserList', data => {
-					console.log('updateUserList', data);
 					this.users = JSON.parse(data);
 				});
 

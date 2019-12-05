@@ -174,11 +174,9 @@ export default {
 
 			for (const property in updatedUserDetails) {
 				if (updatedUserDetails[property]) {
-					console.log('append');
 					formData.append(property, updatedUserDetails[property]);
 				}
 			}
-			console.log(updatedUserDetails);
 
 			if (localStorage.getItem('authToken')) {
 				axios
@@ -189,7 +187,6 @@ export default {
 					})
 					.then(async res => {
 						if (res.data.errors) {
-							console.log('res data errors,', res.data.errors);
 							for (const error of res.data.errors) {
 								const [key] = Object.keys(error);
 								const [value] = Object.values(error);

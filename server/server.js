@@ -138,7 +138,6 @@ io.on('connection', socket => {
 	socket.on('disconnect', async () => {
 		if (currentRoomId) {
 			/** Filter through users and remove user from user list in that room */
-			console.log(currentRoomId, socket.id);
 			const roomState = await FILTER_ROOM_USERS({
 				roomId: currentRoomId,
 				socketId: socket.id,
