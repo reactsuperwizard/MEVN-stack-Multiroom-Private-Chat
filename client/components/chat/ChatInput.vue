@@ -7,6 +7,7 @@
 				@select="onSelectEmoji"
 			/>
 		</div>
+		<div class="chat__ads_above"></div>
 		<div class="chat__input">
 			<input
 				type="text"
@@ -46,6 +47,7 @@
 				Send
 			</button>
 		</div>
+		<div class="chat__ads_bottom"></div>
 	</div>
 </template>
 
@@ -62,25 +64,25 @@ export default {
 		return {
 			files: '',
 			valueInput: '',
-			dialogHidden: true
+			dialogHidden: true,
 		};
 	},
 	props: ['curUser'],
 	components: {
 		VEmojiPicker,
-		mdbIcon
+		mdbIcon,
 	},
 	computed: {
 		...mapGetters([
 			'getUserData',
 			'getCurrentRoom',
 			'getSocket',
-			'getCurrentSelect'
+			'getCurrentSelect',
 		]),
 
 		emojisNative() {
 			return packEmoji;
-		}
+		},
 	},
 	methods: {
 		...mapActions(['saveCurrentSelect']),
@@ -104,7 +106,7 @@ export default {
 					room: this.getCurrentRoom,
 					user: this.getUserData,
 					select: this.getCurrentSelect,
-					content: this.valueInput
+					content: this.valueInput,
 				});
 				this.valueInput = '';
 			}
@@ -117,8 +119,8 @@ export default {
 				axios
 					.post(`/api/user/image`, formData, {
 						headers: {
-							'Content-Type': 'multipart/form-data'
-						}
+							'Content-Type': 'multipart/form-data',
+						},
 					})
 					.then(async res => {
 						if (res.data.success) {
@@ -126,7 +128,7 @@ export default {
 								room: this.getCurrentRoom,
 								user: this.getUserData,
 								select: this.getCurrentSelect,
-								content: '!!!image!!!' + res.data.image
+								content: '!!!image!!!' + res.data.image,
 							});
 						} else {
 							this.$notify({
@@ -134,14 +136,14 @@ export default {
 								title: 'Upload failed',
 								text: 'Upload image, audio, video less than 50 MB',
 								type: 'error ',
-								duration: 10000
+								duration: 10000,
 							});
 						}
 					})
 
 					.catch(err => console.log(err));
 			}
-		}
+		},
 	},
 	mounted() {
 		const _this = this;
@@ -150,7 +152,7 @@ export default {
 				_this.sendMessage();
 			}
 		});
-	}
+	},
 };
 </script>
 <style lang="css" scoped></style>

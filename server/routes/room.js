@@ -530,14 +530,19 @@ router.put(
         const updateFields = {
             room_id: null,
         };
-        await User.update(updateFields, {
+        User.update(updateFields, {
             returning: true,
             raw: true,
             where: {
                 id: req.body.userid,
             },
-        });
-        return res.status(200);
+        })
+        .then((info) => {
+            return res.status(200).json({'success':true});
+        })
+        .catch((err => {
+            return res.status(200).json({ 'success': false });
+        }))
     },
 );
 module.exports = router;

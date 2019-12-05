@@ -123,11 +123,16 @@
 														<a href="#" @click="onStatusChange(user.id, 2)">
 															<img src="@/assets/img/block.png" />
 															<span>{{
-																getStatus(user.id) == 2 ? 'Active' : 'Block'
+																getStatus(user.id) == 2
+																	? 'Active'
+																	: room.user && room.user == getUserData.id
+																	? 'Block'
+																	: 'Ignore'
 															}}</span>
 														</a>
 														<a
 															href="#"
+															v-if="room.user && room.user == getUserData.id"
 															@click="
 																getStatus(user.id) == 1
 																	? onStatusChange(user.id, 0)

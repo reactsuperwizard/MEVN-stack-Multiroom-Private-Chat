@@ -2,6 +2,17 @@
 	<div id="app" class="app">
 		<Navbar />
 		<Particle name="particle-js" />
+		<!-- <adsense data-ad-client="ca-pub-7640562161899788" data-ad-slot="7259870550">
+		</adsense> -->
+		<!-- <adsense
+			ad-client="ca-pub-7640562161899788"
+			ad-slot="1234567890"
+			ad-style="display: block"
+			ad-format="auto"
+			data-full-width-responsive="true"
+		>
+		</adsense> -->
+
 		<transition
 			:name="transitionName"
 			:enter-active-class="enterActive"
