@@ -38,7 +38,7 @@ export default {
 .ads_sidebar {
 	width: 300px;
 	height: 50px;
-	background-color: #402d31;
+	background-color: pink;
 }
 .sidebar {
 	height: 100vh;
