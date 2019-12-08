@@ -43,6 +43,7 @@ const {
 	GET_ROOM_USERS,
 	FILTER_ROOM_USERS,
 	CREATE_MESSAGE_CONTENT,
+	ACTIVE_ALL_USERS,
 } = require('./actions/socketio');
 
 const { DELETE_STICKY_ROOM } = require('./actions/cronjob');
@@ -70,7 +71,7 @@ const roomRoutes = require('./routes/room');
 const relationRoutes = require('./routes/relation');
 const roomRelationRoutes = require('./routes/roomRelation');
 const privateMsgRoutes = require('./routes/privateMsg');
-// const messageRoutes = require('./routes/messages');
+const adsenseRoutes = require('./routes/adsense');
 
 /** Middleware */
 app.use(
@@ -114,7 +115,7 @@ app.use('/api/room', roomRoutes);
 app.use('/api/relation', relationRoutes);
 app.use('/api/roomRelation', roomRelationRoutes);
 app.use('/api/privateMsg', privateMsgRoutes);
-// app.use('/api/messages', messageRoutes);
+app.use('/api/adsense', adsenseRoutes);
 
 // if (process.env.NODE_ENV !== 'production') {
 //     logger.add(
@@ -317,8 +318,9 @@ io.on('connection', socket => {
 				'msgAlertTriggered',
 				JSON.stringify({
 					trig: true,
-					content: `You are posting a lot. Wait for ${process.env.BAN_TIME /
-						60000} minutes before you can post again`,
+					content: `You are posting a lot. Wait for ${Math.ceil(
+						process.env.BAN_TIME / 60000,
+					)} minutes before you can post again`,
 				}),
 			);
 			BAN_USER(data.user.id);
@@ -431,6 +433,7 @@ io.on('connection', socket => {
 if (process.env.NODE_ENV !== 'test') {
 	server.listen(process.env.PORT || 5000, () => {
 		logger.info(`[LOG=SERVER] Server started on port ${process.env.PORT}`);
+		ACTIVE_ALL_USERS();
 	});
 }
 

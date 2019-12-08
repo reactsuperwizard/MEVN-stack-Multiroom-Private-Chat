@@ -33,42 +33,6 @@
 										:key="user.id"
 									>
 										<div class="chat__user-item">
-											<!-- <div class="chat__user-image chat__user-dropupContainer">
-												<div class="dropup">
-													<button class="dropbtn_noPadding">
-														<img
-															:src="(!user.image.includes('www.gravatar.com/avatar') ? 'http://localhost:5000/public/avatar/' : '') + user.image"
-															alt
-															class="chat__user-avatar"
-														/>
-														<div v-if="room.user && room.user== user.id">
-															<img src="@/assets/img/admin5.png" class="chat__user-adminBadge1" title="Room Admin" />
-														</div>
-													</button>
-													<div class="dropup-content adjustForAvatar">
-														<a href="#">
-															Name :
-															<span>{{ user.username }}</span>
-														</a>
-														<a href="#">
-															<span>Handle : {{ user.handle }}</span>
-														</a>
-														<a href="#">
-															<span>sex : {{ user.sex || 'Unknown' }}</span>
-														</a>
-														<a href="#">
-															<span>age : {{ user.age || 'Unknown' }}</span>
-														</a>
-														<a href="#">
-															<span>located in : {{ user.location || 'Unknown' }}</span>
-														</a>
-														<a href="#">
-															<span>Bio : {{ user.bio || 'Unknown' }}</span>
-														</a>
-													</div>
-												</div>
-											</div>-->
-
 											<div
 												class="chat__user-image"
 												:title="

@@ -7,7 +7,14 @@
 				@select="onSelectEmoji"
 			/>
 		</div>
-		<div class="chat__ads_above"></div>
+		<div class="chat__ads_above">
+			<ins
+				class="adsbygoogle adsense-mobile"
+				style="display:block"
+				:data-ad-client="'ca-pub-' + this.adsenseClientId"
+				:data-ad-slot="this.adsenseSlotId"
+			></ins>
+		</div>
 		<div class="chat__input">
 			<input
 				type="text"
@@ -47,7 +54,6 @@
 				Send
 			</button>
 		</div>
-		<div class="chat__ads_bottom"></div>
 	</div>
 </template>
 
@@ -65,6 +71,8 @@ export default {
 			files: '',
 			valueInput: '',
 			dialogHidden: true,
+			adsenseClientId: '',
+			adsenseSlotId: '',
 		};
 	},
 	props: ['curUser'],
@@ -152,6 +160,18 @@ export default {
 				_this.sendMessage();
 			}
 		});
+	},
+	created() {
+		axios
+			.get(`/api/adsense/`)
+			.then(res => {
+				this.adsenseClientId = res.data.chatInputClientId;
+				this.adsenseSlotId = res.data.chatInputSlotId;
+				// (adsbygoogleC = window.adsbygoogle || []).push({});
+			})
+			.catch(err => {
+				console.log('err', err);
+			});
 	},
 };
 </script>

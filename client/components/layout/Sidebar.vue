@@ -1,7 +1,14 @@
 <template>
 	<transition name="slideLeft" mode="out-in">
 		<div v-if="visible" class="sidebar">
-			<div class="ads_sidebar"></div>
+			<div class="ads_sidebar">
+				<ins
+					class="adsbygoogle adsense-mobile"
+					style="display:block"
+					:data-ad-client="'ca-pub-' + this.adsenseClientId"
+					:data-ad-slot="this.adsenseSlotId"
+				></ins>
+			</div>
 			<div class="sidebar__header">
 				<slot name="header">
 					<h4>Default Header</h4>
@@ -18,11 +25,14 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
 	name: 'Sidebar',
 	data: function() {
 		return {
 			visible: window.innerWidth < 768 ? false : true,
+			adsenseClientId: '',
+			adsenseSlotId: '',
 		};
 	},
 	methods: {
@@ -30,15 +40,30 @@ export default {
 			this.visible = !this.visible;
 		},
 	},
-	mounted() {},
+	mounted() {
+		(adsbygoogle = window.adsbygoogle || []).push({});
+	},
+	created() {
+		axios
+			.get(`/api/adsense/`)
+			.then(res => {
+				this.adsenseClientId = res.data.sidebarClientId;
+				this.adsenseSlotId = res.data.sidebarSlotId;
+				(adsbygoogle = window.adsbygoogle || []).push({});
+			})
+			.catch(err => {
+				console.log('err', err);
+			});
+	},
 };
 </script>
 
 <style lang="scss" scoped>
 .ads_sidebar {
-	width: 300px;
-	height: 50px;
+	width: 300px !important;
+	height: 50px !important;
 	background-color: #402d31;
+	overflow: hidden;
 }
 .sidebar {
 	height: 100vh;

@@ -64,7 +64,7 @@ axios.interceptors.response.use(
 
 export const eventBus = new Vue();
 Vue.use(Notifications);
-
+// Vue.component('adsense', VueAdsense);
 new Vue({
 	router,
 	store,

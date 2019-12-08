@@ -100,5 +100,8 @@ Appearance
 @@- Merge Block/Ban Functionality if not a room admin
 
 
- 
-
+Step 7
+@@- remove ad zone from below the input field. 
+@@- When a user is blocked in private room the red conversation buble near his name should also be removed.
+@@- Usernames in the Online users list are lowercase , while the messages info the first letter the capitalized. Just remove any case manipulation and show the original usernames everywhere.
+@@- Can not select 'unban' for the first user in the list. (the dropdown menu disapears before hovering on that option)

@@ -4,14 +4,6 @@
 		<Particle name="particle-js" />
 		<!-- <adsense data-ad-client="ca-pub-7640562161899788" data-ad-slot="7259870550">
 		</adsense> -->
-		<!-- <adsense
-			ad-client="ca-pub-7640562161899788"
-			ad-slot="1234567890"
-			ad-style="display: block"
-			ad-format="auto"
-			data-full-width-responsive="true"
-		>
-		</adsense> -->
 
 		<transition
 			:name="transitionName"
@@ -61,6 +53,7 @@ import Footer from '@/components/layout/Footer.vue';
 import Particle from '@/components/layout/Particle.vue';
 import { eventBus } from './main.js';
 import { mapActions, mapGetters } from 'vuex';
+// import Ads from 'vue-google-adsense';
 
 const DEFAULT_TRANSITION = 'fade';
 const DEFAULT_ENTER_ACTIVE_CLASS = 'animated fadeIn';
