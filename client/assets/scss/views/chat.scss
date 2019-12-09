@@ -184,7 +184,7 @@
 
 			.dropup-content a {
 				color: black;
-				padding: 5px 16px;
+				padding: 10px;
 				text-decoration: none;
 				display: block;
 
@@ -209,6 +209,7 @@
 
 			.dropup:hover .dropup-content {
 				display: block;
+				border-radius: 2px;
 			}
 
 			.dropup:hover .dropbtn {
@@ -331,7 +332,7 @@
 
 	/** Input List */
 	&__ads_above {
-		padding: 1rem 1rem;
+		// padding: 1rem 1rem;
 		margin: 1rem 1rem 0 1rem;
 		border-top: 1px solid #fff;
 		height: 50px;

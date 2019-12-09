@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 08, 2019 at 03:43 PM
+-- Generation Time: Dec 09, 2019 at 09:19 PM
 -- Server version: 10.1.37-MariaDB
 -- PHP Version: 7.2.12
 
@@ -37,6 +37,8 @@ CREATE TABLE `adsenses` (
   `chatInputSlotId` varchar(50) COLLATE utf8mb4_bin NOT NULL,
   `sidebarClientId` varchar(50) COLLATE utf8mb4_bin NOT NULL,
   `sidebarSlotId` varchar(50) COLLATE utf8mb4_bin NOT NULL,
+  `chatInputAdsExpr` mediumtext COLLATE utf8mb4_bin NOT NULL,
+  `sideBarAdsExpr` mediumtext COLLATE utf8mb4_bin NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
@@ -45,8 +47,8 @@ CREATE TABLE `adsenses` (
 -- Dumping data for table `adsenses`
 --
 
-INSERT INTO `adsenses` (`id`, `chatInputClientId`, `chatInputSlotId`, `sidebarClientId`, `sidebarSlotId`, `createdAt`, `updatedAt`) VALUES
-(1, '4125889001430424', '5349526397', '4125889001430424', '5349526397', '2019-12-08 14:14:57', '0000-00-00 00:00:00');
+INSERT INTO `adsenses` (`id`, `chatInputClientId`, `chatInputSlotId`, `sidebarClientId`, `sidebarSlotId`, `chatInputAdsExpr`, `sideBarAdsExpr`, `createdAt`, `updatedAt`) VALUES
+(1, '4125889001430424', '5349526397', '4125889001430424', '5349526397', ' 		const adsItem = document.createElement(\'div\'); 		adsItem.innerHTML = \'<div style=\"width:100%; height:50px; background-color:pink\">Hello</div>\'; 		document.getElementById(\'chatInputAdsExpr\').appendChild(adsItem);', '` 		const adsItem = document.createElement(\'div\'); 		adsItem.innerHTML = \'<div style=\"width:300px; height:50px; background-color:#402d31\">Hello</div>\'; 		document.getElementById(\'sideBarAdsExpr\').appendChild(adsItem); 		`', '2019-12-09 20:18:13', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -96,16 +98,6 @@ CREATE TABLE `relations` (
   `status` int(11) NOT NULL DEFAULT '2'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
---
--- Dumping data for table `relations`
---
-
-INSERT INTO `relations` (`id`, `user`, `touser`, `status`) VALUES
-(9, 3, 1, 0),
-(10, 2, 1, 0),
-(11, 3, 2, 0),
-(12, 1, 2, 0);
-
 -- --------------------------------------------------------
 
 --
@@ -132,7 +124,7 @@ CREATE TABLE `rooms` (
 
 INSERT INTO `rooms` (`id`, `name`, `avatar`, `user`, `password`, `access`, `lastAcTime`, `users`, `createdAt`, `updatedAt`) VALUES
 (1, 'Private Room', 'pHome.png', NULL, NULL, 0, NULL, NULL, '2019-11-11 06:17:18', '2019-10-09 06:40:18'),
-(2, 'HOME', 'home.png', 'NULL', NULL, 1, NULL, NULL, '2019-12-08 14:39:02', '2019-12-08 14:39:02');
+(2, 'HOME', 'home.png', 'NULL', NULL, 1, NULL, NULL, '2019-12-09 19:57:26', '2019-12-09 19:57:26');
 
 -- --------------------------------------------------------
 
@@ -175,15 +167,6 @@ CREATE TABLE `user_infos` (
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `user_infos`
---
-
-INSERT INTO `user_infos` (`id`, `socketid`, `username`, `handle`, `email`, `password`, `create_time`, `delete_time`, `image`, `age`, `sex`, `location`, `bio`, `status_active`, `status_participate`, `room_id`, `createdAt`, `updatedAt`) VALUES
-(1, 'q1VZJxyym57L7weNAAAF', 'cat1', 'cat1', 'cat1@email.com', '$2a$10$sO7h/uIzDZx6GvbIVnEl9OWeZEH85.RqGHQMddLNzhr7dVtCjaWKW', '2019-12-07 15:04:28', NULL, '//www.gravatar.com/avatar/4fc3103a0027f9ad4e3f6f37debe8e52?s=220&r=pg&d=identicon', NULL, NULL, '', '', 1, 0, NULL, '2019-12-08 14:38:54', '2019-12-08 14:38:54'),
-(2, 'TZrt8AfJxMfaGij7AAAG', 'cat2', 'cat2', 'cat2@email.com', '$2a$10$jhECiO2BD4DmgXIdwKO9t.GbTawjX7ka2ZwasuQdr.8WRJKGKZdty', '2019-12-07 15:04:36', NULL, '//www.gravatar.com/avatar/6312d7776c273231bb2743d1e3ee952c?s=220&r=pg&d=identicon', NULL, NULL, '', '', 1, 0, 2, '2019-12-08 14:39:02', '2019-12-08 14:39:02'),
-(3, 'JUA9EVf7v0rWvYn2AAAH', 'cat3', 'cat3', 'cat3@a.com', '$2a$10$0wIfQl0igwWP.HcS.3Pn0eaCSquaT8nrV74yaUyI6zF2SRFZOwAfy', '2019-12-07 15:09:06', NULL, '//www.gravatar.com/avatar/f12f252dc48684c3ff33367291bef7e0?s=220&r=pg&d=identicon', NULL, NULL, '', '', 1, 0, NULL, '2019-12-08 14:38:53', '2019-12-08 14:38:53');
 
 --
 -- Indexes for dumped tables
@@ -250,25 +233,25 @@ ALTER TABLE `adsenses`
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=198;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=283;
 
 --
 -- AUTO_INCREMENT for table `privatemessages`
 --
 ALTER TABLE `privatemessages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `relations`
 --
 ALTER TABLE `relations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `rooms`
 --
 ALTER TABLE `rooms`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `room_relations`

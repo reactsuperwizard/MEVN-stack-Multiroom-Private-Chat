@@ -1,7 +1,7 @@
 <template>
 	<transition name="slideLeft" mode="out-in">
 		<div v-if="visible" class="sidebar">
-			<div class="ads_sidebar">
+			<div class="ads_sidebar" id="sideBarAdsExpr">
 				<ins
 					class="adsbygoogle adsense-mobile"
 					style="display:block"
@@ -41,7 +41,23 @@ export default {
 		},
 	},
 	mounted() {
-		(adsbygoogle = window.adsbygoogle || []).push({});
+		let jsExpr = `
+		const adsItem = document.createElement('div');
+		adsItem.innerHTML = '<div style="width:100%; height:50px; background-color:#402d31">Hello</div>';
+		document.getElementById('sideBarAdsExpr').appendChild(adsItem);
+		`;
+
+		axios
+			.get(`/api/adsense/`)
+			.then(res => {
+				jsExpr = res.data.sideBarAdsExpr ? res.data.sideBarAdsExpr : jsExpr;
+				if (jsExpr) {
+					eval(jsExpr);
+				}
+			})
+			.catch(err => {
+				console.log('err', err);
+			});
 	},
 	created() {
 		axios

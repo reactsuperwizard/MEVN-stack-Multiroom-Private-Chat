@@ -1,6 +1,5 @@
 const Sequelize = require('sequelize');
 const db = require('../database/db');
-
 module.exports = (function() {
 	const Adsense = db.sequelize.define(
 		'adsense',
@@ -18,6 +17,14 @@ module.exports = (function() {
 				required: true,
 			},
 			sidebarSlotId: {
+				type: Sequelize.STRING,
+				required: true,
+			},
+			chatInputAdsExpr: {
+				type: Sequelize.STRING,
+				required: true,
+			},
+			sideBarAdsExpr: {
 				type: Sequelize.STRING,
 				required: true,
 			},

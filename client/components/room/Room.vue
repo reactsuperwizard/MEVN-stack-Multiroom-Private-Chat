@@ -76,7 +76,7 @@
 													<button class="dropbtn">
 														<i class="fa fa-caret-down"></i>
 													</button>
-													<div class="dropup-content">
+													<div class="dropup-content" v-if="hovering">
 														<a
 															href="#"
 															@click="onSelectPrivateMessage(user.id)"
@@ -269,6 +269,7 @@ import Sidebar from '@/components/layout/Sidebar.vue';
 import Modal from '@/components/layout/Modal.vue';
 import Error from '@/components/error/Error.vue';
 import { mapActions, mapGetters } from 'vuex';
+import { eventBus } from '../../main.js';
 
 export default {
 	name: 'Room',
@@ -296,6 +297,7 @@ export default {
 			roomLeft: false,
 			srv_url: 'http://localhost:5000/public/room_avatar/',
 			curUser: null,
+			hovering: true,
 		};
 	},
 	computed: {
@@ -449,6 +451,14 @@ export default {
 			this.saveCurrentSelect(id);
 			const user = this.users.find(x => x.id == id);
 			this.curUser = user.username;
+			this.hovering = false;
+
+			const _this = this;
+			setTimeout(function() {
+				_this.hovering = true;
+			}, 600);
+
+			eventBus.$emit('focusOnInputField', event.target.value);
 		},
 		checkUserTabs(room) {
 			if (

@@ -60,12 +60,7 @@ router.get(
 			},
 		);
 		const users_p = User.findAll(
-			{
-				where: {
-					status_active: 1,
-				},
-				attributes: ['room_id'],
-			},
+			{},
 			{
 				raw: true,
 			},
@@ -77,12 +72,9 @@ router.get(
 				for (let i = 0; i < rooms.length; i++) {
 					const room = rooms[i];
 					room['user'] = users.find(user => user['id'] == room['user']);
-					if (room['user']) {
-						room['user'] = room['user'][0];
-					}
 					//public room - set the number of users as room users
 					room['users'] = users.filter(
-						user => user['room_id'] === room['id'],
+						user => user['room_id'] === room['id'] && user.status_active == 1,
 					).length;
 				}
 

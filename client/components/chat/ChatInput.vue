@@ -7,7 +7,7 @@
 				@select="onSelectEmoji"
 			/>
 		</div>
-		<div class="chat__ads_above">
+		<div class="chat__ads_above" id="chatInputAdsExpr">
 			<ins
 				class="adsbygoogle adsense-mobile"
 				style="display:block"
@@ -21,6 +21,7 @@
 				v-model="valueInput"
 				class="chat__input-control"
 				@focus="$emit('enterText')"
+				ref="chatInputField"
 			/>
 			<div
 				v-if="this.getCurrentSelect && this.getCurrentRoom.access"
@@ -63,6 +64,7 @@ import { mapGetters, mapActions } from 'vuex';
 import VEmojiPicker from 'v-emoji-picker';
 import packEmoji from 'v-emoji-picker/data/emojis.js';
 import { mdbIcon } from 'mdbvue';
+import { eventBus } from '../../main.js';
 
 export default {
 	name: 'ChatInput',
@@ -155,23 +157,38 @@ export default {
 	},
 	mounted() {
 		const _this = this;
+		let jsExpr = `
+		const adsItem = document.createElement('div');
+		adsItem.innerHTML = '<div style="width:100%; height:50px; background-color:pink">Hello</div>';
+		document.getElementById('chatInputAdsExpr').appendChild(adsItem);
+		`;
+
+		axios
+			.get(`/api/adsense/`)
+			.then(res => {
+				jsExpr = res.data.chatInputAdsExpr ? res.data.chatInputAdsExpr : jsExpr;
+				if (jsExpr) {
+					eval(jsExpr);
+				}
+			})
+			.catch(err => {
+				console.log('err', err);
+			});
+
 		window.addEventListener('keyup', function(event) {
 			if (event.keyCode === 13) {
 				_this.sendMessage();
 			}
 		});
+		eventBus.$on('focusOnInputField', () => {
+			setTimeout(function() {
+				_this.$refs.chatInputField.focus();
+			}, 600);
+		});
 	},
-	created() {
-		axios
-			.get(`/api/adsense/`)
-			.then(res => {
-				this.adsenseClientId = res.data.chatInputClientId;
-				this.adsenseSlotId = res.data.chatInputSlotId;
-				// (adsbygoogleC = window.adsbygoogle || []).push({});
-			})
-			.catch(err => {
-				console.log('err', err);
-			});
+	created() {},
+	destroyed() {
+		eventBus.$off('focusOnInputField');
 	},
 };
 </script>

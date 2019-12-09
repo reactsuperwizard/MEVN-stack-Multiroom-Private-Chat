@@ -270,9 +270,9 @@ module.exports = {
 		);
 		const users = await User.findAll(
 			{
-				where: {
-					status_active: 1,
-				},
+				// where: {
+				// 	status_active: 1,
+				// },
 			},
 			{
 				raw: true,
@@ -281,7 +281,7 @@ module.exports = {
 		for (var i = 0; i < rooms.length; i++) {
 			rooms[i]['user'] = users.find(user => user.id == rooms[i]['user']);
 			rooms[i]['users'] = users.filter(
-				user => user['room_id'] == rooms[i]['id'],
+				user => user['room_id'] === rooms[i]['id'] && user.status_active == 1,
 			).length;
 		}
 		return { rooms: rooms, online: users.length };

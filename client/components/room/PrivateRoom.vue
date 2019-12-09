@@ -83,11 +83,11 @@
 															<img src="@/assets/img/block.png" />
 															<span>
 																{{
-																user.from == 2 ? 'Active' : 'Block'
+																user.from == 2 ? 'Active' : 'Ignore'
 																}}
 															</span>
 														</a>
-														<a
+														<!-- <a
 															href="#"
 															@click="
 																user.from == 1
@@ -101,7 +101,7 @@
 																user.from == 1 ? 'Unban' : 'Ban'
 																}}
 															</span>
-														</a>
+														</a> -->
 													</div>
 												</div>
 											</div>

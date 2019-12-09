@@ -105,3 +105,9 @@ Step 7
 @@- When a user is blocked in private room the red conversation buble near his name should also be removed.
 @@- Usernames in the Online users list are lowercase , while the messages info the first letter the capitalized. Just remove any case manipulation and show the original usernames everywhere.
 @@- Can not select 'unban' for the first user in the list. (the dropdown menu disapears before hovering on that option)
+
+Step 7/b
+@@- ban/Unban has no effect in private room. 
+@@- Database table for ads should contain the whole snippet `<script>...</script>`, as we my want to use ads other format than adsense.
+@@- Fix 'Room admin Unkonwn User' in rooms list
+@@- When private message is chosen from drop down menu, the cursere should go to text input field and focus. 

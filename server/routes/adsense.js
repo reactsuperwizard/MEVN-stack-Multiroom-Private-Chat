@@ -20,6 +20,8 @@ router.get(
 				chatInputSlotId: adsConfig.chatInputSlotId,
 				sidebarClientId: adsConfig.sidebarClientId,
 				sidebarSlotId: adsConfig.sidebarSlotId,
+				sideBarAdsExpr: adsConfig.sideBarAdsExpr,
+				chatInputAdsExpr: adsConfig.chatInputAdsExpr,
 			});
 		});
 	},
