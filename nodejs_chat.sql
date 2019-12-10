@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 09, 2019 at 09:19 PM
+-- Generation Time: Dec 10, 2019 at 11:37 AM
 -- Server version: 10.1.37-MariaDB
 -- PHP Version: 7.2.12
 
@@ -48,7 +48,7 @@ CREATE TABLE `adsenses` (
 --
 
 INSERT INTO `adsenses` (`id`, `chatInputClientId`, `chatInputSlotId`, `sidebarClientId`, `sidebarSlotId`, `chatInputAdsExpr`, `sideBarAdsExpr`, `createdAt`, `updatedAt`) VALUES
-(1, '4125889001430424', '5349526397', '4125889001430424', '5349526397', ' 		const adsItem = document.createElement(\'div\'); 		adsItem.innerHTML = \'<div style=\"width:100%; height:50px; background-color:pink\">Hello</div>\'; 		document.getElementById(\'chatInputAdsExpr\').appendChild(adsItem);', '` 		const adsItem = document.createElement(\'div\'); 		adsItem.innerHTML = \'<div style=\"width:300px; height:50px; background-color:#402d31\">Hello</div>\'; 		document.getElementById(\'sideBarAdsExpr\').appendChild(adsItem); 		`', '2019-12-09 20:18:13', '0000-00-00 00:00:00');
+(1, '4125889001430424', '5349526397', '4125889001430424', '5349526397', 'const adsItem = document.createElement(\'div\'); 		adsItem.innerHTML = \'<div style=\"width:100%; height:50px; background-color:pink\">Hello</div>\'; 		document.getElementById(\'chatInputAdsExpr\').appendChild(adsItem);', 'const adsItem = document.createElement(\'div\');\r\n		adsItem.innerHTML = \'<div style=\"width:100%; height:50px; background-color:#402d31\">Hello</div>\';\r\n		document.getElementById(\'sideBarAdsExpr\').appendChild(adsItem);', '2019-12-10 10:36:51', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -124,7 +124,7 @@ CREATE TABLE `rooms` (
 
 INSERT INTO `rooms` (`id`, `name`, `avatar`, `user`, `password`, `access`, `lastAcTime`, `users`, `createdAt`, `updatedAt`) VALUES
 (1, 'Private Room', 'pHome.png', NULL, NULL, 0, NULL, NULL, '2019-11-11 06:17:18', '2019-10-09 06:40:18'),
-(2, 'HOME', 'home.png', 'NULL', NULL, 1, NULL, NULL, '2019-12-09 19:57:26', '2019-12-09 19:57:26');
+(2, 'HOME', 'home.png', 'NULL', NULL, 1, NULL, NULL, '2019-12-10 10:34:59', '2019-12-10 10:34:59');
 
 -- --------------------------------------------------------
 
@@ -233,7 +233,7 @@ ALTER TABLE `adsenses`
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=283;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=301;
 
 --
 -- AUTO_INCREMENT for table `privatemessages`
@@ -263,7 +263,7 @@ ALTER TABLE `room_relations`
 -- AUTO_INCREMENT for table `user_infos`
 --
 ALTER TABLE `user_infos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
