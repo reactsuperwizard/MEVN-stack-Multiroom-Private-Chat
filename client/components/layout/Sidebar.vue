@@ -40,25 +40,7 @@ export default {
 			this.visible = !this.visible;
 		},
 	},
-	mounted() {
-		let jsExpr = `
-		const adsItem = document.createElement('div');
-		adsItem.innerHTML = '<div style="width:100%; height:50px; background-color:#402d31">Hello</div>';
-		document.getElementById('sideBarAdsExpr').appendChild(adsItem);
-		`;
-
-		axios
-			.get(`/api/adsense/`)
-			.then(res => {
-				jsExpr = res.data.sideBarAdsExpr ? res.data.sideBarAdsExpr : jsExpr;
-				if (jsExpr) {
-					eval(jsExpr);
-				}
-			})
-			.catch(err => {
-				console.log('err', err);
-			});
-	},
+	mounted() {},
 	created() {
 		axios
 			.get(`/api/adsense/`)

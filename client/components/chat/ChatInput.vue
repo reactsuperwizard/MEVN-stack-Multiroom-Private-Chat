@@ -8,12 +8,12 @@
 			/>
 		</div>
 		<div class="chat__ads_above" id="chatInputAdsExpr">
-			<ins
+			<!-- <ins
 				class="adsbygoogle adsense-mobile"
 				style="display:block"
 				:data-ad-client="'ca-pub-' + this.adsenseClientId"
 				:data-ad-slot="this.adsenseSlotId"
-			></ins>
+			></ins> -->
 		</div>
 		<div class="chat__input">
 			<input
@@ -157,23 +157,6 @@ export default {
 	},
 	mounted() {
 		const _this = this;
-		let jsExpr = `
-		const adsItem = document.createElement('div');
-		adsItem.innerHTML = '<div style="width:100%; height:50px; background-color:pink">Hello</div>';
-		document.getElementById('chatInputAdsExpr').appendChild(adsItem);
-		`;
-
-		axios
-			.get(`/api/adsense/`)
-			.then(res => {
-				jsExpr = res.data.chatInputAdsExpr ? res.data.chatInputAdsExpr : jsExpr;
-				if (jsExpr) {
-					eval(jsExpr);
-				}
-			})
-			.catch(err => {
-				console.log('err', err);
-			});
 
 		window.addEventListener('keyup', function(event) {
 			if (event.keyCode === 13) {

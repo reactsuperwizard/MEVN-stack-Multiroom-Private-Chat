@@ -270,6 +270,7 @@ import Modal from '@/components/layout/Modal.vue';
 import Error from '@/components/error/Error.vue';
 import { mapActions, mapGetters } from 'vuex';
 import { eventBus } from '../../main.js';
+import $ from 'jquery';
 
 export default {
 	name: 'Room',
@@ -750,7 +751,20 @@ export default {
 			// .catch(err => console.log(err));
 		}
 	},
-	mounted() {},
+	mounted() {
+		axios
+			.get(`/api/adsense/`)
+			.then(res => {
+				res.data.forEach(adsense => {
+					$(adsense.adCode).appendTo(
+						document.getElementById(adsense.destinationId),
+					);
+				});
+			})
+			.catch(err => {
+				console.log('err', err);
+			});
+	},
 };
 </script>
 

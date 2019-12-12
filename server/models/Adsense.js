@@ -4,27 +4,15 @@ module.exports = (function() {
 	const Adsense = db.sequelize.define(
 		'adsense',
 		{
-			chatInputClientId: {
+			description: {
 				type: Sequelize.STRING,
 				required: true,
 			},
-			chatInputSlotId: {
+			destinationId: {
 				type: Sequelize.STRING,
 				required: true,
 			},
-			sidebarClientId: {
-				type: Sequelize.STRING,
-				required: true,
-			},
-			sidebarSlotId: {
-				type: Sequelize.STRING,
-				required: true,
-			},
-			chatInputAdsExpr: {
-				type: Sequelize.STRING,
-				required: true,
-			},
-			sideBarAdsExpr: {
+			adCode: {
 				type: Sequelize.STRING,
 				required: true,
 			},
