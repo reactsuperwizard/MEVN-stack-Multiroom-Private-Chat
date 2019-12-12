@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 10, 2019 at 11:37 AM
+-- Generation Time: Dec 12, 2019 at 05:01 AM
 -- Server version: 10.1.37-MariaDB
 -- PHP Version: 7.2.12
 
@@ -33,12 +33,9 @@ USE `nodejs_chat`;
 DROP TABLE IF EXISTS `adsenses`;
 CREATE TABLE `adsenses` (
   `id` int(11) NOT NULL,
-  `chatInputClientId` varchar(50) COLLATE utf8mb4_bin NOT NULL,
-  `chatInputSlotId` varchar(50) COLLATE utf8mb4_bin NOT NULL,
-  `sidebarClientId` varchar(50) COLLATE utf8mb4_bin NOT NULL,
-  `sidebarSlotId` varchar(50) COLLATE utf8mb4_bin NOT NULL,
-  `chatInputAdsExpr` mediumtext COLLATE utf8mb4_bin NOT NULL,
-  `sideBarAdsExpr` mediumtext COLLATE utf8mb4_bin NOT NULL,
+  `description` varchar(50) COLLATE utf8mb4_bin NOT NULL,
+  `destinationID` varchar(50) COLLATE utf8mb4_bin NOT NULL,
+  `adCode` mediumtext COLLATE utf8mb4_bin NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
@@ -47,8 +44,9 @@ CREATE TABLE `adsenses` (
 -- Dumping data for table `adsenses`
 --
 
-INSERT INTO `adsenses` (`id`, `chatInputClientId`, `chatInputSlotId`, `sidebarClientId`, `sidebarSlotId`, `chatInputAdsExpr`, `sideBarAdsExpr`, `createdAt`, `updatedAt`) VALUES
-(1, '4125889001430424', '5349526397', '4125889001430424', '5349526397', 'const adsItem = document.createElement(\'div\'); 		adsItem.innerHTML = \'<div style=\"width:100%; height:50px; background-color:pink\">Hello</div>\'; 		document.getElementById(\'chatInputAdsExpr\').appendChild(adsItem);', 'const adsItem = document.createElement(\'div\');\r\n		adsItem.innerHTML = \'<div style=\"width:100%; height:50px; background-color:#402d31\">Hello</div>\';\r\n		document.getElementById(\'sideBarAdsExpr\').appendChild(adsItem);', '2019-12-10 10:36:51', '0000-00-00 00:00:00');
+INSERT INTO `adsenses` (`id`, `description`, `destinationID`, `adCode`, `createdAt`, `updatedAt`) VALUES
+(0, 'Hi this is the first adsense.', 'chatInputAdsExpr', '<script>alert(\"hi\");</script>', '2019-12-12 03:41:01', '0000-00-00 00:00:00'),
+(1, 'Hi this is the first adsense.', 'sideBarAdsExpr', '<script>alert(\"This is adsense from sidebar\");</script>', '2019-12-12 03:41:01', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -124,7 +122,7 @@ CREATE TABLE `rooms` (
 
 INSERT INTO `rooms` (`id`, `name`, `avatar`, `user`, `password`, `access`, `lastAcTime`, `users`, `createdAt`, `updatedAt`) VALUES
 (1, 'Private Room', 'pHome.png', NULL, NULL, 0, NULL, NULL, '2019-11-11 06:17:18', '2019-10-09 06:40:18'),
-(2, 'HOME', 'home.png', 'NULL', NULL, 1, NULL, NULL, '2019-12-10 10:34:59', '2019-12-10 10:34:59');
+(2, 'HOME', 'home.png', 'NULL', NULL, 1, NULL, NULL, '2019-12-12 03:57:28', '2019-12-12 03:57:28');
 
 -- --------------------------------------------------------
 
@@ -176,8 +174,7 @@ CREATE TABLE `user_infos` (
 -- Indexes for table `adsenses`
 --
 ALTER TABLE `adsenses`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `id` (`id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `messages`
@@ -224,16 +221,10 @@ ALTER TABLE `user_infos`
 --
 
 --
--- AUTO_INCREMENT for table `adsenses`
---
-ALTER TABLE `adsenses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=301;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=333;
 
 --
 -- AUTO_INCREMENT for table `privatemessages`
@@ -263,7 +254,7 @@ ALTER TABLE `room_relations`
 -- AUTO_INCREMENT for table `user_infos`
 --
 ALTER TABLE `user_infos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
